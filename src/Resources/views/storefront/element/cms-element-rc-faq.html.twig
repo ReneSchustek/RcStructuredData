@@ -1,0 +1,38 @@
+{% block element_rc_faq %}
+    {% set faqData = element.data %}
+
+    {# Ohne gepflegte FAQ-Einträge wird gar nichts ausgegeben (kein leerer Block). #}
+    {% if faqData and faqData.items|length > 0 %}
+        <div class="cms-element-rc-faq">
+            {% set displayMode = faqData.displayMode|default('accordion') %}
+
+            {% if displayMode == 'list' %}
+                {% block element_rc_faq_definition_list %}
+                    {# Offene Darstellung: Frage/Antwort als Definitionsliste, kein Aufklappen. #}
+                    <dl class="rc-faq-list rc-faq-list--plain">
+                        {% for item in faqData.items %}
+                            {% block element_rc_faq_definition_item %}
+                                <dt class="rc-faq-question">{{ item.question }}</dt>
+                                <dd class="rc-faq-answer">{{ item.answer|raw }}</dd>
+                            {% endblock %}
+                        {% endfor %}
+                    </dl>
+                {% endblock %}
+            {% else %}
+                {% block element_rc_faq_list %}
+                    <div class="rc-faq-list">
+                        {% for item in faqData.items %}
+                            {% block element_rc_faq_item %}
+                                {# Natives details/summary: tastatur- und screenreader-zugänglich ohne JS (BFSG). #}
+                                <details class="rc-faq-item">
+                                    <summary class="rc-faq-question">{{ item.question }}</summary>
+                                    <div class="rc-faq-answer">{{ item.answer|raw }}</div>
+                                </details>
+                            {% endblock %}
+                        {% endfor %}
+                    </div>
+                {% endblock %}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

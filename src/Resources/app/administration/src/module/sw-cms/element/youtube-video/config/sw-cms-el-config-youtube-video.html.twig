@@ -1,0 +1,35 @@
+{% block sw_cms_element_youtube_video_config %}
+    {% parent %}
+
+    {% block sw_cms_element_youtube_video_config_rc_schema %}
+        <div class="rc-schema-youtube-video-config">
+            <p class="rc-schema-youtube-video-config__hint">
+                {{ $tc('sw-cms.elements.youtubeVideo.rcSchema.hint') }}
+            </p>
+
+            <sw-text-field
+                v-model:value="rcSchemaName"
+                :label="$tc('sw-cms.elements.youtubeVideo.rcSchema.name.label')"
+                :placeholder="$tc('sw-cms.elements.youtubeVideo.rcSchema.name.placeholder')">
+            </sw-text-field>
+
+            <sw-textarea-field
+                v-model:value="rcSchemaDescription"
+                :label="$tc('sw-cms.elements.youtubeVideo.rcSchema.description.label')"
+                :placeholder="$tc('sw-cms.elements.youtubeVideo.rcSchema.description.placeholder')">
+            </sw-textarea-field>
+
+            <sw-text-field
+                v-model:value="rcSchemaUploadDate"
+                :label="$tc('sw-cms.elements.youtubeVideo.rcSchema.uploadDate.label')"
+                :placeholder="$tc('sw-cms.elements.youtubeVideo.rcSchema.uploadDate.placeholder')">
+            </sw-text-field>
+
+            <sw-text-field
+                v-model:value="rcSchemaDuration"
+                :label="$tc('sw-cms.elements.youtubeVideo.rcSchema.duration.label')"
+                :placeholder="$tc('sw-cms.elements.youtubeVideo.rcSchema.duration.placeholder')">
+            </sw-text-field>
+        </div>
+    {% endblock %}
+{% endblock %}

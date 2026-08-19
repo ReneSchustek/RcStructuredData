@@ -1,0 +1,11 @@
+{% block sw_category_detail_base %}
+    {% parent %}
+
+    {% block sw_category_detail_base_rc_schema %}
+        <sw-rc-schema-diagnose-card
+            v-if="category && category.id && category.type === 'page'"
+            entity-type="category"
+            :entity-id="category.id">
+        </sw-rc-schema-diagnose-card>
+    {% endblock %}
+{% endblock %}

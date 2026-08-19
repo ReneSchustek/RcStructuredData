@@ -1,0 +1,44 @@
+{% block rc_schema_additional_property %}
+    <div class="rc-schema-additional-property">
+        {% block rc_schema_additional_property_items %}
+            <div
+                v-for="(item, index) in items"
+                :key="index"
+                class="rc-schema-additional-property__item">
+
+                <sw-text-field
+                    v-model:value="item.name"
+                    :label="index === 0 ? $tc('rc-schema.additionalProperty.name.label') : ''"
+                    :placeholder="$tc('rc-schema.additionalProperty.name.placeholder')"
+                    :disabled="disabled"
+                    @update:value="emitChange">
+                </sw-text-field>
+
+                <sw-text-field
+                    v-model:value="item.value"
+                    :label="index === 0 ? $tc('rc-schema.additionalProperty.value.label') : ''"
+                    :placeholder="$tc('rc-schema.additionalProperty.value.placeholder')"
+                    :disabled="disabled"
+                    @update:value="emitChange">
+                </sw-text-field>
+
+                <sw-button
+                    variant="ghost-danger"
+                    size="small"
+                    :disabled="disabled"
+                    @click="removeProperty(index)">
+                    {{ $tc('rc-schema.additionalProperty.remove') }}
+                </sw-button>
+            </div>
+        {% endblock %}
+
+        {% block rc_schema_additional_property_add %}
+            <sw-button
+                variant="ghost"
+                :disabled="disabled"
+                @click="addProperty">
+                {{ $tc('rc-schema.additionalProperty.add') }}
+            </sw-button>
+        {% endblock %}
+    </div>
+{% endblock %}

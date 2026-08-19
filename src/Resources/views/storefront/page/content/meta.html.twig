@@ -1,0 +1,21 @@
+{% sw_extends '@Storefront/storefront/page/content/meta.html.twig' %}
+
+{#
+    Kategorie- und Landingpages rendern dieses Template. Liegt unser fertiger JSON-LD-Graph
+    als Page-Extension `rcSchemaGraph` vor, geben wir genau einen zusammenhängenden
+    `@graph`-Block aus und ersetzen damit die getrennte Core-Ausgabe (WebPage/Breadcrumb/
+    ItemList). Auf Seiten ohne unseren Graphen bleibt das Core-Verhalten erhalten.
+#}
+{% block layout_head_json_ld %}
+    {% set rcSchemaGraph = page.extensions.rcSchemaGraph %}
+    {% if rcSchemaGraph is not null %}
+        {% if rcSchemaGraph.diagnostics is not empty %}
+            <!-- rc-schema Vollständigkeit:
+{% for line in rcSchemaGraph.diagnostics %}  - {{ line }}
+{% endfor %}-->
+        {% endif %}
+        <script type="application/ld+json">{{ rcSchemaGraph.graph|json_encode(jsonLdFlags|default(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP')))|raw }}</script>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,63 @@
+{% block sw_rc_schema_diagnose_card %}
+    <sw-card
+        class="sw-rc-schema-diagnose-card"
+        :title="$tc('rc-schema.diagnose.title')"
+        :isLoading="isLoading">
+
+        {% block sw_rc_schema_diagnose_card_error %}
+            <sw-alert v-if="hasError" variant="error">
+                {{ $tc('rc-schema.diagnose.error') }}
+            </sw-alert>
+        {% endblock %}
+
+        {# Die Hinweise stehen vor allem anderen und auch dann, wenn gar kein Graph entsteht:
+           Handgeschriebenes JSON-LD auf der Seite ist unabhängig davon ein Problem. #}
+        {% block sw_rc_schema_diagnose_card_warnings %}
+            <template v-if="!isLoading && !hasError && result && result.warnings && result.warnings.length">
+                <sw-alert
+                    v-for="warning in result.warnings"
+                    :key="warning.code"
+                    class="sw-rc-schema-diagnose-card__warning"
+                    variant="warning">
+                    {{ warning.message }}
+                </sw-alert>
+            </template>
+        {% endblock %}
+
+        {% block sw_rc_schema_diagnose_card_content %}
+            <template v-if="!isLoading && !hasError && result">
+                <sw-alert v-if="!result.hasGraph" variant="info">
+                    {{ $tc('rc-schema.diagnose.noGraph') }}
+                </sw-alert>
+
+                <template v-else>
+                    <p class="sw-rc-schema-diagnose-card__count">
+                        {{ $tc('rc-schema.diagnose.nodeCount', result.nodeCount, { count: result.nodeCount }) }}
+                    </p>
+
+                    <sw-alert v-if="result.findings.length === 0" variant="success">
+                        {{ $tc('rc-schema.diagnose.complete') }}
+                    </sw-alert>
+
+                    <template v-else>
+                        <sw-alert variant="warning">
+                            {{ $tc('rc-schema.diagnose.hasGaps') }}
+                        </sw-alert>
+
+                        <ul class="sw-rc-schema-diagnose-card__findings">
+                            <li v-for="finding in result.findings" :key="finding.id">
+                                <strong>{{ finding.type }}</strong>
+                                <span v-if="finding.missingRequired.length">
+                                    — {{ $tc('rc-schema.diagnose.required') }}: {{ finding.missingRequired.join(', ') }}
+                                </span>
+                                <span v-if="finding.missingRecommended.length">
+                                    — {{ $tc('rc-schema.diagnose.recommended') }}: {{ finding.missingRecommended.join(', ') }}
+                                </span>
+                            </li>
+                        </ul>
+                    </template>
+                </template>
+            </template>
+        {% endblock %}
+    </sw-card>
+{% endblock %}

@@ -1,0 +1,39 @@
+# ============================================================
+# .gitignore – RcStructuredData
+# ============================================================
+
+# Lokale Arbeits- und Werkzeugdateien (nicht Teil des Plugins)
+
+# Lokale Dev-Helper
+
+# IDE
+.idea/
+.vscode/
+
+# Composer / PHP
+vendor/
+composer.phar
+# Als verteiltes Plugin (Library) wird die Lock-Datei nicht versioniert — die
+# konsumierende Shopware-Installation löst die Abhängigkeiten selbst auf.
+composer.lock
+
+# Build / Cache
+var/
+.phpunit.cache/
+.php-cs-fixer.cache
+
+# Frontend
+node_modules/
+/src/Resources/app/storefront/dist/
+/src/Resources/app/administration/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+secrets.json

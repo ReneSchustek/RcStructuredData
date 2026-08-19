@@ -1,0 +1,152 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Kern: ID-Erzeugung, Kontext-Aufbau, Graph-Zusammenbau -->
+        <service id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\SchemaContextFactory">
+            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\GraphBuilder">
+            <argument type="tagged_iterator" tag="rc_schema.node_provider"/>
+        </service>
+
+        <!-- Knoten-Provider (graph pieces) — je Schema-Typ einer, per Tag eingesammelt -->
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\OrganizationNodeProvider">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\WebSiteNodeProvider">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\LocalBusinessNodeProvider">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\BreadcrumbNodeProvider">
+            <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder"/>
+            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\CollectionPageNodeProvider">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\WebPageNodeProvider">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\FaqPageNodeProvider">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\FaqCmsBlockExtractor"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\VideoObjectNodeProvider">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\YoutubeVideoExtractor"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Enrichment\VideoMetadataEnricher"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\ItemListNodeProvider">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\ProductListingExtractor"/>
+            <argument type="service" id="Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
+        <!-- BlogPosting: liest nur aus dem SchemaContext (keine Blog-Plugin-Kopplung) -->
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\BlogPostingNodeProvider">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
+        <!-- Optionale Video-Metadaten-Anreicherung über die YouTube-Data-API (nur bei gesetztem Key) -->
+        <service id="Ruhrcoder\RcStructuredData\Schema\Enrichment\YoutubeApiMetadataEnricher">
+            <argument type="service" id="http_client"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="cache.object"/>
+            <argument type="service" id="logger"/>
+        </service>
+        <service
+            id="Ruhrcoder\RcStructuredData\Schema\Enrichment\VideoMetadataEnricher"
+            alias="Ruhrcoder\RcStructuredData\Schema\Enrichment\YoutubeApiMetadataEnricher"/>
+
+        <!-- CMS-Block-Extraktion (Datenquelle für FAQ/Video aus sichtbaren Blöcken) -->
+        <service id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
+        <service id="Ruhrcoder\RcStructuredData\Schema\Extractor\FaqCmsBlockExtractor">
+            <argument type="service" id="Shopware\Core\Framework\Util\HtmlSanitizer"/>
+        </service>
+        <service id="Ruhrcoder\RcStructuredData\Schema\Extractor\YoutubeVideoExtractor"/>
+        <service id="Ruhrcoder\RcStructuredData\Schema\Extractor\ProductListingExtractor"/>
+
+        <!-- Vollständigkeits-Diagnose (Debug-Kommentar + Konsolenbefehl) -->
+        <service id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\CompletenessChecker"/>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\PageWarningChecker">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\SchemaDiagnoser">
+            <argument type="service" id="category.repository"/>
+            <argument type="service" id="cms_page.repository"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\SchemaContextFactory"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\GraphBuilder"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\CompletenessChecker"/>
+            <argument type="service" id="landing_page.repository"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\PageWarningChecker"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Command\DiagnoseCommand">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\SchemaDiagnoser"/>
+            <tag name="console.command"/>
+        </service>
+
+        <!-- Admin-API-Endpunkt für die sichtbare Diagnose-Karte -->
+        <service id="Ruhrcoder\RcStructuredData\Controller\SchemaDiagnoseController" public="true">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\SchemaDiagnoser"/>
+            <tag name="controller.service_arguments"/>
+        </service>
+
+        <!-- rc-faq CMS-Element: registriert den Element-Typ und liefert das Accordion -->
+        <service id="Ruhrcoder\RcStructuredData\Block\Faq\DataResolver\FaqResolver">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\FaqCmsBlockExtractor"/>
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
+
+        <!-- Storefront-Anbindung: hängt den Graphen als Page-Extension an -->
+        <service id="Ruhrcoder\RcStructuredData\Subscriber\SchemaGraphSubscriber">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\SchemaContextFactory"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\GraphBuilder"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\CompletenessChecker"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Beantwortet der Vorlage, ob der Kern WebSite und Organization schon selbst ausgibt -->
+        <service id="Ruhrcoder\RcStructuredData\Twig\StructuredDataExtension">
+            <tag name="twig.extension"/>
+        </service>
+    </services>
+</container>

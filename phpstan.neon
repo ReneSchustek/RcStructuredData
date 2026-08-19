@@ -1,0 +1,34 @@
+includes:
+    - vendor/shopwarelabs/phpstan-shopware/rules.neon
+
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - vendor
+    bootstrapFiles:
+        - vendor/autoload.php
+    # Symbol-Definitionen für optionale Fremd-Plugin-Integrationen (WerklOpenBlogware) —
+    # keine Laufzeit-Abhängigkeit; scanFiles macht die Klassen der Analyse bekannt.
+    scanFiles:
+        - phpstan-stubs/werkl-openblogware.php
+    ignoreErrors:
+        # Der Aufruf steht im **Kopf** der Schleife und läuft genau einmal — es gibt keine Abfrage
+        # je Durchlauf. Die Regel prüft die syntaktische Verschachtelung, nicht den Ablauf.
+        -
+            message: '#EntityRepository method calls are not allowed within loops#'
+            path: src/Install/CustomFieldsInstaller.php
+
+        # Die Prüfung läuft über alle Verkaufskanäle und hat keinen Aufrufer, dessen Kontext zu
+        # übernehmen wäre — sie wird aus der Verwaltung angestoßen.
+        -
+            message: '#Do not use Shopware\\Core\\Framework\\Context::createDefaultContext#'
+            path: src/Schema/Diagnostics/SchemaDiagnoser.php
+
+        # In Tests gibt es keinen Aufrufer. Ein aufgebauter Nutzerkontext täuschte dort eine
+        # Abhängigkeit vor, die der Test gar nicht hat.
+        -
+            message: '#Do not use Shopware\\Core\\Framework\\Context::createDefaultContext#'
+            path: tests/*

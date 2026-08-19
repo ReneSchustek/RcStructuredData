@@ -1,0 +1,11 @@
+{% block sw_landing_page_detail_base %}
+    {% parent %}
+
+    {% block sw_landing_page_detail_base_rc_schema %}
+        <sw-rc-schema-diagnose-card
+            v-if="landingPage && landingPage.id"
+            entity-type="landingPage"
+            :entity-id="landingPage.id">
+        </sw-rc-schema-diagnose-card>
+    {% endblock %}
+{% endblock %}

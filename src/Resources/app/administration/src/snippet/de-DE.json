@@ -1,0 +1,77 @@
+{
+  "sw-cms": {
+    "blocks": {
+      "rc-faq": {
+        "label": "FAQ (strukturierte Daten)"
+      }
+    },
+    "elements": {
+      "rc-faq": {
+        "label": "FAQ (strukturierte Daten)",
+        "config": {
+          "title": "FAQ-Einträge",
+          "addItem": "Frage hinzufügen",
+          "removeItem": "Entfernen",
+          "displayMode": {
+            "label": "Darstellung",
+            "accordion": "Accordion (aufklappbar)",
+            "list": "Liste (offen)"
+          },
+          "question": {
+            "label": "Frage",
+            "placeholder": "Frage eingeben …"
+          },
+          "answer": {
+            "label": "Antwort",
+            "placeholder": "Antwort eingeben …"
+          }
+        }
+      },
+      "youtubeVideo": {
+        "rcSchema": {
+          "hint": "Schema.org-Metadaten für das VideoObject. Leere Felder werden über Kategorie-Fallback und Seitendaten gefüllt.",
+          "name": {
+            "label": "Video-Titel (Schema)",
+            "placeholder": "Titel des Videos …"
+          },
+          "description": {
+            "label": "Video-Beschreibung (Schema)",
+            "placeholder": "Kurzbeschreibung des Videos …"
+          },
+          "uploadDate": {
+            "label": "Upload-Datum (ISO 8601)",
+            "placeholder": "z. B. 2024-05-01"
+          },
+          "duration": {
+            "label": "Dauer (ISO 8601)",
+            "placeholder": "z. B. PT5M30S"
+          }
+        }
+      }
+    }
+  },
+  "rc-schema": {
+    "diagnose": {
+      "title": "Schema.org-Diagnose",
+      "nodeCount": "{count} Knoten im @graph erzeugt.",
+      "complete": "Alle erkannten Knoten sind vollständig – keine fehlenden Felder.",
+      "hasGaps": "Es fehlen empfohlene Schema-Felder (siehe Liste). Das ist kein Fehler, verbessert aber die Rich-Result-Chancen.",
+      "required": "Pflichtfelder",
+      "recommended": "Empfehlungen",
+      "noGraph": "Für diese Kategorie wird kein Schema-Graph erzeugt (z. B. Startseite/Ordner).",
+      "error": "Diagnose konnte nicht geladen werden."
+    },
+    "additionalProperty": {
+      "name": {
+        "label": "Name",
+        "placeholder": "z. B. Material"
+      },
+      "value": {
+        "label": "Wert",
+        "placeholder": "z. B. Edelstahl"
+      },
+      "add": "Eigenschaft hinzufügen",
+      "remove": "Entfernen"
+    }
+  }
+}

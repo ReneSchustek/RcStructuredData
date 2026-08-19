@@ -1,0 +1,47 @@
+{% block sw_cms_element_rc_faq_config %}
+    <div class="sw-cms-el-config-rc-faq">
+        {% block sw_cms_element_rc_faq_config_display_mode %}
+            <sw-single-select
+                class="sw-cms-el-config-rc-faq__display-mode"
+                :label="$tc('sw-cms.elements.rc-faq.config.displayMode.label')"
+                :options="displayModeOptions"
+                v-model:value="displayMode">
+            </sw-single-select>
+        {% endblock %}
+
+        {% block sw_cms_element_rc_faq_config_items %}
+            <div
+                v-for="(item, index) in faqItems"
+                :key="index"
+                class="sw-cms-el-config-rc-faq__item">
+
+                <sw-text-field
+                    v-model:value="item.question"
+                    :label="$tc('sw-cms.elements.rc-faq.config.question.label')"
+                    :placeholder="$tc('sw-cms.elements.rc-faq.config.question.placeholder')">
+                </sw-text-field>
+
+                <sw-text-editor
+                    v-model:value="item.answer"
+                    :label="$tc('sw-cms.elements.rc-faq.config.answer.label')"
+                    :placeholder="$tc('sw-cms.elements.rc-faq.config.answer.placeholder')">
+                </sw-text-editor>
+
+                <sw-button
+                    variant="ghost-danger"
+                    size="small"
+                    @click="removeFaqItem(index)">
+                    {{ $tc('sw-cms.elements.rc-faq.config.removeItem') }}
+                </sw-button>
+            </div>
+        {% endblock %}
+
+        {% block sw_cms_element_rc_faq_config_add %}
+            <sw-button
+                variant="ghost"
+                @click="addFaqItem">
+                {{ $tc('sw-cms.elements.rc-faq.config.addItem') }}
+            </sw-button>
+        {% endblock %}
+    </div>
+{% endblock %}

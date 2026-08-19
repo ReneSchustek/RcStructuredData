@@ -1,0 +1,8 @@
+# Einheitliche Zeilenenden (LF) für alle Textdateien, unabhängig vom Betriebssystem.
+* text=auto eol=lf
+
+# Binärdateien nie normalisieren.
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary

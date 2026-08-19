@@ -1,0 +1,77 @@
+{
+  "sw-cms": {
+    "blocks": {
+      "rc-faq": {
+        "label": "FAQ (structured data)"
+      }
+    },
+    "elements": {
+      "rc-faq": {
+        "label": "FAQ (structured data)",
+        "config": {
+          "title": "FAQ entries",
+          "addItem": "Add question",
+          "removeItem": "Remove",
+          "displayMode": {
+            "label": "Display",
+            "accordion": "Accordion (collapsible)",
+            "list": "List (open)"
+          },
+          "question": {
+            "label": "Question",
+            "placeholder": "Enter question …"
+          },
+          "answer": {
+            "label": "Answer",
+            "placeholder": "Enter answer …"
+          }
+        }
+      },
+      "youtubeVideo": {
+        "rcSchema": {
+          "hint": "Schema.org metadata for the VideoObject. Empty fields fall back to category defaults and page data.",
+          "name": {
+            "label": "Video title (schema)",
+            "placeholder": "Title of the video …"
+          },
+          "description": {
+            "label": "Video description (schema)",
+            "placeholder": "Short description of the video …"
+          },
+          "uploadDate": {
+            "label": "Upload date (ISO 8601)",
+            "placeholder": "e.g. 2024-05-01"
+          },
+          "duration": {
+            "label": "Duration (ISO 8601)",
+            "placeholder": "e.g. PT5M30S"
+          }
+        }
+      }
+    }
+  },
+  "rc-schema": {
+    "diagnose": {
+      "title": "Schema.org diagnostics",
+      "nodeCount": "{count} nodes generated in the @graph.",
+      "complete": "All recognised nodes are complete – no missing fields.",
+      "hasGaps": "Recommended schema fields are missing (see list). Not an error, but improves rich-result chances.",
+      "required": "Required",
+      "recommended": "Recommended",
+      "noGraph": "No schema graph is generated for this category (e.g. home page/folder).",
+      "error": "Could not load diagnostics."
+    },
+    "additionalProperty": {
+      "name": {
+        "label": "Name",
+        "placeholder": "e.g. Material"
+      },
+      "value": {
+        "label": "Value",
+        "placeholder": "e.g. Stainless steel"
+      },
+      "add": "Add property",
+      "remove": "Remove"
+    }
+  }
+}

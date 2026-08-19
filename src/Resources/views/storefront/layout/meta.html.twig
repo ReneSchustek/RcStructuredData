@@ -1,0 +1,14 @@
+{% sw_extends '@Storefront/storefront/layout/meta.html.twig' %}
+
+{#
+    Organization + WebSite sind Teil unseres @graph (siehe page/content/meta.html.twig).
+    Hier wird nur die getrennte globale Core-JSON-LD-Ausgabe (WebSite + Organization)
+    unterdrückt, sobald unser Graph greift — sonst stünden sie doppelt im <head>.
+    Der seitenspezifische Block (layout_head_json_ld) wird in page/content/meta.html.twig
+    überschrieben, weil Kategorie- und Landingpages dieses Template rendern.
+#}
+{% block layout_head_json_ld_global %}
+    {% if page.extensions.rcSchemaGraph is null %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+
+    <card>
+        <title>Organization</title>
+        <title lang="de-DE">Organisation</title>
+
+        <input-field>
+            <name>organizationName</name>
+            <label>Organization name</label>
+            <label lang="de-DE">Name der Organisation</label>
+            <helpText>If empty, the shop name is used.</helpText>
+            <helpText lang="de-DE">Falls leer, wird der Shop-Name verwendet.</helpText>
+        </input-field>
+
+        <input-field>
+            <name>organizationLogo</name>
+            <label>Logo URL</label>
+            <label lang="de-DE">Logo-URL</label>
+            <helpText>Absolute URL to the organization logo.</helpText>
+            <helpText lang="de-DE">Absolute URL zum Logo der Organisation.</helpText>
+        </input-field>
+
+        <input-field type="textarea">
+            <name>organizationSameAs</name>
+            <label>Social profiles (one URL per line)</label>
+            <label lang="de-DE">Social-Profile (eine URL pro Zeile)</label>
+            <helpText>Profile URLs (e.g. Facebook, Instagram) for the sameAs property.</helpText>
+            <helpText lang="de-DE">Profil-URLs (z. B. Facebook, Instagram) für die sameAs-Eigenschaft.</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>WebSite</title>
+        <title lang="de-DE">Website</title>
+
+        <input-field>
+            <name>websiteName</name>
+            <label>WebSite name</label>
+            <label lang="de-DE">Name der Website</label>
+            <helpText>If empty, the shop name is used.</helpText>
+            <helpText lang="de-DE">Falls leer, wird der Shop-Name verwendet.</helpText>
+        </input-field>
+
+        <input-field>
+            <name>websiteSearchUrl</name>
+            <label>Search URL template</label>
+            <label lang="de-DE">Such-URL-Vorlage</label>
+            <helpText>Optional. Must contain {search_term_string}, e.g. https://shop.example/search?search={search_term_string}</helpText>
+            <helpText lang="de-DE">Optional. Muss {search_term_string} enthalten, z. B. https://shop.example/search?search={search_term_string}</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>LocalBusiness (local SEO)</title>
+        <title lang="de-DE">LocalBusiness (lokale SEO)</title>
+
+        <input-field>
+            <name>localBusinessStreet</name>
+            <label>Street and number</label>
+            <label lang="de-DE">Straße und Hausnummer</label>
+            <helpText>Set street and city to enable the LocalBusiness node. Leave empty to disable.</helpText>
+            <helpText lang="de-DE">Straße und Ort setzen aktiviert den LocalBusiness-Knoten. Leer lassen, um ihn zu deaktivieren.</helpText>
+        </input-field>
+
+        <input-field>
+            <name>localBusinessZip</name>
+            <label>Postal code</label>
+            <label lang="de-DE">Postleitzahl</label>
+        </input-field>
+
+        <input-field>
+            <name>localBusinessCity</name>
+            <label>City</label>
+            <label lang="de-DE">Ort</label>
+        </input-field>
+
+        <input-field>
+            <name>localBusinessCountry</name>
+            <label>Country code (ISO, e.g. DE)</label>
+            <label lang="de-DE">Ländercode (ISO, z. B. DE)</label>
+        </input-field>
+
+        <input-field>
+            <name>localBusinessPhone</name>
+            <label>Telephone</label>
+            <label lang="de-DE">Telefon</label>
+        </input-field>
+
+        <input-field>
+            <name>localBusinessPriceRange</name>
+            <label>Price range (e.g. €€)</label>
+            <label lang="de-DE">Preisspanne (z. B. €€)</label>
+        </input-field>
+
+        <input-field>
+            <name>localBusinessLatitude</name>
+            <label>Latitude (optional)</label>
+            <label lang="de-DE">Breitengrad (optional)</label>
+        </input-field>
+
+        <input-field>
+            <name>localBusinessLongitude</name>
+            <label>Longitude (optional)</label>
+            <label lang="de-DE">Längengrad (optional)</label>
+        </input-field>
+
+        <input-field type="textarea">
+            <name>localBusinessOpeningHours</name>
+            <label>Opening hours (one per line, e.g. Mo-Fr 09:00-18:00)</label>
+            <label lang="de-DE">Öffnungszeiten (eine pro Zeile, z. B. Mo-Fr 09:00-18:00)</label>
+            <helpText>Schema.org openingHours format, e.g. "Mo-Fr 09:00-18:00" or "Sa 10:00-14:00".</helpText>
+            <helpText lang="de-DE">Schema.org-openingHours-Format, z. B. „Mo-Fr 09:00-18:00" oder „Sa 10:00-14:00".</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>YouTube Data API</title>
+        <title lang="de-DE">YouTube-Data-API</title>
+
+        <input-field type="password">
+            <name>youtubeApiKey</name>
+            <label>YouTube Data API key</label>
+            <label lang="de-DE">YouTube-Data-API-Schlüssel</label>
+            <helpText>Optional. If set, missing VideoObject fields (title, description, upload date, duration) are fetched automatically from the YouTube Data API. Leave empty to disable.</helpText>
+            <helpText lang="de-DE">Optional. Wenn gesetzt, werden fehlende VideoObject-Felder (Titel, Beschreibung, Upload-Datum, Dauer) automatisch über die YouTube-Data-API geholt. Leer lassen, um die Anreicherung zu deaktivieren.</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>Diagnostics</title>
+        <title lang="de-DE">Diagnose</title>
+
+        <input-field type="bool">
+            <name>debug</name>
+            <label>Output completeness diagnostics as HTML comment</label>
+            <label lang="de-DE">Vollständigkeits-Diagnose als HTML-Kommentar ausgeben</label>
+            <helpText>If enabled, missing recommended schema fields are listed as an HTML comment before the JSON-LD. Never enable in production.</helpText>
+            <helpText lang="de-DE">Wenn aktiviert, werden fehlende empfohlene Schema-Felder als HTML-Kommentar vor dem JSON-LD aufgelistet. Niemals produktiv aktivieren.</helpText>
+            <defaultValue>false</defaultValue>
+        </input-field>
+    </card>
+</config>

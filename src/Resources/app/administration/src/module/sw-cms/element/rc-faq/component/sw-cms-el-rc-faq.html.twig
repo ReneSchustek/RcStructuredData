@@ -1,0 +1,16 @@
+{% block sw_cms_element_rc_faq %}
+    <div class="sw-cms-el-rc-faq">
+        <div class="sw-cms-el-rc-faq__preview">
+            <sw-icon name="regular-question-circle" small></sw-icon>
+            <span class="sw-cms-el-rc-faq__label">
+                {{ $tc('sw-cms.elements.rc-faq.label') }}
+            </span>
+
+            <ul v-if="element.config.faqItems.value && element.config.faqItems.value.length" class="sw-cms-el-rc-faq__questions">
+                <li v-for="(item, index) in element.config.faqItems.value" :key="index">
+                    {{ item.question }}
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

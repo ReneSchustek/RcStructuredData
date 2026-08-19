@@ -1,0 +1,23 @@
+{
+  "base": "/bundles/rcstructureddata/administration/",
+  "entryPoints": {
+    "rc-structured-data": {
+      "css": [],
+      "dynamic": [],
+      "js": [
+        "/bundles/rcstructureddata/administration/assets/rc-structured-data-BPBGA_-j.js"
+      ],
+      "legacy": false,
+      "preload": []
+    }
+  },
+  "legacy": false,
+  "metadatas": {},
+  "version": [
+    "7.1.0",
+    7,
+    1,
+    0
+  ],
+  "viteServer": null
+}

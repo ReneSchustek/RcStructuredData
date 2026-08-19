@@ -1,0 +1,42 @@
+{% sw_extends '@Storefront/storefront/page/product-detail/meta.html.twig' %}
+
+{#
+    Produktdetailseiten geben strukturierte Daten als JSON-LD aus — unabhängig
+    vom Feature-Flag JSON_LD_DATA. Statt die Produkt-Logik in PHP nachzubauen (Varianten/ProductGroup,
+    Maße, Videos, Verfügbarkeits-Kaskade) binden wir die gepflegten Core-Partials wieder ein (DRY).
+
+    Gibt der Kern WebSite + Organization nicht selbst aus, ergänzen wir sie hier, damit die
+    @id-Verweise (isPartOf/seller/copyrightHolder) aufgelöst sind. Gibt er sie aus, halten wir uns
+    zurück — sonst stünden sie doppelt im <head>.
+
+    Die Frage beantwortet `rc_schema_core_renders_global_json_ld()` und nicht mehr das Flag direkt:
+    Mit 6.8 verschwindet `JSON_LD_DATA`, und `Feature::isActive()` liefert für ein unbekanntes Flag
+    `false` — die alte Bedingung `not feature(...)` hätte sich damit ins Gegenteil verkehrt.
+
+    Hinweis: Bei deaktiviertem Flag rendert der Core zusätzlich Microdata im Body — das bleibt
+    parallel bestehen (identisch zum Verhalten auf Kategorieseiten, kein Blocker).
+#}
+{% block layout_head_json_ld %}
+    {# Sicheres JSON-Escaping für <script>-Kontext, auch wenn jsonLdFlags nicht global gesetzt ist. #}
+    {% set jsonLdFlags = jsonLdFlags|default(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP')) %}
+
+    {% if not rc_schema_core_renders_global_json_ld() %}
+        {% sw_include '@Storefront/storefront/layout/structured-data/json-ld-website.html.twig' %}
+        {% sw_include '@Storefront/storefront/layout/structured-data/json-ld-organization.html.twig' %}
+    {% endif %}
+
+    {% set jsonLdWebPageType = 'ItemPage' %}
+    {% sw_include '@Storefront/storefront/layout/structured-data/json-ld-webpage.html.twig' %}
+
+    {% if feature('v6.8.0.0') or feature('BREADCRUMB_REWORK') %}
+        {% sw_include '@Storefront/storefront/layout/structured-data/json-ld-breadcrumb.html.twig' with {
+            breadcrumbItems: page.breadcrumb
+        } only %}
+    {% else %}
+        {% sw_include '@Storefront/storefront/layout/structured-data/json-ld-breadcrumb.html.twig' with {
+            category: page.product.seoCategory
+        } only %}
+    {% endif %}
+
+    {% sw_include '@Storefront/storefront/layout/structured-data/json-ld-product.html.twig' %}
+{% endblock %}
