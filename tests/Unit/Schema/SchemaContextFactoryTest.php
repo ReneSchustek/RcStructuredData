@@ -21,14 +21,14 @@ class SchemaContextFactoryTest extends TestCase
 
     public function testRootCategoryYieldsHomeContext(): void
     {
-        $category = $this->makeCategory(self::NAV_ROOT_ID, name: 'Trummer Edelstahl');
+        $category = $this->makeCategory(self::NAV_ROOT_ID, name: 'Muster Edelstahl');
 
         $context = $this->factory()->fromCategory($category, null, $this->salesChannelContext());
 
         static::assertInstanceOf(SchemaContext::class, $context);
         static::assertSame(SchemaContext::TYPE_HOME, $context->getPageType());
         static::assertTrue($context->isHome());
-        static::assertSame('Trummer Edelstahl', $context->getName());
+        static::assertSame('Muster Edelstahl', $context->getName());
         static::assertSame('https://shop.example/', $context->getPageUrl());
         static::assertSame('https://shop.example/', $context->getBaseUrl());
         static::assertNull($context->getCategory());

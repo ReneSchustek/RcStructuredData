@@ -37,7 +37,7 @@ class LocalBusinessNodeProviderTest extends TestCase
     {
         $provider = new LocalBusinessNodeProvider(
             $this->systemConfig([
-                self::PREFIX . 'organizationName' => 'Trummer Edelstahl GmbH',
+                self::PREFIX . 'organizationName' => 'Muster Edelstahl GmbH',
                 self::PREFIX . 'localBusinessStreet' => 'Musterstr. 1',
                 self::PREFIX . 'localBusinessZip' => '44787',
                 self::PREFIX . 'localBusinessCity' => 'Bochum',
@@ -57,7 +57,7 @@ class LocalBusinessNodeProviderTest extends TestCase
         $node = $provider->provide($context)[0];
         static::assertSame('LocalBusiness', $node['@type']);
         static::assertSame('https://shop.example/#/schema/localbusiness/1', $node['@id']);
-        static::assertSame('Trummer Edelstahl GmbH', $node['name']);
+        static::assertSame('Muster Edelstahl GmbH', $node['name']);
         static::assertSame([
             '@type' => 'PostalAddress',
             'streetAddress' => 'Musterstr. 1',

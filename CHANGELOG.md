@@ -1,18 +1,18 @@
 # Changelog
 
-## [2.15.0] - 2026-08-19 — Die Diagnose meldet jetzt zwei stille Fehler
+## [2.15.0] - 2026-08-19: Die Diagnose meldet jetzt zwei stille Fehler
 
 ### Neu
 
 - **„Auf dieser Seite steht handgeschriebenes JSON-LD".** Trägt ein Baustein der Seite einen
   eigenen `ld+json`-Block, hat die Seite zwei Auszeichnungen. Sie können auseinanderlaufen, ohne
-  dass es jemandem auffällt — genau das ist auf den Blogbeiträgen passiert: zwanzig Fragen und
+  dass es jemandem auffällt. Genau das ist auf den Blogbeiträgen passiert: zwanzig Fragen und
   fünf Anleitungsschritte im Schema, von denen kein einziger auf der Seite sichtbar war. Der
   Hinweis nennt den Baustein, in dem es steckt, und erscheint auch dann, wenn für die Seite gar
   kein Graph entsteht.
 - **„Diese Seite meldet FAQPage, ohne einen rc-faq-Baustein zu haben".** Die Auszeichnung entsteht
   aus dem sichtbaren Seiteninhalt. Meldet sie trotzdem eine FAQ, stammt diese aus einer anderen
-  Quelle — der Verdacht auf Fragen, die kein Besucher zu sehen bekommt.
+  Quelle, und das weckt den Verdacht auf Fragen, die kein Besucher zu sehen bekommt.
 
 Beide Hinweise stehen in der Diagnose-Karte der Kategorie- und Landingpage-Ansicht, im
 Konsolenbefehl und in der Antwort der Diagnose-Schnittstelle. Sie kosten nichts: geprüft wird an
@@ -22,23 +22,23 @@ den Bausteinen, die für die Diagnose ohnehin geladen werden.
 
 - Ein ungenutzter Import im Installer der Zusatzfelder ist entfallen.
 
-## [2.14.1] - 2026-08-17 — Baustein, Eigenschaft und Diagnose-Karte sind wieder da
+## [2.14.1] - 2026-08-17: Baustein, Eigenschaft und Diagnose-Karte sind wieder da
 
 ### Behoben
 
 - **Im Backoffice fehlte alles, was die Erweiterung dort beisteuert**: der Baustein für die
   häufigen Fragen, die zusätzlichen Eigenschaften und die Diagnose-Karte, an der sich ablesen
   lässt, ob die Auszeichnung greift. Ursache waren die fehlenden gebauten Dateien des
-  Backoffice-Teils: Ohne sie kündigt Shopware das Bündel nicht an und lädt es nie — ohne
-  Fehlermeldung. Die Auszeichnung selbst lief in der Storefront die ganze Zeit weiter, weshalb der
+  Backoffice-Teils: Ohne sie kündigt Shopware das Bündel nicht an und lädt es nie, und
+  zwar ohne Fehlermeldung. Die Auszeichnung selbst lief in der Storefront die ganze Zeit weiter, weshalb der
   Ausfall von außen nicht zu sehen war.
 
-## [2.14.0] - 2026-08-12 — Zwei Lücken aus dem Sicherheits-Durchgang geschlossen
+## [2.14.0] - 2026-08-12: Zwei Lücken aus dem Sicherheits-Durchgang geschlossen
 
 ### Geändert
 
 - **Die Diagnose-Schnittstelle verlangt jetzt ein Recht.** Beide Adressen gaben ihre Auskunft
-  bisher an jeden Zugang heraus, der im Backoffice angemeldet war — auch an eine Integration,
+  bisher an jeden Zugang heraus, der im Backoffice angemeldet war, auch an eine Integration,
   die für einen einzigen, eng geschnittenen Zweck angelegt wurde. Verlangt wird jetzt das
   Leserecht auf das, wonach gefragt wird: `category:read` für Kategorien, `landing_page:read`
   für Landingpages.
@@ -51,17 +51,17 @@ den Bausteinen, die für die Diagnose ohnehin geladen werden.
 - **Die Antwort einer Frage-Antwort-Liste wird vor der Ausgabe bereinigt.** Sie trägt gewollt
   Auszeichnungen aus dem Textbearbeiter und wird deshalb ungeprüft ausgegeben, damit Absätze und
   Listen erhalten bleiben. Dazwischen fehlte die Bereinigung: Wer im Backoffice Inhalte pflegen
-  darf, konnte damit Skripte einschleusen, die im Browser jedes Besuchers liefen — auch bei einer
+  darf, konnte damit Skripte einschleusen, die im Browser jedes Besuchers liefen, auch bei einer
   Person mit vollem Zugang, die die Seite nur ansieht. Formatierung bleibt erhalten, Skripte
   fallen weg.
 
-## [2.13.2] - 2026-08-10 — Strukturierte Daten bleiben auch nach dem Versionswechsel eindeutig
+## [2.13.2] - 2026-08-10: Strukturierte Daten bleiben auch nach dem Versionswechsel eindeutig
 
 ### Geändert
 
-- **WebSite und Organization erscheinen weiterhin genau einmal.** Ob das Plugin sie ergänzen muss, hing bisher an einem Schalter, den Shopware mit der nächsten Hauptversion entfernt — danach hätte die Abfrage das Gegenteil bedeutet und beide Angaben wären doppelt im Kopfbereich gelandet. Die Entscheidung trifft jetzt das Plugin selbst und bleibt über den Versionswechsel hinweg richtig. Sichtbar ändert sich nichts.
+- **WebSite und Organization erscheinen weiterhin genau einmal.** Ob das Plugin sie ergänzen muss, hing bisher an einem Schalter, den Shopware mit der nächsten Hauptversion entfernt. Danach hätte die Abfrage das Gegenteil bedeutet und beide Angaben wären doppelt im Kopfbereich gelandet. Die Entscheidung trifft jetzt das Plugin selbst und bleibt über den Versionswechsel hinweg richtig. Sichtbar ändert sich nichts.
 
-## [2.13.1] - 2026-08-10 — Vorbereitet auf die nächste Shopware-Hauptversion
+## [2.13.1] - 2026-08-10: Vorbereitet auf die nächste Shopware-Hauptversion
 
 ### Geändert
 
@@ -73,12 +73,12 @@ den Bausteinen, die für die Diagnose ohnehin geladen werden.
 
 ### Behoben
 
-- **FAQ **und** Blog-Artikel auf derselben Seite verlieren ihre Verknüpfung nicht mehr:** Enthält die einem Blog-Artikel zugeordnete CMS-Seite einen FAQ-Block, zeigten FAQPage und BlogPosting beide auf `mainEntity` — der zuletzt verdrahtete Typ überschrieb den anderen, dessen Knoten blieb unverbunden im Graph. Beide werden jetzt gemeinsam als `mainEntity` verlinkt.
+- **FAQ **und** Blog-Artikel auf derselben Seite verlieren ihre Verknüpfung nicht mehr:** Enthält die einem Blog-Artikel zugeordnete CMS-Seite einen FAQ-Block, zeigten FAQPage und BlogPosting beide auf `mainEntity`. Der zuletzt verdrahtete Typ überschrieb den anderen, und dessen Knoten blieb unverbunden im Graph. Beide werden jetzt gemeinsam als `mainEntity` verlinkt.
 - **Keine toten `@id`-Referenzen mehr im Graph:** Zeigte eine `publisher`-Referenz auf eine Organization, die (mangels gepflegtem Shop-/Organisationsnamen) gar nicht erzeugt wurde, stand eine ins Leere laufende Referenz im JSON-LD (von Google als „referenced @id not found" beanstandet). Solche toten Referenzen werden jetzt vor der Ausgabe entfernt.
 
 ### Geändert
 
-- **YouTube-API-Ausfall belastet die Seite nicht mehr wiederholt:** Ein API-Fehler (z. B. 403 bei erschöpftem Quota) wurde nicht negativ gecacht — jeder Cache-Miss-Render löste erneut einen bis zu 3 s blockierenden, scheiternden Aufruf aus. Fehler werden jetzt kurz negativ gecacht (Latenz- und Quota-Schutz).
+- **YouTube-API-Ausfall belastet die Seite nicht mehr wiederholt:** Ein API-Fehler (z. B. 403 bei erschöpftem Quota) wurde nicht negativ gecacht, und jeder Cache-Miss-Render löste erneut einen bis zu 3 s blockierenden, scheiternden Aufruf aus. Fehler werden jetzt kurz negativ gecacht (Latenz- und Quota-Schutz).
 - **Regressions-Sperre:** Neuer Twig-Contract-Test pinnt die drei JSON-LD-Meta-Overrides (`layout_head_json_ld`/`layout_head_json_ld_global`) gegen einen stillen Core-Rename (Phantom-Block-Klasse).
 
 ## [2.12.1] - 2026-07-20
@@ -87,7 +87,7 @@ den Bausteinen, die für die Diagnose ohnehin geladen werden.
 
 ### Behoben
 
-- **Video-Thumbnail im VideoObject-Schema:** Der Fallback-Vorschaubild-Link (wenn am YouTube-Block kein Bild gepflegt ist) nutzte `maxresdefault.jpg`, das nur für Videos mit HD-Thumbnail existiert — bei SD-/älteren Videos lieferte er 404, und `thumbnailUrl` ist ein von Google gefordertes Feld (tote URL → Rich-Result-Warnung). Umgestellt auf `hqdefault.jpg` (existiert für jedes Video).
+- **Video-Thumbnail im VideoObject-Schema:** Der Fallback-Vorschaubild-Link (wenn am YouTube-Block kein Bild gepflegt ist) nutzte `maxresdefault.jpg`, das nur für Videos mit HD-Thumbnail existiert. Bei SD-/älteren Videos lieferte er 404, und `thumbnailUrl` ist ein von Google gefordertes Feld (tote URL → Rich-Result-Warnung). Umgestellt auf `hqdefault.jpg` (existiert für jedes Video).
 
 ## [2.12.0] - 2026-07-02
 
@@ -177,7 +177,7 @@ den Bausteinen, die für die Diagnose ohnehin geladen werden.
 
 ### Hinzugefügt
 - **Dedizierter FAQ-CMS-Block** (`rc-faq`): erscheint in der Block-Seitenleiste und ist frei per
-  Drag&Drop platzierbar — man wählt selbst, wo die FAQs entstehen, und nutzt das Shopware-CMS normal
+  Drag&Drop platzierbar. Man wählt selbst, wo die FAQs entstehen, und nutzt das Shopware-CMS normal
   weiter. Der Block kapselt das bestehende `rc-faq`-Element (Anzeige und FAQPage-Schema aus einer
   Quelle).
 - **Wählbare Darstellung** je FAQ-Element (`displayMode`): **Accordion** (aufklappbar,
@@ -210,7 +210,7 @@ den Bausteinen, die für die Diagnose ohnehin geladen werden.
   `aggregateRating`/`review` aus vorhandenen Bewertungen.
 - Umgesetzt als Twig-Override `storefront/page/product-detail/meta.html.twig` (Block
   `layout_head_json_ld`). WebSite/Organization werden nur ergänzt, wenn der globale Core-Block sie
-  mangels Flag nicht liefert — bei aktivem Flag keine Dopplung.
+  mangels Flag nicht liefert. Bei aktivem Flag gibt es keine Dopplung.
 
 ## [2.2.0] - 2026-07-01
 
@@ -223,12 +223,12 @@ den Bausteinen, die für die Diagnose ohnehin geladen werden.
   Feld-Kaskade des VideoObject: **Block → Category → API → Auto** (Abruf nur, wenn nach Block +
   Category noch ein Feld fehlt).
 - Antworten werden gecacht (Quota-Schonung); Netzwerk-/Quota-Fehler und ein fehlender Key führen
-  zum stillen Fallback auf die manuelle Pflege — nie zu einem Seitenfehler. Der API-Key stammt aus
+  zum stillen Fallback auf die manuelle Pflege, nie zu einem Seitenfehler. Der API-Key stammt aus
   `system_config` und erscheint weder im Output noch im Log.
 - Plugin-Konfiguration: Feld **YouTube-Data-API-Schlüssel** (Typ `password`), DE/EN.
 
 ### Behoben / Qualität
-- Englische Hilfetexte für `organizationName` und `websiteName` enthielten deutschen Text — korrigiert.
+- Englische Hilfetexte für `organizationName` und `websiteName` enthielten deutschen Text; das ist korrigiert.
 - Video-Cache-Schlüssel nutzt `hash('sha256', …)` statt `sha1` (keine sicherheitsrelevante Hash-Funktion).
 - Sicherer Fallback der JSON-Encode-Flags im Storefront-Template (`JSON_HEX_TAG | JSON_HEX_AMP`).
 - Endanwenderfreundliche, ausführliche README; erweiterter Unit-Test für die `SchemaContextFactory`.
@@ -242,13 +242,13 @@ den Bausteinen, die für die Diagnose ohnehin geladen werden.
 - Admin-Repeater für **`additionalProperty`** (Name/Wert): Das JSON-Custom-Field
   `rc_schema_additional_properties` wird jetzt über eine eigene Admin-Komponente
   (`rc-schema-additional-property`, via `config.componentName` in `sw-form-field-renderer`
-  eingebunden) als bearbeitbare Name/Wert-Liste gerendert — an Kategorie und Landingpage.
+  eingebunden) als bearbeitbare Name/Wert-Liste gerendert, an Kategorie und Landingpage.
   Speichert exakt `[{name, value}, …]` (kompatibel zum bestehenden Auslesen im
   `AbstractPageNodeProvider`). Snippets DE/EN.
 
 ## [2.0.0] - 2026-06-30
 
-> **Deployment:** `bin/build-storefront.sh` erforderlich (Erstinstallation v2 — Storefront-Twig + Admin geändert), anschließend `bin/console plugin:update RcStructuredData` (Custom-Field-Set) und `cache:clear`.
+> **Deployment:** `bin/build-storefront.sh` erforderlich (Erstinstallation v2: Storefront-Twig + Admin geändert), anschließend `bin/console plugin:update RcStructuredData` (Custom-Field-Set) und `cache:clear`.
 
 ### Geändert (Breaking)
 - Architektur-Umbau zum **Schema Graph Builder**: Das Plugin erzeugt die strukturierten
@@ -262,7 +262,7 @@ den Bausteinen, die für die Diagnose ohnehin geladen werden.
 - Knoten: `CollectionPage` (Kategorie, niemals Product), `WebPage` (Landingpage),
   `BreadcrumbList` (automatisch aus der Shopware-Navigation), `Organization` und `WebSite`
   (Singletons aus der Plugin-Konfiguration, per `@id` referenziert).
-- Getaggte `SchemaNodeProvider`-Architektur (`rc_schema.node_provider`) — neue Schema-Typen
+- Getaggte `SchemaNodeProvider`-Architektur (`rc_schema.node_provider`). Neue Schema-Typen
   (FAQPage, VideoObject, Article, Product …) werden durch Hinzufügen eines Providers ergänzt.
 - Custom-Field-Set `rc_schema` (Beschreibungs-Override, additionalProperty) für Kategorie
   und Landingpage.
