@@ -41,15 +41,22 @@
             <tag name="rc_schema.node_provider"/>
         </service>
 
+        <!-- Sichtbare Bilder einer Erlebniswelt für `image` am Seitenknoten -->
+        <service id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsImageCollector">
+            <argument type="service" id="media.repository"/>
+        </service>
+
         <service id="Ruhrcoder\RcStructuredData\Schema\Node\CollectionPageNodeProvider">
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\ContentPageDetector"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsImageCollector"/>
             <tag name="rc_schema.node_provider"/>
         </service>
 
         <service id="Ruhrcoder\RcStructuredData\Schema\Node\WebPageNodeProvider">
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\ContentPageDetector"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsImageCollector"/>
             <tag name="rc_schema.node_provider"/>
         </service>
 

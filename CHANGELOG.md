@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.23.0] - 2026-10-14: Alle sichtbaren Bilder im Graphen
+
+> **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`.
+
+### Neu
+
+- **`image` an Seitenknoten** (CollectionPage, WebPage): alle Bilder, die auf der Erlebniswelt sichtbar sind, als
+  `ImageObject` mit Bildtext, in Seitenreihenfolge, jedes einmal, höchstens 60, Adressen sauber kodiert. Quellen: Bildbausteine, Galerien,
+  Schieber, Kacheln und Karten (alles unter `media`/`mediaId` in der Konfiguration), Hintergrundbilder von Abschnitten
+  und Blöcken, die Titelbilder der gezeigten Produkte (Listing, Schieber, Querverkauf) und Bilder im HTML von Text- und
+  Twig-Bausteinen. Was auf keinem Gerät sichtbar ist, zählt nicht. Bisher stand auf Kategorieseiten kein Bild im
+  Graphen.
+
 ## [2.22.1] - 2026-10-14: Teamseite und „Über uns" sind Inhaltsseiten
 
 > **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`.

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ruhrcoder\RcStructuredData\Schema\Node;
 
+use Ruhrcoder\RcStructuredData\Schema\Cms\CmsImageCollector;
 use Ruhrcoder\RcStructuredData\Schema\Cms\ContentPageDetector;
 use Ruhrcoder\RcStructuredData\Schema\IdFactory;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
@@ -21,8 +22,9 @@ final class CollectionPageNodeProvider extends AbstractPageNodeProvider
     public function __construct(
         IdFactory $idFactory,
         private readonly ContentPageDetector $contentPageDetector,
+        ?CmsImageCollector $imageCollector = null,
     ) {
-        parent::__construct($idFactory);
+        parent::__construct($idFactory, $imageCollector);
     }
 
     public function supports(SchemaContext $context): bool

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ruhrcoder\RcStructuredData\Schema\Node;
 
+use Ruhrcoder\RcStructuredData\Schema\Cms\CmsImageCollector;
 use Ruhrcoder\RcStructuredData\Schema\IdFactory;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 use Ruhrcoder\RcStructuredData\Schema\SchemaNodeProvider;
@@ -15,11 +16,15 @@ use Ruhrcoder\RcStructuredData\Schema\SchemaNodeProvider;
  * (Identität, Sprache, Beschreibung, additionalProperty) ist identisch (DRY). Die Bezüge
  * isPartOf/breadcrumb/mainEntity/hasPart setzt der GraphBuilder, sobald die Zielknoten
  * existieren.
+ *
+ * `image` führt die Bilder, die auf der Seite sichtbar sind (siehe {@see CmsImageCollector}). Vorher stand dort auf einer
+ * Kategorieseite mit elf sichtbaren Motiven kein einziges.
  */
 abstract class AbstractPageNodeProvider implements SchemaNodeProvider
 {
     public function __construct(
         protected readonly IdFactory $idFactory,
+        private readonly ?CmsImageCollector $imageCollector = null,
     ) {
     }
 
@@ -38,6 +43,13 @@ abstract class AbstractPageNodeProvider implements SchemaNodeProvider
         $description = $context->getDescription();
         if ($description !== '') {
             $node['description'] = $description;
+        }
+
+        if ($this->imageCollector !== null) {
+            $images = $this->imageCollector->collect($context->getCmsPage(), $context->getSalesChannelContext()->getContext(), $context->getBaseUrl());
+            if ($images !== []) {
+                $node['image'] = $images;
+            }
         }
 
         $additionalProperty = $this->buildAdditionalProperty($context);
