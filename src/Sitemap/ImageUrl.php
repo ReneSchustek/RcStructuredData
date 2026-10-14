@@ -55,6 +55,7 @@ class ImageUrl extends Url
         $images = '';
         foreach ($this->images as $image) {
             if (str_starts_with($image, '/') && !str_starts_with($image, '//')) {
+                // Ohne volle Seitenadresse wäre das Bild relativ, und `image:loc` verlangt eine absolute Adresse.
                 if ($origin === null) {
                     continue;
                 }
@@ -63,6 +64,7 @@ class ImageUrl extends Url
             $images .= '<image:image><image:loc>' . htmlspecialchars($image, \ENT_XML1 | \ENT_QUOTES, 'UTF-8') . '</image:loc></image:image>';
         }
 
+        // Die Bilder gehören in das `<url>`-Element, also vor dessen schließendes Tag.
         return substr($xml, 0, -\strlen('</url>')) . $images . '</url>';
     }
 

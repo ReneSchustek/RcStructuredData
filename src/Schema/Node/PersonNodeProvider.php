@@ -17,8 +17,9 @@ use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
  * Der Titel einer Karte ist der Name, der Text beginnt mit der Funktion; was nach dem ersten „·" folgt (Telefon,
  * E-Mail), gehört nicht dazu. Karten ohne `portraits` (etwa „Zentrale") sind keine Personen.
  *
- * **Bewusst nur Name und Funktion** (Rene, 14.10.2026): keine E-Mail, kein Telefon, kein Bild der Personen in den
- * strukturierten Daten. Ausgegeben wird nur auf der Seite, auf der die Karten stehen; eine eigene Pflege gibt es nicht.
+ * Ausgezeichnet werden nur Name und Funktion. E-Mail, Telefon und Bild der Personen bleiben aus den strukturierten
+ * Daten draußen, auch wenn die Karte sie zeigt. Ausgegeben wird nur auf der Seite, auf der die Karten stehen; eine
+ * eigene Pflege gibt es nicht.
  */
 final class PersonNodeProvider implements SchemaNodeProvider
 {
@@ -49,6 +50,7 @@ final class PersonNodeProvider implements SchemaNodeProvider
                     continue;
                 }
 
+                // Die Nummer läuft über alle Kartenbausteine der Seite, sonst teilten sich zwei Personen eine Kennung.
                 $node = [
                     '@type' => 'Person',
                     '@id' => $this->idFactory->person($context, \count($nodes) + 1),
@@ -84,6 +86,7 @@ final class PersonNodeProvider implements SchemaNodeProvider
         }
 
         $config = $slot->getFieldConfig();
+        // Ohne gespeicherte Darstellung zeigt der Baustein Karten.
         $display = $config->get('display')?->getValue() ?? 'cards';
 
         return $display === 'cards' && $config->get('portraits')?->getValue() === true;

@@ -17,8 +17,8 @@ use Ruhrcoder\RcStructuredData\Schema\SchemaNodeProvider;
  * isPartOf/breadcrumb/mainEntity/hasPart setzt der GraphBuilder, sobald die Zielknoten
  * existieren.
  *
- * `image` führt die Bilder, die auf der Seite sichtbar sind (siehe {@see CmsImageCollector}). Vorher stand dort auf einer
- * Kategorieseite mit elf sichtbaren Motiven kein einziges.
+ * `image` führt die Bilder, die auf der Seite sichtbar sind (siehe {@see CmsImageCollector}), damit eine Kategorieseite
+ * mit vielen Motiven sie auch in den strukturierten Daten nennt.
  */
 abstract class AbstractPageNodeProvider implements SchemaNodeProvider
 {
@@ -45,6 +45,7 @@ abstract class AbstractPageNodeProvider implements SchemaNodeProvider
             $node['description'] = $description;
         }
 
+        // Ohne Sammler, etwa in Tests der Knotenstruktur, fehlt nur `image`.
         if ($this->imageCollector !== null) {
             $images = $this->imageCollector->collect($context->getCmsPage(), $context->getSalesChannelContext()->getContext(), $context->getBaseUrl());
             if ($images !== []) {

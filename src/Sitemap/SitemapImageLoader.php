@@ -24,8 +24,8 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 /**
  * Die Bilder je Sitemap-Eintrag, aus derselben Quelle wie `image` im Graphen.
  *
- * - **Produkt:** die Bilder der Galerie, das Titelbild zuerst (Varianten erben sie vom Hauptartikel).
- * - **Kategorie, Startseite, Landingpage:** das Kategoriebild und die Bilder der Erlebniswelt aus
+ * - Produkt: die Bilder der Galerie, das Titelbild zuerst (Varianten erben sie vom Hauptartikel).
+ * - Kategorie, Startseite, Landingpage: das Kategoriebild und die Bilder der Erlebniswelt aus
  *   {@see CmsImageCollector}, mit den Überschreibungen je Baustein. Die Titelbilder der gelisteten Produkte gehören in
  *   deren eigene Einträge und fehlen hier, weil die Sitemap das Listing nicht auflöst.
  *
@@ -33,6 +33,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 class SitemapImageLoader
 {
+    /**
+     * Dieselbe Obergrenze wie {@see CmsImageCollector}, damit ein Eintrag nicht mehr Bilder nennt als der Graph.
+     */
     private const LIMIT = 60;
 
     /**
@@ -85,6 +88,9 @@ class SitemapImageLoader
         return $result;
     }
 
+    /**
+     * Startseite und Kategorie teilen sich eine Abfrage; die Startseite ist die Navigationskategorie des Kanals.
+     */
     private static function kind(Url $url): string
     {
         return match ($url->getResource()) {
@@ -127,6 +133,7 @@ class SitemapImageLoader
         foreach ($products as $product) {
             $media = $product->getMedia()?->getElements() ?? [];
             $coverId = $product->getCoverId();
+            // Titelbild zuerst, danach die Galerie in ihrer gepflegten Reihenfolge.
             usort($media, static fn (ProductMediaEntity $a, ProductMediaEntity $b): int => [$a->getId() !== $coverId, $a->getPosition()] <=> [$b->getId() !== $coverId, $b->getPosition()]);
 
             $urls = [];
@@ -163,6 +170,8 @@ class SitemapImageLoader
             ? $this->categoryRepository->search($criteria, $context->getContext())->getEntities()
             : $this->landingPageRepository->search($criteria, $context->getContext())->getEntities();
 
+        // Das Kategoriebild steht vor der Erlebniswelt. `slotConfig` geht mit, weil die Erlebniswelt hier unaufgelöst
+        // vorliegt und niemand sonst die Überschreibungen je Baustein einsetzt.
         $sources = [];
         foreach ($entities as $entity) {
             $own = $entity instanceof CategoryEntity && $entity->getMediaId() !== null ? ['id:' . strtolower($entity->getMediaId())] : [];

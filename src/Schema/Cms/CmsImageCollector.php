@@ -20,14 +20,14 @@ use Shopware\Core\Framework\Uuid\Uuid;
 /**
  * Sammelt die Bilder, die auf einer Erlebniswelt sichtbar sind, für `image` am Seitenknoten.
  *
- * **Nur Sichtbares.** Dieselbe Regel wie beim FAQ-Schema: Auszeichnung entsteht aus dem sichtbaren Inhalt, nie daneben.
- * Abschnitte und Blöcke, die auf keinem Gerät sichtbar sind, zählen nicht; Medien anderer Typen (PDF, Video) ebenso
- * wenig.
+ * Es zählt nur Sichtbares, dieselbe Regel wie beim FAQ-Schema: Auszeichnung entsteht aus dem sichtbaren Inhalt, nie
+ * daneben. Abschnitte und Blöcke, die auf keinem Gerät sichtbar sind, zählen nicht; Medien anderer Typen (PDF, Video)
+ * ebenso wenig.
  *
- * **Drei Quellen, in Seitenreihenfolge, jedes Bild einmal:**
+ * Drei Quellen, in Seitenreihenfolge, jedes Bild einmal:
  * 1. Medien aus der Konfiguration der Bausteine. Jeder Baustein legt seine Bilder unter `media` oder `mediaId` ab (das
- *    Video sein Vorschaubild unter `previewMedia`), auch
- *    in Listen (Galerie, Schieber, Kacheln, Karten); dazu die Hintergrundbilder von Abschnitten und Blöcken.
+ *    Video sein Vorschaubild unter `previewMedia`), auch in Listen (Galerie, Schieber, Kacheln, Karten); dazu die
+ *    Hintergrundbilder von Abschnitten und Blöcken.
  * 2. Titelbilder der Produkte, die ein Baustein zeigt (Listing, Produktschieber, Querverkauf). Sie liegen nach der
  *    Auflösung der Erlebniswelt schon geladen vor.
  * 3. Bilder im HTML von Text- und Twig-Bausteinen (`<img src>`), etwa Kategoriekacheln oder Porträts, die nicht als
@@ -38,7 +38,8 @@ class CmsImageCollector
     private const MEDIA_KEYS = ['media', 'mediaId', 'previewMedia'];
 
     /**
-     * Obergrenze gegen ausufernde Graphen. Die Startseite zeigt rund 45 Bilder; 30 schnitten dort ab.
+     * Obergrenze gegen ausufernde Graphen. Die bildreichste Seite, die Startseite, zeigt rund 45 Bilder; 30 reichen
+     * dort nicht, 60 lässt Luft.
      */
     private const LIMIT = 60;
 
@@ -55,6 +56,8 @@ class CmsImageCollector
      */
     public function collect(?CmsPageEntity $page, Context $context, string $baseUrl = ''): array
     {
+        // Gekürzt wird vor dem Laden, damit die Medienabfrage begrenzt bleibt. Was danach als Nicht-Bild herausfällt,
+        // füllt nichts nach.
         $sources = \array_slice(self::sources($page), 0, self::LIMIT);
         $ids = array_values(array_map(static fn (string $source): string => substr($source, 3), array_filter($sources, static fn (string $source): bool => str_starts_with($source, 'id:'))));
         $media = $ids === [] ? new MediaCollection() : $this->mediaRepository->search(new Criteria($ids), $context)->getEntities();
@@ -65,6 +68,7 @@ class CmsImageCollector
             $image = str_starts_with($source, 'id:')
                 ? self::fromMedia($media->get(substr($source, 3)))
                 : self::fromUrl(substr($source, 4), $baseUrl);
+            // Ein Medium und ein `<img>` im HTML können auf dieselbe Datei zeigen; die Adresse zählt einmal.
             if ($image === null || isset($seen[$image['url']])) {
                 continue;
             }
@@ -79,9 +83,9 @@ class CmsImageCollector
      * Die Bildquellen der sichtbaren Teile einer Erlebniswelt, in Seitenreihenfolge, ohne Dopplung:
      * `id:<Medienkennung>` oder `url:<Bildadresse aus HTML>`.
      *
-     * `$slotOverrides` sind die Einstellungen, die eine Kategorie oder Landingpage je Baustein überschreibt (`slotConfig`).
-     * Auf der Seite setzt sie der Kern beim Auflösen ein; die Sitemap liest die Erlebniswelt unaufgelöst und reicht sie
-     * hier herein.
+     * `$slotOverrides` sind die Einstellungen, die eine Kategorie oder Landingpage je Baustein überschreibt
+     * (`slotConfig`). Auf der Seite setzt sie der Kern beim Auflösen ein; die Sitemap liest die Erlebniswelt
+     * unaufgelöst und reicht sie hier herein.
      *
      * @param array<string, mixed> $slotOverrides
      *
@@ -247,6 +251,7 @@ class CmsImageCollector
             return;
         }
 
+        // Jeder andere Text kann HTML eines Text- oder Twig-Bausteins sein.
         if (\is_string($value)) {
             foreach (self::htmlImageUrls($value) as $url) {
                 $sources[] = 'url:' . $url;
@@ -291,6 +296,9 @@ class CmsImageCollector
     }
 
     /**
+     * Protokollrelative Adressen bekommen `https:`, wurzelrelative die Shop-Adresse. Pfadrelative lassen sich ohne die
+     * Adresse der einbettenden Seite nicht sicher auflösen und zählen nicht.
+     *
      * @return array<string, string>|null
      */
     private static function fromUrl(string $url, string $baseUrl): ?array

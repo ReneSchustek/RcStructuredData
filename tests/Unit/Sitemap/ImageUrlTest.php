@@ -42,6 +42,11 @@ final class ImageUrlTest extends TestCase
         );
     }
 
+    /**
+     * Was: Eintrag ohne Bilder.
+     * Warum: Seiten ohne Bild dürfen sich in der Sitemap nicht vom Eintrag des Kerns unterscheiden.
+     * Erwartet: dieselbe Ausgabe wie der Kern.
+     */
     public function testWithoutImagesTheUrlStaysAsTheCoreWritesIt(): void
     {
         $url = new Url();

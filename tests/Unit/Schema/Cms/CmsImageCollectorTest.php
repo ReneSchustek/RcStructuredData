@@ -108,7 +108,8 @@ final class CmsImageCollectorTest extends TestCase
     }
 
     /**
-     * Was: Bildbaustein, dessen Bild eine Kategorie überschreibt (`slotConfig`), wie ihn die Sitemap unaufgelöst liest.
+     * Was: Bildbaustein, dessen Bild eine Kategorie überschreibt (`slotConfig`).
+     * Warum: Die Sitemap liest die Erlebniswelt unaufgelöst; die Überschreibung setzt dort nur der Sammler ein.
      * Erwartet: das Bild der Überschreibung statt des Layoutbildes.
      */
     public function testSlotOverridesReplaceTheLayoutImage(): void

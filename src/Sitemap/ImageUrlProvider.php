@@ -11,8 +11,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 /**
  * Hängt an die Einträge eines Sitemap-Lieferanten des Kerns die Bilder der Seite, für die Bildersuche.
  *
- * Dekoriert Produkt-, Kategorie-, Landingpage- und Startseiten-Lieferanten; Seiten und Reihenfolge bleiben, wie der Kern
- * sie liefert. Keine zweite Sitemap-Datei: Sie veraltete ab dem ersten Tag.
+ * Dekoriert Produkt-, Kategorie-, Landingpage- und Startseiten-Lieferanten; Seiten und Reihenfolge bleiben, wie der
+ * Kern sie liefert. Eine eigene Bilder-Sitemap neben der des Kerns gibt es nicht, weil sie ab dem ersten Tag veralten
+ * würde.
  */
 class ImageUrlProvider extends AbstractUrlProvider
 {

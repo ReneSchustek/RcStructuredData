@@ -7,26 +7,22 @@ namespace Ruhrcoder\RcStructuredData\Schema\Cms;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 
 /**
- * Entscheidet, ob eine Kategorie eine **Inhaltsseite** ist und damit als `WebPage` gehört.
+ * Entscheidet, ob eine Kategorie eine Inhaltsseite ist und damit als `WebPage` gehört.
  *
- * **Warum es diese Frage überhaupt gibt:** `CollectionPage` heißt „Seite mit einer Liste von
- * Einträgen". Impressum, AGB, Kontakt, Widerrufsrecht und Datenschutzerklärung sind keine solchen
- * Seiten — sie als `CollectionPage` auszuzeichnen ist schlicht falsch.
+ * `CollectionPage` heißt „Seite mit einer Liste von Einträgen". Impressum, AGB, Kontakt, Widerrufsrecht und
+ * Datenschutzerklärung sind keine solchen Seiten; sie als `CollectionPage` auszuzeichnen wäre falsch.
  *
- * **Der Unterscheider ist der Typ der Erlebniswelt, nicht der der Kategorie.** `category.type` ist
- * bei allen diesen Seiten `page` und taugt deshalb nicht: Auch Produktkategorien tragen ihn. Erst
- * `cms_page.type` trennt die Fälle — `product_list` und `landingpage` führen eine Liste, `page`
- * nicht.
+ * Unterschieden wird am Typ der Erlebniswelt. `category.type` ist bei allen diesen Seiten `page` und taugt nicht,
+ * weil auch Produktkategorien ihn tragen. Erst `cms_page.type` trennt die Fälle: `product_list` führt eine Liste,
+ * `page` nicht.
  *
- * **Die Ausnahme ist die Beitragsliste.** Die Blog-Übersicht läuft ebenfalls über ein Layout vom
- * Typ `page`, führt aber sehr wohl eine Liste — dort ist `CollectionPage` richtig. Erkennbar ist
- * sie am Listen-Baustein, nicht am Namen der Kategorie: Ein Name lässt sich ändern, ein Baustein
- * ist das, was die Seite tatsächlich tut.
+ * Die Blog-Übersicht läuft ebenfalls über ein Layout vom Typ `page`, führt aber eine Liste, also ist dort
+ * `CollectionPage` richtig. Erkennbar ist sie am Listen-Baustein statt am Namen der Kategorie, weil sich ein Name
+ * ändern lässt und der Baustein zeigt, was die Seite tatsächlich tut.
  *
- * **Landingpage-Layouts zählen mit, wenn sie keine Liste führen.** Die Seiten im Design 2027 sind
- * meist als Landingpage angelegt, auch „Über uns" und „Unser Team". Sie bestehen nur aus Text und
- * Karten und waren als `CollectionPage` ausgezeichnet. Eine Landingpage mit Produktschieber,
- * Kategoriekacheln oder Listing bleibt eine Sammlung.
+ * Landingpage-Layouts zählen als Inhaltsseite, wenn sie keine Liste führen. Im Design 2027 sind viele Seiten als
+ * Landingpage angelegt, auch „Über uns" und „Unser Team", und bestehen nur aus Text und Karten. Eine Landingpage mit
+ * Produktschieber, Kategoriekacheln oder Listing bleibt eine Sammlung.
  */
 final class ContentPageDetector
 {
@@ -62,16 +58,15 @@ final class ContentPageDetector
     {
         $cmsPage = $context->getCmsPage();
 
-        // Ohne Erlebniswelt lässt sich nichts unterscheiden. Dann bleibt es beim bisherigen
-        // Verhalten — eine Vermutung wäre hier schlechter als der Bestand.
+        // Ohne Erlebniswelt lässt sich nichts unterscheiden. Die Seite bleibt dann `CollectionPage`, weil eine
+        // Vermutung schlechter wäre als die Voreinstellung.
         if ($cmsPage === null) {
             return false;
         }
 
-        // **`getType()` wird bewusst nicht direkt gefragt.** `CmsPageEntity::$type` ist eine
-        // typisierte Eigenschaft ohne Vorgabewert; wurde die Erlebniswelt ohne dieses Feld
-        // geladen, wirft schon der Zugriff — und zwar mitten in der Auszeichnung jeder Seite.
-        // `getVars()` überspringt nicht initialisierte Eigenschaften und liefert dann `null`.
+        // Nicht `getType()`: `CmsPageEntity::$type` ist eine typisierte Eigenschaft ohne Vorgabewert. Wurde die
+        // Erlebniswelt ohne dieses Feld geladen, wirft schon der Zugriff, mitten in der Auszeichnung jeder Seite.
+        // `getVars()` überspringt nicht initialisierte Eigenschaften, und der Typ ist dann `null`.
         $layout = $cmsPage->getVars()['type'] ?? null;
         if ($layout !== self::LAYOUT_CONTENT && $layout !== self::LAYOUT_LANDING) {
             return false;
