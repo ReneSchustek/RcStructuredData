@@ -20,6 +20,13 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
 {
     private const CONFIG_PREFIX = 'RcStructuredData.config.';
     private const SHOP_NAME_KEY = 'core.basicInformation.shopName';
+    private const SHOP_EMAIL_KEY = 'core.basicInformation.email';
+
+    /**
+     * Liefergebiet des Kundendienstes. Fest, weil der Shop genau dorthin liefert und berät; eine Einstellung dafür
+     * lohnte die Pflege nicht.
+     */
+    private const AREA_SERVED = ['DE', 'AT', 'CH'];
 
     public function __construct(
         private readonly SystemConfigService $systemConfig,
@@ -46,12 +53,45 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
             $node['logo'] = $logo;
         }
 
+        $contactPoint = $this->resolveContactPoint($context);
+        if ($contactPoint !== null) {
+            $node['contactPoint'] = $contactPoint;
+        }
+
         $sameAs = $this->resolveSameAs($context);
         if ($sameAs !== []) {
             $node['sameAs'] = $sameAs;
         }
 
         return [$node];
+    }
+
+    /**
+     * Kundendienst mit Telefon (Einstellung LocalBusiness) und der Shop-E-Mail aus den Grundeinstellungen. Ohne beides
+     * gibt es keinen Kontaktpunkt; ein leerer wäre für Suchmaschinen wertlos.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function resolveContactPoint(SchemaContext $context): ?array
+    {
+        $salesChannelId = $context->getSalesChannelContext()->getSalesChannelId();
+        $telephone = $this->getString($context, 'localBusinessPhone');
+        $email = trim($this->systemConfig->getString(self::SHOP_EMAIL_KEY, $salesChannelId));
+        if ($telephone === '' && $email === '') {
+            return null;
+        }
+
+        $contactPoint = ['@type' => 'ContactPoint', 'contactType' => 'customer service'];
+        if ($telephone !== '') {
+            $contactPoint['telephone'] = $telephone;
+        }
+        if ($email !== '') {
+            $contactPoint['email'] = $email;
+        }
+        $contactPoint['availableLanguage'] = 'de';
+        $contactPoint['areaServed'] = self::AREA_SERVED;
+
+        return $contactPoint;
     }
 
     private function resolveName(SchemaContext $context): string

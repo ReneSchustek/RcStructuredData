@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.22.0] - 2026-10-14: Mitarbeiter und Kontaktpunkt
+
+> **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`. Keine Migration.
+
+### Neu
+
+- **Mitarbeiter als `Person`** mit Name und Funktion, verknüpft per `worksFor` mit der Organisation. Quelle sind die
+  Personenkarten des Themes (Baustein „Service-Leiste", Karten mit „Bilder als Porträt"): Titel = Name, Text bis zum
+  ersten „·" = Funktion. Bewusst ohne E-Mail, Telefon und Bild. Ausgegeben nur auf der Seite mit den Karten.
+- **`contactPoint` an der Organisation**: Kundendienst mit dem Telefon aus der Karte LocalBusiness und der Shop-E-Mail
+  aus den Grundeinstellungen, Sprache Deutsch, Gebiet DE/AT/CH. Ersetzt den handgeschriebenen Block, der bisher in den
+  Layouts stand.
+
 ## [2.21.1] - 2026-10-14: Die Startseite heißt wie der Shop
 
 > **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`.

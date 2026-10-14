@@ -65,6 +65,34 @@ class OrganizationNodeProviderTest extends TestCase
         $node = $provider->provide($this->makeContext())[0];
         static::assertArrayNotHasKey('logo', $node);
         static::assertArrayNotHasKey('sameAs', $node);
+        static::assertArrayNotHasKey('contactPoint', $node);
+    }
+
+    /**
+     * Was: Telefon (Einstellung LocalBusiness) und Shop-E-Mail sind gepflegt.
+     * Warum: Der Kontaktpunkt ersetzt den handgeschriebenen aus den Layouts; Quelle sind die vorhandenen Einstellungen.
+     * Erwartet: ContactPoint mit Telefon, E-Mail, Kundendienst, Deutsch, DE/AT/CH.
+     */
+    public function testAddsContactPointFromPhoneAndShopEmail(): void
+    {
+        $provider = new OrganizationNodeProvider(
+            $this->systemConfig([
+                'RcStructuredData.config.organizationName' => 'Ruhrcoder',
+                'RcStructuredData.config.localBusinessPhone' => '+49 234 123456',
+                'core.basicInformation.email' => 'info@shop.example',
+            ]),
+            new IdFactory(),
+        );
+
+        $node = $provider->provide($this->makeContext())[0];
+        static::assertSame([
+            '@type' => 'ContactPoint',
+            'contactType' => 'customer service',
+            'telephone' => '+49 234 123456',
+            'email' => 'info@shop.example',
+            'availableLanguage' => 'de',
+            'areaServed' => ['DE', 'AT', 'CH'],
+        ], $node['contactPoint']);
     }
 
     /**

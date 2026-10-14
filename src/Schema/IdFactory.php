@@ -24,6 +24,7 @@ final class IdFactory
     private const VIDEO_FRAGMENT = '#video';
     private const ITEMLIST_FRAGMENT = '#itemlist';
     private const BLOGPOSTING_FRAGMENT = '#article';
+    private const PERSON_FRAGMENT = '#person';
 
     public function organization(SchemaContext $context): string
     {
@@ -93,5 +94,13 @@ final class IdFactory
     public function video(SchemaContext $context, int $index): string
     {
         return $context->getPageUrl() . self::VIDEO_FRAGMENT . '-' . $index;
+    }
+
+    /**
+     * Mitarbeiter einer Seite sind fortlaufend nummeriert (#person-1, #person-2 ...).
+     */
+    public function person(SchemaContext $context, int $index): string
+    {
+        return $context->getPageUrl() . self::PERSON_FRAGMENT . '-' . $index;
     }
 }

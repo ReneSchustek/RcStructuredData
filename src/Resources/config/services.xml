@@ -53,6 +53,13 @@
             <tag name="rc_schema.node_provider"/>
         </service>
 
+        <!-- Mitarbeiter (Name und Funktion) aus den Personenkarten des Themes -->
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\PersonNodeProvider">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
         <service id="Ruhrcoder\RcStructuredData\Schema\Node\FaqPageNodeProvider">
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\FaqCmsBlockExtractor"/>
