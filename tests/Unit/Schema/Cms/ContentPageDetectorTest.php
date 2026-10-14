@@ -34,6 +34,36 @@ class ContentPageDetectorTest extends TestCase
     }
 
     /**
+     * Was: Landingpage-Layout nur mit Text und Personenkarten (Teamseite, „Über uns").
+     * Warum: Die Seiten im Design 2027 sind als Landingpage angelegt, führen aber keine Liste.
+     * Erwartet: Inhaltsseite, also WebPage.
+     */
+    public function testLandingpageWithoutListIsAContentPage(): void
+    {
+        $detector = new ContentPageDetector(new CmsSlotIterator());
+        $page = $this->makeCmsPage($this->makeSlot('text'), $this->makeSlot('rc-tr-service'));
+        $page->setType('landingpage');
+
+        static::assertTrue($detector->isContentPage($this->makeContext(cmsPage: $page)));
+    }
+
+    /**
+     * Was: Landingpage mit Produktschieber oder Kategoriekacheln (etwa „Haus & Garten").
+     * Warum: Sie führt Produkte oder Kategorien auf und ist damit eine Sammlung.
+     * Erwartet: keine Inhaltsseite.
+     */
+    public function testLandingpageWithProductsOrCategoriesStaysACollection(): void
+    {
+        $detector = new ContentPageDetector(new CmsSlotIterator());
+        foreach (['product-slider', 'rc-tr-showcase', 'subcategories'] as $type) {
+            $page = $this->makeCmsPage($this->makeSlot('text'), $this->makeSlot($type));
+            $page->setType('landingpage');
+
+            static::assertFalse($detector->isContentPage($this->makeContext(cmsPage: $page)), $type);
+        }
+    }
+
+    /**
      * Was: Eine Erlebniswelt vom Typ `product_list` ist keine Inhaltsseite.
      * Warum: Sie führt genau die Liste, für die es `CollectionPage` gibt.
      */

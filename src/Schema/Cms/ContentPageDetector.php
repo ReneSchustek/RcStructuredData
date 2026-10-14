@@ -22,6 +22,11 @@ use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
  * Typ `page`, führt aber sehr wohl eine Liste — dort ist `CollectionPage` richtig. Erkennbar ist
  * sie am Listen-Baustein, nicht am Namen der Kategorie: Ein Name lässt sich ändern, ein Baustein
  * ist das, was die Seite tatsächlich tut.
+ *
+ * **Landingpage-Layouts zählen mit, wenn sie keine Liste führen.** Die Seiten im Design 2027 sind
+ * meist als Landingpage angelegt, auch „Über uns" und „Unser Team". Sie bestehen nur aus Text und
+ * Karten und waren als `CollectionPage` ausgezeichnet. Eine Landingpage mit Produktschieber,
+ * Kategoriekacheln oder Listing bleibt eine Sammlung.
  */
 final class ContentPageDetector
 {
@@ -31,10 +36,22 @@ final class ContentPageDetector
     private const LAYOUT_CONTENT = 'page';
 
     /**
-     * Bausteine, die eine Liste von Einträgen ausgeben. Steht einer davon auf der Seite, ist sie
-     * trotz `page`-Layout eine Sammlung.
+     * Der Typ einer Erlebniswelt, die eine Liste führen kann, aber nicht muss.
      */
-    private const LIST_SLOT_TYPES = ['blog', 'product-listing'];
+    private const LAYOUT_LANDING = 'landingpage';
+
+    /**
+     * Bausteine, die eine Liste von Einträgen ausgeben (Beiträge, Produkte, Kategorien). Steht einer davon auf der
+     * Seite, ist sie trotz `page`- oder Landingpage-Layout eine Sammlung.
+     */
+    private const LIST_SLOT_TYPES = [
+        'blog',
+        'product-listing',
+        'product-slider',
+        'cross-selling',
+        'rc-tr-showcase',
+        'subcategories',
+    ];
 
     public function __construct(
         private readonly CmsSlotIterator $slotIterator,
@@ -56,7 +73,7 @@ final class ContentPageDetector
         // geladen, wirft schon der Zugriff — und zwar mitten in der Auszeichnung jeder Seite.
         // `getVars()` überspringt nicht initialisierte Eigenschaften und liefert dann `null`.
         $layout = $cmsPage->getVars()['type'] ?? null;
-        if ($layout !== self::LAYOUT_CONTENT) {
+        if ($layout !== self::LAYOUT_CONTENT && $layout !== self::LAYOUT_LANDING) {
             return false;
         }
 

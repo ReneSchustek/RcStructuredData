@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.22.1] - 2026-10-14: Teamseite und „Über uns" sind Inhaltsseiten
+
+> **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`.
+
+### Behoben
+
+- **Landingpage-Layouts ohne Liste sind `WebPage`**: „Über uns", „Unser Team" und andere Seiten im Design 2027 sind als
+  Landingpage angelegt und waren als `CollectionPage` ausgezeichnet. Führt die Seite keine Liste (Listing,
+  Produktschieber, Cross-Selling, Kategoriekacheln, Unterkategorien, Beiträge), ist sie jetzt eine `WebPage`.
+
 ## [2.22.0] - 2026-10-14: Mitarbeiter und Kontaktpunkt
 
 > **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`. Keine Migration.
