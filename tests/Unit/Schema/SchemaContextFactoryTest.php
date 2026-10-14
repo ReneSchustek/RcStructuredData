@@ -36,6 +36,41 @@ class SchemaContextFactoryTest extends TestCase
     }
 
     /**
+     * Was: Startseite mit gepflegtem Meta-Titel und Meta-Beschreibung im Verkaufskanal.
+     * Warum: Die Wurzelkategorie heißt im Shop „Hauptkategorien"; als Name der Startseite stand das im JSON-LD, ohne
+     *        Beschreibung.
+     * Erwartet: Name und Beschreibung aus dem Kanal, die Kategorie zählt nicht.
+     */
+    public function testHomeTakesNameAndDescriptionFromTheSalesChannel(): void
+    {
+        $category = $this->makeCategory(self::NAV_ROOT_ID, name: 'Hauptkategorien');
+
+        $context = $this->factory()->fromCategory($category, null, $this->salesChannelContext([
+            'homeMetaTitle' => ' Muster Edelstahl – Geländer nach Maß ',
+            'homeMetaDescription' => '<p>Bausätze und Bauteile aus Edelstahl.</p>',
+        ]));
+
+        static::assertNotNull($context);
+        static::assertSame('Muster Edelstahl – Geländer nach Maß', $context->getName());
+        static::assertSame('Bausätze und Bauteile aus Edelstahl.', $context->getDescription());
+    }
+
+    /**
+     * Was: Startseite ohne Meta-Titel, aber mit Kanalnamen.
+     * Warum: Der Kanalname ist der Name des Shops; die Wurzelkategorie ist es nicht.
+     * Erwartet: Kanalname.
+     */
+    public function testHomeFallsBackToTheSalesChannelName(): void
+    {
+        $category = $this->makeCategory(self::NAV_ROOT_ID, name: 'Hauptkategorien');
+
+        $context = $this->factory()->fromCategory($category, null, $this->salesChannelContext(['name' => 'Muster Edelstahl GmbH']));
+
+        static::assertNotNull($context);
+        static::assertSame('Muster Edelstahl GmbH', $context->getName());
+    }
+
+    /**
      * Die Startseite behält ihre Erlebniswelt — sonst entsteht aus ihren Bausteinen (Videos, FAQ,
      * Nachweise) kein einziger Knoten. Ohne Kategorie bleiben Breadcrumb und CollectionPage aus.
      */
@@ -215,10 +250,14 @@ class SchemaContextFactoryTest extends TestCase
         return new SchemaContextFactory($seoUrlReplacer);
     }
 
-    private function salesChannelContext(): SalesChannelContext
+    /**
+     * @param array<string, string> $translations
+     */
+    private function salesChannelContext(array $translations = []): SalesChannelContext
     {
         $salesChannel = $this->createMock(SalesChannelEntity::class);
         $salesChannel->method('getNavigationCategoryId')->willReturn(self::NAV_ROOT_ID);
+        $salesChannel->method('getTranslation')->willReturnCallback(static fn (string $field): ?string => $translations[$field] ?? null);
 
         $context = $this->createMock(SalesChannelContext::class);
         $context->method('getSalesChannel')->willReturn($salesChannel);

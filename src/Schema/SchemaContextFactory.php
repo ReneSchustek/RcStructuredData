@@ -92,10 +92,23 @@ final class SchemaContextFactory
     {
         $homeUrl = $this->seoUrlReplacer->generate(self::HOME_ROUTE);
 
+        // Die Wurzelkategorie heißt im Shop „Hauptkategorien"; das ist kein Name für die Startseite. Es gilt, was der
+        // Verkaufskanal für die Startseite vorsieht (Meta-Titel, Startseitenname), sonst der Name des Kanals.
+        $salesChannel = $context->getSalesChannel();
+        $name = $this->firstFilled(
+            $salesChannel->getTranslation('homeMetaTitle'),
+            $salesChannel->getTranslation('homeName'),
+            $salesChannel->getTranslation('name'),
+            $salesChannel->getName(),
+        );
+        $description = $this->firstFilled($salesChannel->getTranslation('homeMetaDescription'));
+
         return new SchemaContext(
             SchemaContext::TYPE_HOME,
-            $this->resolveName($category->getTranslation('name'), $category->getName()),
-            '',
+            $name !== '' ? $name : $this->resolveName($category->getTranslation('name'), $category->getName()),
+            $description !== ''
+                ? $this->toPlainText($description)
+                : $this->resolveDescription($category->getCustomFields() ?? [], null, null, $category->getTranslation('metaDescription') ?? $category->getMetaDescription()),
             $homeUrl,
             $homeUrl,
             $context->getLanguageInfo()->localeCode,
@@ -171,6 +184,18 @@ final class SchemaContextFactory
             $landingPage->getCmsPage(),
             $this->resolveVideoFallback($customFields),
         );
+    }
+
+    /** Der erste nicht leere Text, getrimmt; sonst ''. */
+    private function firstFilled(mixed ...$values): string
+    {
+        foreach ($values as $value) {
+            if (\is_string($value) && trim($value) !== '') {
+                return trim($value);
+            }
+        }
+
+        return '';
     }
 
     /**

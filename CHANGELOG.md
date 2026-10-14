@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.21.1] - 2026-10-14: Die Startseite heißt wie der Shop
+
+> **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`.
+
+### Behoben
+
+- **Startseite**: Name aus dem Meta-Titel der Startseite, sonst dem Startseitennamen oder dem Namen des Verkaufskanals,
+  statt der Wurzelkategorie („Hauptkategorien"); Beschreibung aus der Meta-Beschreibung der Startseite, sonst der
+  Wurzelkategorie.
+
 ## [2.21.0] - 2026-10-14: Firmenangaben vollständiger, eine Beschreibung je Seite
 
 > **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`. Keine Migration. Danach in der Plugin-Konfiguration
