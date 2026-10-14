@@ -1,0 +1,65 @@
+{% block sw_cms_element_rc_documents_config %}
+    <div class="sw-cms-el-config-rc-documents">
+        {% block sw_cms_element_rc_documents_config_title %}
+            <sw-text-field
+                v-model:value="element.config.documentsTitle.value"
+                :label="$tc('sw-cms.elements.rc-documents.config.title.label')"
+                :placeholder="$tc('sw-cms.elements.rc-documents.config.title.placeholder')">
+            </sw-text-field>
+        {% endblock %}
+
+        {% block sw_cms_element_rc_documents_config_items %}
+            <div
+                v-for="(item, index) in documents"
+                :key="index"
+                class="sw-cms-el-config-rc-documents__item">
+
+                <sw-text-field
+                    v-model:value="item.name"
+                    :label="$tc('sw-cms.elements.rc-documents.config.name.label')"
+                    :placeholder="$tc('sw-cms.elements.rc-documents.config.name.placeholder')"
+                    :help-text="$tc('sw-cms.elements.rc-documents.config.name.helpText')">
+                </sw-text-field>
+
+                <sw-media-field
+                    v-model:value="item.mediaId"
+                    :label="$tc('sw-cms.elements.rc-documents.config.media.label')"
+                    file-accept="application/pdf">
+                </sw-media-field>
+
+                <sw-textarea-field
+                    v-model:value="item.description"
+                    :label="$tc('sw-cms.elements.rc-documents.config.description.label')"
+                    :placeholder="$tc('sw-cms.elements.rc-documents.config.description.placeholder')">
+                </sw-textarea-field>
+
+                <sw-datepicker
+                    v-model:value="item.datePublished"
+                    date-type="date"
+                    :label="$tc('sw-cms.elements.rc-documents.config.datePublished.label')">
+                </sw-datepicker>
+
+                <sw-datepicker
+                    v-model:value="item.expires"
+                    date-type="date"
+                    :label="$tc('sw-cms.elements.rc-documents.config.expires.label')">
+                </sw-datepicker>
+
+                <sw-button
+                    variant="ghost-danger"
+                    size="small"
+                    @click="removeDocument(index)">
+                    {{ $tc('sw-cms.elements.rc-documents.config.removeItem') }}
+                </sw-button>
+            </div>
+        {% endblock %}
+
+        {% block sw_cms_element_rc_documents_config_add %}
+            <sw-button
+                variant="ghost"
+                @click="addDocument">
+                {{ $tc('sw-cms.elements.rc-documents.config.addItem') }}
+            </sw-button>
+        {% endblock %}
+    </div>
+{% endblock %}

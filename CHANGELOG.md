@@ -1,5 +1,196 @@
 # Changelog
 
+## [2.21.0] - 2026-10-14: Firmenangaben vollständiger, eine Beschreibung je Seite
+
+> **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`. Keine Migration. Danach in der Plugin-Konfiguration
+> Bild des Geschäfts, Breiten- und Längengrad und Preisspanne pflegen (alle optional).
+
+### Geändert
+
+- **LocalBusiness heißt jetzt `HomeAndConstructionBusiness`**, ein Untertyp für Baubedarf und Handwerk, und trägt ein
+  `image` (neue Einstellung „Bild des Geschäfts", sonst das Logo der Organisation).
+- **Öffnungszeiten als `openingHoursSpecification`** mit Wochentagen, Öffnen und Schließen, wie Google es empfiehlt.
+  Zeilen wie „Mo-Th 08:00-17:00" oder „Mo,We 08:00-12:00"; was sich nicht lesen lässt, bleibt als Text erhalten.
+- **Eine Beschreibung je Seite**: CollectionPage, WebPage und Landingpage nehmen die Meta-Beschreibung; die eigene
+  Fassung im Zusatzfeld gilt nur noch, wenn keine Meta-Beschreibung gepflegt ist.
+- **Namen ohne Leerzeichen am Rand** in Seiten und Brotkrume (etwa „Glasgeländer " aus der Kategoriepflege).
+
+## [2.20.1] - 2026-10-05: Zusatzfelder heißen wie die Erweiterung, Wartegrenze für YouTube
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
+
+### Behoben
+
+- **Der Abgleich mit YouTube hält die Seite höchstens drei Sekunden auf.** Die Wartegrenze galt nur
+  für die Pause zwischen zwei Datenpaketen; eine langsam tröpfelnde Antwort konnte den Aufbau der
+  Start-, Kategorie- oder Landingpage länger aufhalten. Jetzt begrenzt sie den ganzen Aufruf.
+- **Ablaufdatum eines Nachweises ohne Zonenangabe:** Es gilt in der Zeit der Redaktion. Auf einem
+  Server in UTC wurde aus „3. Juli, 23:30“ der 4. Juli.
+
+### Intern
+
+- **Messprojekt `benchmarks/`** mit PHPBench und einer Seitenmessung über HTTP, Ablage je Lauf in
+  `benchmarks/results.csv`; kommt in kein Ausrollpaket. Ausgangswerte vom 05.10. auf einer Kopie des Shops: Der
+  Graph kostet auf Start-, Kategorie- und Landingpage weniger als die Streuung der Messung (rund
+  10 bis 20 ms); ein Abgleich mit YouTube bei leerem Speicher 25 ms je Video, aus dem Speicher
+  praktisch nichts.
+- Wächter im Testlauf: Jeder Aufruf der YouTube-Schnittstelle trägt eine Wartegrenze von höchstens
+  drei Sekunden.
+
+### Geändert
+
+- Unter „Zusatzfelder“ an Kategorie und Landingpage stand „Schema.org strukturierte Daten“. Dort steht jetzt „Strukturierte Daten“, derselbe Name wie unter Erweiterungen.
+
+## [2.20.0] - 2026-09-21: Nachweise als eigener Baustein, Videos auf der Startseite
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`,
+> danach `bin/build-administration.sh` für den neuen Baustein im Backoffice.
+
+### Neu
+
+- **CMS-Baustein „Nachweise" (`rc-documents`).** Er zeigt Dateien aus der Medienverwaltung
+  (Prüfzeugnisse, Bescheide) als Liste mit Verweis, freiwilliger Beschreibung, Ausstellungs- und
+  Ablaufdatum, und erzeugt daraus je Eintrag einen `DigitalDocument`-Knoten. Die Seite hängt die
+  Knoten über `hasPart` an, neben die Videos.
+
+  **Warum das gebraucht wird:** Auf `/bauteile/glashalter/` stehen das bauaufsichtliche
+  Prüfzeugnis P-169908-LGA und sein Verlängerungsbescheid als Verweise in einem freien Textblock,
+  die Daten dazu in einer Tabelle daneben. Daraus lässt sich kein Nachweis ableiten, ohne Fließtext
+  zu deuten; ausgezeichnet waren sie deshalb nur im handgeschriebenen JSON-LD. Fiele der Handblock,
+  wüsste Google nicht mehr, was die beiden PDF sind.
+
+- **Ein Eintrag braucht Namen und Datei, sonst erscheint er nicht**, weder auf der Seite noch im
+  Graphen. Wird die Datei später gelöscht, verschwindet der Eintrag mit ihr, statt als toter
+  Verweis stehen zu bleiben.
+
+- **Kein `publisher`.** Ein Prüfzeugnis stellt die Prüfstelle aus, nicht der Shop.
+
+### Behoben
+
+- **Auf der Startseite entstand aus keinem Baustein ein Knoten.** Der Startseiten-Kontext wurde
+  seit 2.6.0 ohne Erlebniswelt gebaut. Gedacht war das, um Breadcrumb und CollectionPage fernzuhalten.
+  Mitgenommen hat das auch Videos, FAQ und alles Weitere, was als Baustein auf der Seite steht: Die
+  beiden Videos der Startseite standen deshalb nur im handgeschriebenen JSON-LD. Die Erlebniswelt
+  reist jetzt mit; Breadcrumb und CollectionPage bleiben aus, weil sie an der Kategorie hängen, die
+  weiterhin fehlt. Auf einer Kopie des Shops gegen 2.19.0 verglichen: Startseite und Glashalter gewinnen die
+  erwarteten Knoten, die Seiten für Handläufe und Treppengeländer bleiben unverändert.
+
+- **Voraussetzung bleibt das Datum.** Ein Video ohne `uploadDate` wird weiterhin ausgelassen; die
+  beiden Startseiten-Videos brauchen die Angaben am Baustein.
+
+### Abgesichert
+
+- **Ein Datum bleibt der Tag, der gepflegt wurde.** Ein Datumsfeld kann „4. Juli, 0 Uhr" als
+  `2026-07-03T22:00:00.000Z` speichern; abgeschnitten wäre das der 3. Juli. Zeitpunkte werden in
+  der Zone der Redaktion (Europe/Berlin) gelesen. Am Prüfblock auf einer Kopie des Shops nachgewiesen.
+
+- **Die Diagnose-Karte sieht die Nachweise auch.** Sie lädt die Seite ohne Storefront und hätte
+  die Dateien sonst nicht aufgelöst. Die Karte hätte eine Lücke gemeldet, die es auf der Seite
+  nicht gibt. Aufgelöst wird an einer gemeinsamen Stelle (`DocumentsStructBuilder`).
+
+- **Dateikennungen in Großbuchstaben werden angenommen.** `Uuid::isValid()` lehnt sie ab; ohne
+  Umwandlung wäre ein solcher Eintrag still verschwunden. Aufgefallen im Test.
+
+## [2.19.0] - 2026-09-08: Inhaltsseiten sind keine Sammlungen
+
+### Behoben
+
+- **Impressum, AGB, Kontakt und die übrigen Inhaltsseiten wurden als `CollectionPage`
+  ausgezeichnet.** Der Typ heißt „Seite mit einer Liste von Einträgen", und auf einer
+  Widerrufsbelehrung ist das schlicht falsch. Sie sind jetzt `WebPage`. Betroffen sind im Shop
+  **21 Kategorien**, davon 11 sichtbar.
+
+- **Der Unterscheider ist der Typ der Erlebniswelt, nicht der der Kategorie.** `category.type` ist
+  bei diesen Seiten `page`, bei Produktkategorien aber ebenfalls; er taugt also nicht. Erst
+  `cms_page.type` trennt die Fälle: `product_list` und `landingpage` führen eine Liste, `page`
+  nicht.
+
+- **Die Blog-Übersicht bleibt eine Sammlung.** Sie läuft ebenfalls über ein `page`-Layout, führt
+  aber sehr wohl eine Liste. Erkannt wird sie am Listen-Baustein, nicht am Namen der Kategorie:
+  Ein Name lässt sich ändern, ein Baustein ist das, was die Seite tut.
+
+### Nebenbei abgesichert
+
+- **`CmsPageEntity::$type` ist eine typisierte Eigenschaft ohne Vorgabewert.** Wird die
+  Erlebniswelt ohne dieses Feld geladen, wirft schon der Zugriff, und zwar mitten in der
+  Auszeichnung jeder Seite. Gelesen wird deshalb über `getVars()`, das nicht initialisierte
+  Eigenschaften überspringt. Aufgefallen im Test, nicht im Betrieb.
+
+## [2.18.0] - 2026-08-26: Begriffssatz als eigener Baustein
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
+
+### Neu
+
+- **CMS-Baustein „Begriffssatz" (`rc-defined-terms`).** Er zeigt eine Liste von Fachbegriffen
+  sichtbar auf der Seite und erzeugt daraus den `DefinedTermSet`-Knoten: Name, freiwillige
+  Erläuterung, Begriffe mit freiwilliger Erklärung.
+
+  **Warum das gebraucht wird:** Sieben Kategorieseiten tragen dieses Wissen heute nur als
+  handgeschriebenes JSON-LD (Normen, Vorgaben, Fachbegriffe, also fachliches Wissen des Betriebs, das
+  sich aus keinem Produktdatensatz ableiten lässt). Fielen die Handblöcke ersatzlos, ginge diese
+  Auszeichnung verloren. Jetzt gibt es einen Platz dafür, der nach derselben Regel arbeitet wie
+  alles andere in diesem Plugin: **Ausgezeichnet wird, was auf der Seite steht.**
+
+### Entscheidungen im Baustein, die nicht offensichtlich sind
+
+- **Je Baustein ein eigener Satz, anders als bei der FAQ.** Fragen einer Seite werden zu *einer*
+  `FAQPage` zusammengeführt; Begriffssätze nicht. „Normen für Geländer" und „Werkstoffe" sind
+  zwei Sammlungen mit je eigenem Namen. Sie zu verschmelzen hieße, einen Namen zu verlieren, und
+  der Name ist bei einem Begriffssatz die halbe Aussage.
+- **Ein Satz ohne Namen oder ohne Begriffe wird nicht ausgegeben**. Es gilt dieselbe Regel wie beim
+  `VideoObject` ohne Datum: lieber kein Knoten als ein unvollständiger. Die Nummerierung
+  (`#begriffe-1`, `#begriffe-2` …) zählt nur ausgegebene Sätze, damit keine Verknüpfung ins Leere
+  zeigt.
+- **Verknüpft über `about`, nicht über `hasPart`.** Ein Begriffssatz ist kein Teil der Seite,
+  sondern das, wovon sie handelt.
+- **Die Erklärung geht durch den Sanitizer, der Begriff nicht.** Die Erklärung kommt aus dem
+  Textbearbeiter und wird mit `|raw` ausgegeben — ohne Sanitizer würde aus einem Redakteursrecht
+  ein Vollzugriff. Der Begriff wird escaped ausgegeben und stünde, durch den Sanitizer geschickt,
+  mit sichtbaren Auszeichnungen auf der Seite.
+
+### Was damit **nicht** entschieden ist
+
+`DigitalDocument` (4 Vorkommen) und `OfferCatalog` (2 Slots) stehen weiterhin nur handgeschrieben
+da. Ob sich ein eigener Baustein dafür lohnt, ist eine Frage an die Search Console. Sie gehört
+beantwortet, **bevor** die Handblöcke entfernt werden, denn danach ist die Vorlage weg.
+
+## [2.17.1] - 2026-08-24: Ein ausgelassenes Video steht in der Diagnose
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
+
+### Neu
+
+- **Wird ein Video ohne Veröffentlichungsdatum ausgelassen, meldet es die Diagnose, mit Videokennung.** Seit 2.17.0 entsteht für ein solches Video gar kein `VideoObject` mehr; ohne diese Meldung wäre das ein stiller Verlust, denn im Backoffice sähe niemand, **welches** Video ein Datum braucht. Mehrere ausgelassene Videos stehen in **einer** Meldung, nicht in einer Wand aus Hinweisen.
+
+
+## [2.17.0] - 2026-08-24: Search-Console-Befunde: Videos und Versanddetails
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
+> Kein Storefront-Bau nötig.
+
+### Behoben
+
+- **Ein Video ohne Veröffentlichungsdatum wird gar nicht mehr ausgezeichnet.** Google wertet ein `VideoObject` ohne `uploadDate` als **kritischen Fehler**. Das Video erscheint dann nicht in der Suche, und die Meldung steht in der Search Console. Ein fehlendes `VideoObject` ist dagegen neutral. Am 24.08.2026 waren 13 solcher Knoten auf 7 Seiten betroffen. Wer Datum und Beschreibung am Video pflegt (Zusatzfeld am Block oder an der Seite, wahlweise über die YouTube-Schnittstelle), bekommt die Auszeichnung zurück. Die Auslassung ist also kein Verzicht, sondern ein Hinweis mit Wirkung.
+
+### Neu
+
+- **`offers.shippingDetails` trägt jetzt Ziel, Laufzeit und Preis.** Shopware gibt dort nur die Bearbeitungszeit aus; die Search Console vermisste `shippingDestination`, `transitTime` und `shippingRate`. Neu dabei: die Lieferländer des Verkaufskanals, die Laufzeit der Versandart — fachlich etwas anderes als die Bearbeitungszeit im Haus — und der vorberechnete Versandpreis.
+- **Der Preis kommt aus `RcProductFeedShippingExtension`**, das ihn für den Warenstrom ohnehin je Produkt und Land vorhält. Die Anbindung ist weich: Ohne dieses Plugin läuft alles unverändert weiter, nur ohne `shippingRate`. Ein geschätzter Ersatzwert wird bewusst **nicht** übernommen, denn er wäre eine Zusage über einen Preis, den der Shop nicht ermittelt hat.
+- Produkte **ohne** Lieferzeit bekommen die Angabe jetzt ebenfalls (vorher ließ Shopware sie ganz weg): Ziel und Laufzeit stehen unabhängig vom Produkt fest.
+
+
+## [2.16.0] - 2026-08-19: Blogbeiträge tragen ihr Änderungsdatum
+
+### Neu
+
+- **`dateModified` steht jetzt am BlogPosting.** Bisher lieferte die Auszeichnung nur das Datum der
+  Veröffentlichung. Das Feld fehlte damit als einziges gegenüber dem Block, den WerklOpenBlogware
+  danebenschreibt, und ohne es hätte der Wechsel auf die eigene Auszeichnung etwas gekostet.
+- Bei einem nie bearbeiteten Beitrag gilt das Datum der Veröffentlichung. Das ist kein Detail:
+  Wer `null` durch eine Datumsformatierung schickt, bekommt das **heutige** Datum. Genau dieser
+  Fehler steckt im Block des Fremdplugins, wo jeder Beitrag seit Monaten „heute bearbeitet" meldet.
+
 ## [2.15.0] - 2026-08-19: Die Diagnose meldet jetzt zwei stille Fehler
 
 ### Neu

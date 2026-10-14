@@ -37,9 +37,9 @@ final class CustomFieldsInstaller
         'name' => self::CUSTOM_FIELDSET_NAME,
         'config' => [
             'label' => [
-                'en-GB' => 'Schema.org structured data',
-                'de-DE' => 'Schema.org strukturierte Daten',
-                Defaults::LANGUAGE_SYSTEM => 'Schema.org structured data',
+                'en-GB' => 'Structured Data',
+                'de-DE' => 'Strukturierte Daten',
+                Defaults::LANGUAGE_SYSTEM => 'Structured Data',
             ],
             'translated' => true,
         ],

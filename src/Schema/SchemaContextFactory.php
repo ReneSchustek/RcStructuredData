@@ -58,7 +58,7 @@ final class SchemaContextFactory
         // bekommt keine CollectionPage/Breadcrumb, sondern den Home-Kontext (Organization + WebSite
         // + WebPage als Homepage-Signale).
         if ($category->getId() === $context->getSalesChannel()->getNavigationCategoryId()) {
-            return $this->fromHome($category, $context);
+            return $this->fromHome($category, $cmsPage, $context);
         }
 
         $customFields = $category->getCustomFields() ?? [];
@@ -67,7 +67,7 @@ final class SchemaContextFactory
         return new SchemaContext(
             SchemaContext::TYPE_CATEGORY,
             $this->resolveName($category->getTranslation('name'), $category->getName()),
-            $this->resolveDescription($customFields, $category->getTranslation('description'), $category->getDescription()),
+            $this->resolveDescription($customFields, $category->getTranslation('description'), $category->getDescription(), $category->getTranslation('metaDescription') ?? $category->getMetaDescription()),
             $pageUrl,
             $this->seoUrlReplacer->generate(self::HOME_ROUTE),
             $context->getLanguageInfo()->localeCode,
@@ -80,11 +80,15 @@ final class SchemaContextFactory
     }
 
     /**
-     * Baut den Home-Kontext (Startseite): nur Homepage-Signale, ohne Category/CmsPage — dadurch
-     * feuern Organization/WebSite (Singletons) und WebPage, aber keine CollectionPage/Breadcrumb/
-     * FAQ/Video/ItemList.
+     * Baut den Home-Kontext (Startseite): Homepage-Signale **ohne Category** — dadurch feuern
+     * Organization/WebSite (Singletons) und WebPage, aber keine CollectionPage/Breadcrumb/ItemList.
+     *
+     * **Die Erlebniswelt reist mit.** Bis 2.19.0 fehlte sie hier, und damit jeder Knoten aus einem
+     * Baustein: Die beiden Videos der Startseite standen nur im handgeschriebenen JSON-LD, obwohl
+     * das Plugin sie hätte auszeichnen können. Was als Baustein auf der Seite steht (Video, FAQ,
+     * Begriffssatz, Nachweise), ist sichtbarer Inhalt — auf der Startseite wie überall.
      */
-    private function fromHome(CategoryEntity $category, SalesChannelContext $context): SchemaContext
+    private function fromHome(CategoryEntity $category, ?CmsPageEntity $cmsPage, SalesChannelContext $context): SchemaContext
     {
         $homeUrl = $this->seoUrlReplacer->generate(self::HOME_ROUTE);
 
@@ -96,6 +100,8 @@ final class SchemaContextFactory
             $homeUrl,
             $context->getLanguageInfo()->localeCode,
             $context,
+            cmsPage: $cmsPage,
+            videoFallback: $this->resolveVideoFallback($category->getCustomFields() ?? []),
         );
     }
 
@@ -155,7 +161,7 @@ final class SchemaContextFactory
         return new SchemaContext(
             SchemaContext::TYPE_LANDINGPAGE,
             $this->resolveName($landingPage->getTranslation('name'), $landingPage->getName()),
-            $this->resolveDescription($customFields, null, null),
+            $this->resolveDescription($customFields, null, null, $landingPage->getTranslation('metaDescription') ?? $landingPage->getMetaDescription()),
             $pageUrl,
             $this->seoUrlReplacer->generate(self::HOME_ROUTE),
             $context->getLanguageInfo()->localeCode,
@@ -167,10 +173,13 @@ final class SchemaContextFactory
         );
     }
 
+    /**
+     * Namen ohne Leerzeichen am Rand: Kategorienamen wie „Glasgeländer " standen so in BreadcrumbList und CollectionPage.
+     */
     private function resolveName(mixed $translated, ?string $fallback): string
     {
-        if (\is_string($translated) && $translated !== '') {
-            return $translated;
+        if (\is_string($translated) && trim($translated) !== '') {
+            return trim($translated);
         }
 
         return trim((string) ($fallback ?? ''));
@@ -179,8 +188,14 @@ final class SchemaContextFactory
     /**
      * @param array<string, mixed> $customFields
      */
-    private function resolveDescription(array $customFields, mixed $translated, ?string $fallback): string
+    private function resolveDescription(array $customFields, mixed $translated, ?string $fallback, mixed $meta = null): string
     {
+        // Die Meta-Beschreibung zuerst: Sie ist die gepflegte Kurzbeschreibung der Seite. Eine zweite, eigene Fassung im
+        // JSON-LD hieße zwei Beschreibungen für dieselbe Seite; die eigene gilt nur, wenn keine Meta-Beschreibung da ist.
+        if (\is_string($meta) && trim($meta) !== '') {
+            return $this->toPlainText($meta);
+        }
+
         $override = $customFields[self::FIELD_DESCRIPTION] ?? null;
         if (\is_string($override) && trim($override) !== '') {
             return $this->toPlainText($override);

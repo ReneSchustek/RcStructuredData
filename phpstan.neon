@@ -6,14 +6,17 @@ parameters:
     paths:
         - src
         - tests
+        - benchmarks
     excludePaths:
         - vendor
     bootstrapFiles:
         - vendor/autoload.php
-    # Symbol-Definitionen für optionale Fremd-Plugin-Integrationen (WerklOpenBlogware) —
-    # keine Laufzeit-Abhängigkeit; scanFiles macht die Klassen der Analyse bekannt.
+    # Symbol-Definitionen für optionale Fremd-Plugin-Integrationen (WerklOpenBlogware,
+    # RcProductFeedShippingExtension) — keine Laufzeit-Abhängigkeit; scanFiles macht die
+    # Klassen der Analyse bekannt, damit sie auch dort läuft, wo nur dieses Plugin liegt.
     scanFiles:
         - phpstan-stubs/werkl-openblogware.php
+        - phpstan-stubs/rc-product-feed-shipping.php
     ignoreErrors:
         # Der Aufruf steht im **Kopf** der Schleife und läuft genau einmal — es gibt keine Abfrage
         # je Durchlauf. Die Regel prüft die syntaktische Verschachtelung, nicht den Ablauf.

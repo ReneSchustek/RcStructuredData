@@ -55,7 +55,7 @@ class LocalBusinessNodeProviderTest extends TestCase
         static::assertTrue($provider->supports($context));
 
         $node = $provider->provide($context)[0];
-        static::assertSame('LocalBusiness', $node['@type']);
+        static::assertSame('HomeAndConstructionBusiness', $node['@type']);
         static::assertSame('https://shop.example/#/schema/localbusiness/1', $node['@id']);
         static::assertSame('Muster Edelstahl GmbH', $node['name']);
         static::assertSame([
@@ -68,7 +68,58 @@ class LocalBusinessNodeProviderTest extends TestCase
         static::assertSame('+49 234 123456', $node['telephone']);
         static::assertSame('€€', $node['priceRange']);
         static::assertSame(['@type' => 'GeoCoordinates', 'latitude' => '51.48', 'longitude' => '7.22'], $node['geo']);
-        static::assertSame(['Mo-Fr 09:00-18:00', 'Sa 10:00-14:00'], $node['openingHours']);
+        static::assertSame([
+            [
+                '@type' => 'OpeningHoursSpecification',
+                'dayOfWeek' => ['https://schema.org/Monday', 'https://schema.org/Tuesday', 'https://schema.org/Wednesday', 'https://schema.org/Thursday', 'https://schema.org/Friday'],
+                'opens' => '09:00',
+                'closes' => '18:00',
+            ],
+            [
+                '@type' => 'OpeningHoursSpecification',
+                'dayOfWeek' => ['https://schema.org/Saturday'],
+                'opens' => '10:00',
+                'closes' => '14:00',
+            ],
+        ], $node['openingHoursSpecification']);
+        static::assertArrayNotHasKey('openingHours', $node);
+    }
+
+    /**
+     * Was: Bild des Geschäfts.
+     * Warum: Google empfiehlt `image`; ohne eigenes Foto ist das Logo besser als nichts.
+     * Erwartet: eigenes Bild vor Logo, Logo als Rückfall.
+     */
+    public function testImageFallsBackToTheLogo(): void
+    {
+        $base = [
+            self::PREFIX . 'localBusinessStreet' => 'Musterstr. 1',
+            self::PREFIX . 'localBusinessCity' => 'Bochum',
+            self::PREFIX . 'organizationLogo' => 'https://shop.example/logo.png',
+        ];
+
+        $withLogo = (new LocalBusinessNodeProvider($this->systemConfig($base), new IdFactory()))->provide($this->makeContext())[0];
+        static::assertSame('https://shop.example/logo.png', $withLogo['image']);
+
+        $withPhoto = (new LocalBusinessNodeProvider(
+            $this->systemConfig($base + [self::PREFIX . 'localBusinessImage' => 'https://shop.example/werk.jpg']),
+            new IdFactory(),
+        ))->provide($this->makeContext())[0];
+        static::assertSame('https://shop.example/werk.jpg', $withPhoto['image']);
+    }
+
+    /**
+     * Was: Öffnungszeiten mit Aufzählung und eine unlesbare Zeile.
+     * Warum: Was sich nicht lesen lässt, darf nicht verloren gehen.
+     * Erwartet: Aufzählung als zwei Tage, unlesbare Zeile als Text.
+     */
+    public function testOpeningHoursWithListAndUnreadableLine(): void
+    {
+        [$specification, $unreadable] = LocalBusinessNodeProvider::openingHoursSpecification(['Mo,We 8:00-12:00', 'nach Vereinbarung']);
+
+        static::assertSame(['https://schema.org/Monday', 'https://schema.org/Wednesday'], $specification[0]['dayOfWeek']);
+        static::assertSame('08:00', $specification[0]['opens']);
+        static::assertSame(['nach Vereinbarung'], $unreadable);
     }
 
     public function testOmitsGeoWhenIncomplete(): void

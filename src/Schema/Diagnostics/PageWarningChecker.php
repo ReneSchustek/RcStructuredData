@@ -6,6 +6,7 @@ namespace Ruhrcoder\RcStructuredData\Schema\Diagnostics;
 
 use Ruhrcoder\RcStructuredData\RcStructuredData;
 use Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator;
+use Ruhrcoder\RcStructuredData\Schema\Extractor\YoutubeVideoExtractor;
 use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
 use Shopware\Core\Content\Cms\CmsPageEntity;
 
@@ -19,6 +20,12 @@ use Shopware\Core\Content\Cms\CmsPageEntity;
  *    `ld+json`-Block, trägt die Seite zwei Auszeichnungen. Sie können auseinanderlaufen, und
  *    genau das ist auf den Blogbeiträgen passiert: zwanzig Fragen und fünf HowTo-Schritte, von
  *    denen keiner auf der Seite sichtbar war — ein Richtlinienverstoß, den niemand bemerkt hat.
+ * 3. **Ein Video, das ausgelassen wurde.** Fehlt einem YouTube-Baustein das Veröffentlichungs-
+ *    datum, gibt das Plugin für ihn seit 2.17.0 gar keinen Knoten aus — ein unvollständiges
+ *    VideoObject ist für Google ein kritischer Fehler, ein fehlendes neutral. Ohne diese Meldung
+ *    wäre die Auslassung ein stiller Verlust: Niemand im Backoffice sähe, **welches** Video ein
+ *    Datum braucht.
+ *
  * 2. **`FAQPage` ohne einen FAQ-Baustein.** Der Graph entsteht aus dem sichtbaren Seiteninhalt.
  *    Meldet er trotzdem eine FAQ, ohne dass ein `rc-faq`-Baustein auf der Seite steht, stammt
  *    sie aus einer anderen Quelle — der Verdacht auf eine FAQ, die kein Besucher sieht.
@@ -29,6 +36,7 @@ final class PageWarningChecker
 {
     public const WARNING_HANDWRITTEN_JSON_LD = 'handwritten_json_ld';
     public const WARNING_FAQ_WITHOUT_BLOCK = 'faq_without_block';
+    public const WARNING_VIDEO_WITHOUT_UPLOAD_DATE = 'video_without_upload_date';
 
     /**
      * Bewusst nicht auf `moorl-twig` eingegrenzt: Handgeschriebenes JSON-LD kann in jedem Slot
@@ -38,6 +46,7 @@ final class PageWarningChecker
 
     public function __construct(
         private readonly CmsSlotIterator $slotIterator,
+        private readonly YoutubeVideoExtractor $videoExtractor,
     ) {
     }
 
@@ -64,6 +73,21 @@ final class PageWarningChecker
             ];
         }
 
+        $ausgelassen = $this->videosWithoutNode($graph, $slots);
+        if ($ausgelassen !== []) {
+            $warnings[] = [
+                'code' => self::WARNING_VIDEO_WITHOUT_UPLOAD_DATE,
+                'message' => sprintf(
+                    'Für %s ist kein VideoObject entstanden — es fehlt das Veröffentlichungsdatum. '
+                    . 'Ein unvollständiger Knoten wäre für Google ein kritischer Fehler; gepflegt wird '
+                    . 'das Datum am Baustein oder an der Seite.',
+                    \count($ausgelassen) === 1
+                        ? 'das Video ' . $ausgelassen[0]
+                        : 'die Videos ' . implode(', ', $ausgelassen)
+                ),
+            ];
+        }
+
         if ($this->graphHasFaqPage($graph) && !$this->hasFaqBlock($slots)) {
             $warnings[] = [
                 'code' => self::WARNING_FAQ_WITHOUT_BLOCK,
@@ -73,6 +97,81 @@ final class PageWarningChecker
         }
 
         return $warnings;
+    }
+
+    /**
+     * Die Videos der Seite, für die im Graphen kein Knoten steht.
+     *
+     * Verglichen wird über die Videokennung in `contentUrl` und `embedUrl` — die `@id` des
+     * Knotens trägt sie nicht. Die Kaskade wird dabei **nicht** nachgebaut: Was am Ende
+     * herauskam, steht im Graphen, und nur das zählt.
+     *
+     * @param array<string, mixed>|null $graph
+     * @param list<CmsSlotEntity>       $slots
+     *
+     * @return list<string>
+     */
+    private function videosWithoutNode(?array $graph, array $slots): array
+    {
+        $fehlend = [];
+
+        foreach ($slots as $slot) {
+            if (!$this->videoExtractor->supports($slot)) {
+                continue;
+            }
+
+            foreach ($this->videoExtractor->extract($slot) as $video) {
+                $videoId = $video['videoId'];
+                if ($videoId === '' || \in_array($videoId, $fehlend, true)) {
+                    continue;
+                }
+
+                if (!$this->graphCarriesVideo($graph, $videoId)) {
+                    $fehlend[] = $videoId;
+                }
+            }
+        }
+
+        return $fehlend;
+    }
+
+    /**
+     * @param array<string, mixed>|null $graph
+     */
+    private function graphCarriesVideo(?array $graph, string $videoId): bool
+    {
+        foreach ($this->nodesOf($graph) as $node) {
+            if (($node['@type'] ?? '') !== 'VideoObject') {
+                continue;
+            }
+
+            foreach (['contentUrl', 'embedUrl'] as $feld) {
+                $wert = $node[$feld] ?? '';
+                if (\is_string($wert) && str_contains($wert, $videoId)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array<string, mixed>|null $graph
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function nodesOf(?array $graph): array
+    {
+        $nodes = [];
+
+        foreach ($graph['@graph'] ?? [] as $node) {
+            if (\is_array($node)) {
+                $nodes[] = $node;
+            }
+        }
+
+        return $nodes;
     }
 
     /**

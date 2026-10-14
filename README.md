@@ -310,3 +310,17 @@ gespeichert und niemals im Seitenquelltext oder in Protokollen ausgegeben.
 - **Hersteller:** Ruhrcoder (René Schustek) – <https://ruhrcoder.de>
 - **Lizenz:** MIT (siehe [LICENSE](LICENSE))
 - **Änderungshistorie:** siehe [CHANGELOG](CHANGELOG.md)
+
+## Geschwindigkeit messen
+
+Das Messprojekt unter `benchmarks/` läuft getrennt vom Testlauf und gehört in kein Ausrollpaket
+(`export-ignore`). Ein Lauf vom Arbeitsplatz misst gegen eine Testinstanz:
+
+```bash
+bash benchmarks/run.sh <instanz> <rechner>
+```
+
+Er misst Startseite, eine Kategorie und eine Landingpage über HTTP (Median aus 12 Aufrufen) und den
+Abgleich mit YouTube mit leerem und mit gefülltem Speicher. Jeder Lauf hängt seine Werte an
+`benchmarks/results.csv` an.
+

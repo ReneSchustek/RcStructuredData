@@ -53,7 +53,7 @@ final class BreadcrumbNodeProvider implements SchemaNodeProvider
             $itemListElement[] = [
                 '@type' => 'ListItem',
                 'position' => $position,
-                'name' => $name,
+                'name' => trim($name),
                 'item' => $this->seoUrlReplacer->generate(
                     self::NAVIGATION_ROUTE,
                     ['navigationId' => $categoryId],

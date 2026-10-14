@@ -16,6 +16,8 @@ use Ruhrcoder\RcStructuredData\Schema\SchemaNodeProvider;
  *
  * Mehrere Videoblöcke werden zu mehreren VideoObject mit fortlaufender, eindeutiger `@id`
  * (#video-1, #video-2 …). Der GraphBuilder hängt sie automatisch per `hasPart` an die Seite.
+ * Gezählt wird erst beim Ausgeben: Ein übersprungener Block hinterlässt keine Lücke in der
+ * Nummerierung.
  * Fehlende Metadaten werden über eine vierstufige Kaskade gefüllt: Block → Seiten-Fallback
  * (Category/Landingpage-Custom-Fields) → YouTube-Data-API (optional, nur bei gesetztem Key) →
  * Auto-Wert (Seitentitel/Meta) bzw. leer.
@@ -46,7 +48,25 @@ final class VideoObjectNodeProvider implements SchemaNodeProvider
             }
 
             foreach ($this->extractor->extract($slot) as $video) {
-                $nodes[] = $this->buildNode($video, $context, ++$index);
+                $node = $this->buildNode($video, $context, $index + 1);
+
+                // Ohne Datum wird der Knoten gar nicht erst ausgegeben.
+                //
+                // **Warum lieber nichts als etwas:** Google wertet ein VideoObject ohne
+                // `uploadDate` als **kritischen Fehler** — das Video erscheint dann nicht in der
+                // Suche, und die Meldung steht in der Search Console. Ein fehlendes VideoObject
+                // ist dagegen neutral: Die Seite wird bewertet wie jede ohne Video. Am
+                // 2026-08-24 waren auf Live 13 Knoten auf 7 Seiten in diesem Zustand.
+                //
+                // Das Datum kommt aus der Kaskade (Block-Zusatzfeld, Seiten-Zusatzfeld,
+                // YouTube-Schnittstelle). Wer es pflegt, bekommt den Knoten zurück — die
+                // Auslassung ist kein Verzicht, sondern ein Hinweis mit Wirkung.
+                if (!isset($node['uploadDate'])) {
+                    continue;
+                }
+
+                ++$index;
+                $nodes[] = $node;
             }
         }
 

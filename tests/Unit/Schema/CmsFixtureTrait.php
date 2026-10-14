@@ -53,6 +53,67 @@ trait CmsFixtureTrait
     }
 
     /**
+     * Ein rc-defined-terms-Slot: Name, freiwillige Erläuterung und die Begriffe.
+     *
+     * @param list<array{term: string, definition?: string}> $terms
+     */
+    private function makeDefinedTermsSlot(?string $name, array $terms = [], ?string $description = null): CmsSlotEntity
+    {
+        $slot = new CmsSlotEntity();
+        $id = 'slot-' . ++$this->fixtureCounter;
+        $slot->setUniqueIdentifier($id);
+        $slot->setSlot($id);
+        $slot->setType('rc-defined-terms');
+
+        $fieldConfig = new FieldConfigCollection();
+        if ($name !== null) {
+            $fieldConfig->add(new FieldConfig('termSetName', FieldConfig::SOURCE_STATIC, $name));
+        }
+        if ($description !== null) {
+            $fieldConfig->add(new FieldConfig('termSetDescription', FieldConfig::SOURCE_STATIC, $description));
+        }
+        $fieldConfig->add(new FieldConfig('terms', FieldConfig::SOURCE_STATIC, $terms));
+        $slot->setFieldConfig($fieldConfig);
+
+        return $slot;
+    }
+
+    /**
+     * Ein rc-documents-Slot: freiwillige Überschrift und die gepflegten Nachweise. Die Einträge
+     * sind bewusst lose typisiert — die Tests schieben auch Unbrauchbares hinein.
+     *
+     * @param list<mixed> $documents
+     */
+    private function makeDocumentsSlot(array $documents = [], ?string $title = null): CmsSlotEntity
+    {
+        $slot = new CmsSlotEntity();
+        $id = 'slot-' . ++$this->fixtureCounter;
+        $slot->setUniqueIdentifier($id);
+        $slot->setSlot($id);
+        $slot->setType('rc-documents');
+
+        $fieldConfig = new FieldConfigCollection();
+        if ($title !== null) {
+            $fieldConfig->add(new FieldConfig('documentsTitle', FieldConfig::SOURCE_STATIC, $title));
+        }
+        $fieldConfig->add(new FieldConfig('documents', FieldConfig::SOURCE_STATIC, $documents));
+        $slot->setFieldConfig($fieldConfig);
+
+        return $slot;
+    }
+
+    private function makeMedia(string $id, string $url, string $mimeType = 'application/pdf'): MediaEntity
+    {
+        $media = new MediaEntity();
+        $media->setId($id);
+        $media->setUniqueIdentifier($id);
+        $media->setUrl($url);
+        $media->setMimeType($mimeType);
+
+        return $media;
+    }
+
+    /**
      * @param array<string, string> $config Zusätzliche fieldConfig-Werte (z. B. rcSchemaName)
      */
     private function makeYoutubeSlot(?string $videoId, array $config = [], ?string $thumbnailUrl = null): CmsSlotEntity

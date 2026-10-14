@@ -124,6 +124,34 @@ class YoutubeApiMetadataEnricherTest extends TestCase
         }
     }
 
+    /**
+     * Wächter der Geschwindigkeit: Der Aufruf läuft mitten im Aufbau der Seite, und ohne Wartegrenze
+     * hielte eine hängende Schnittstelle die Seite beliebig lange auf. Gemessen dauert ein Aufruf vom
+     * Testsystem rund 26 ms (`benchmarks/YoutubeEnricherBench.php`); die Grenze darf
+     * nicht über drei Sekunden wachsen.
+     */
+    public function testEveryCallCarriesAWaitLimitOfAtMostThreeSeconds(): void
+    {
+        $timeouts = [];
+        $durations = [];
+        $client = new MockHttpClient(function (string $method, string $url, array $options) use (&$timeouts, &$durations): MockResponse {
+            $timeouts[] = $options['timeout'] ?? null;
+            $durations[] = $options['max_duration'] ?? null;
+
+            return $this->videoResponse();
+        });
+
+        $this->enricher($client, 'KEY')->enrich('abc123');
+
+        static::assertCount(1, $timeouts);
+        static::assertIsFloat($timeouts[0]);
+        static::assertLessThanOrEqual(3.0, $timeouts[0]);
+        // `timeout` begrenzt nur die Pause zwischen zwei Datenpaketen; eine tröpfelnde Antwort hielte
+        // die Seite sonst länger auf. `max_duration` begrenzt den ganzen Aufruf.
+        static::assertIsFloat($durations[0]);
+        static::assertLessThanOrEqual(3.0, $durations[0]);
+    }
+
     private function videoResponse(): MockResponse
     {
         $body = json_encode([

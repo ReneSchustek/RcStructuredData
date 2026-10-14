@@ -1,0 +1,32 @@
+import './component';
+import './config';
+import './preview';
+
+const { Application } = Shopware;
+
+/**
+ * Nachweise — eine sichtbare Liste von Dateien (Prüfzeugnisse, Bescheide), aus der zugleich je ein
+ * `DigitalDocument` entsteht.
+ *
+ * **Warum es dieses Element gibt:** Das bauaufsichtliche Prüfzeugnis auf `/bauteile/glashalter/`
+ * stand bisher als Verweis in einem freien Textblock und nur im handgeschriebenen JSON-LD als
+ * Nachweis. Was ein Verweis *ist*, sagt ein Verweis nicht — hier wird es gepflegt.
+ */
+Application.getContainer('service').cmsService.registerCmsElement({
+    name: 'rc-documents',
+    label: 'sw-cms.elements.rc-documents.label',
+    component: 'sw-cms-el-rc-documents',
+    configComponent: 'sw-cms-el-config-rc-documents',
+    previewComponent: 'sw-cms-el-preview-rc-documents',
+    category: 'text',
+    defaultConfig: {
+        documentsTitle: {
+            source: 'static',
+            value: '',
+        },
+        documents: {
+            source: 'static',
+            value: [],
+        },
+    },
+});

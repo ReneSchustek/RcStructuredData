@@ -34,6 +34,7 @@ class BlogPostingNodeProviderTest extends TestCase
             'de-DE',
             article: [
                 'datePublished' => '2026-05-01T10:00:00+02:00',
+                'dateModified' => '2026-05-04T08:30:00+02:00',
                 'author' => 'René Schustek',
                 'image' => 'https://shop.example/media/blog.png',
                 'articleBody' => 'Der volle Text.',
@@ -46,6 +47,7 @@ class BlogPostingNodeProviderTest extends TestCase
         static::assertSame('Edelstahl richtig montieren', $node['headline']);
         static::assertSame('Kurzer Teaser', $node['description']);
         static::assertSame('2026-05-01T10:00:00+02:00', $node['datePublished']);
+        static::assertSame('2026-05-04T08:30:00+02:00', $node['dateModified']);
         static::assertSame(['@type' => 'Person', 'name' => 'René Schustek'], $node['author']);
         static::assertSame('https://shop.example/media/blog.png', $node['image']);
         static::assertSame('Der volle Text.', $node['articleBody']);
@@ -60,6 +62,7 @@ class BlogPostingNodeProviderTest extends TestCase
 
         $node = $provider->provide($context)[0];
         static::assertArrayNotHasKey('datePublished', $node);
+        static::assertArrayNotHasKey('dateModified', $node);
         static::assertArrayNotHasKey('author', $node);
         static::assertArrayNotHasKey('image', $node);
         static::assertArrayNotHasKey('description', $node);

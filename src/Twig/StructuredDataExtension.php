@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Ruhrcoder\RcStructuredData\Twig;
 
+use Ruhrcoder\RcStructuredData\Schema\Product\ShippingDetailsProvider;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Feature;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -26,11 +29,33 @@ class StructuredDataExtension extends AbstractExtension
 {
     private const JSON_LD_FLAG = 'JSON_LD_DATA';
 
+    public function __construct(
+        private readonly ShippingDetailsProvider $shippingDetails,
+    ) {
+    }
+
     public function getFunctions(): array
     {
         return [
             new TwigFunction('rc_schema_core_renders_global_json_ld', $this->coreRendersGlobalJsonLd(...)),
+            new TwigFunction('rc_schema_shipping_details', $this->shippingDetailsFor(...)),
         ];
+    }
+
+    /**
+     * Die Versanddetails eines Produkts für `offers.shippingDetails`.
+     *
+     * **Warum in PHP und nicht in der Vorlage:** Die Länder des Verkaufskanals stehen nicht am
+     * Kontext, sondern in einer eigenen Zuordnung, und der vorberechnete Versandpreis liegt in
+     * einem anderen Plugin. Beides in Twig zu holen hieße, in der Vorlage Datenbankabfragen zu
+     * bauen — und der Preis wäre dort ohnehin nicht erreichbar (Shopware sperrt beim Rendern
+     * die Felder, die die Berechnung braucht).
+     *
+     * @return array<string, mixed>|null
+     */
+    public function shippingDetailsFor(SalesChannelProductEntity $product, SalesChannelContext $context): ?array
+    {
+        return $this->shippingDetails->forProduct($product, $context);
     }
 
     /**

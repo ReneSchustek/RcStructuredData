@@ -86,16 +86,27 @@ final class BlogSchemaSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @return array{datePublished: string, author: string, image: string, articleBody: string}
+     * @return array{datePublished: string, dateModified: string, author: string, image: string, articleBody: string}
      */
     private function resolveArticle(BlogEntryEntity $entry): array
     {
         return [
             'datePublished' => $entry->getPublishedAt()->format(DateTimeInterface::ATOM),
+            'dateModified' => $this->resolveDateModified($entry),
             'author' => $this->resolveAuthor($entry),
             'image' => $entry->getMedia()?->getUrl() ?? '',
             'articleBody' => $this->toPlainText($entry->getContent()),
         ];
+    }
+
+    /**
+     * Ein nie bearbeiteter Beitrag hat kein Änderungsdatum. Dann gilt das Datum der
+     * Veröffentlichung — nicht das heutige, wie es entsteht, wenn man `null` durch eine
+     * Datumsformatierung schickt. Genau dieser Fehler steckt im Block von WerklOpenBlogware.
+     */
+    private function resolveDateModified(BlogEntryEntity $entry): string
+    {
+        return ($entry->getUpdatedAt() ?? $entry->getPublishedAt())->format(DateTimeInterface::ATOM);
     }
 
     private function resolveAuthor(BlogEntryEntity $entry): string

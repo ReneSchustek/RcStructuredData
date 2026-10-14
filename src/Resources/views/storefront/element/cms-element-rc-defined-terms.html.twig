@@ -1,0 +1,39 @@
+{# Begriffssatz: sichtbare Liste von Fachbegriffen, aus der zugleich das `DefinedTermSet`
+   entsteht.
+
+   **Der Grundsatz dieses Plugins gilt auch hier:** Ausgezeichnet wird, was auf der Seite steht.
+   Deshalb rendert dieser Baustein die Begriffe wirklich — er ist kein unsichtbarer Träger für
+   Auszeichnung. Genau daran sind die handgeschriebenen Blöcke gescheitert, die er ablöst: Auf den
+   Blogbeiträgen standen zwanzig Fragen im JSON-LD, die auf der Seite niemand sah. #}
+{% block element_rc_defined_terms %}
+    {% set termsData = element.data %}
+
+    {# Ohne Namen oder ohne Begriffe wird nichts ausgegeben \u2014 kein leerer Kasten. #}
+    {% if termsData and termsData.name and termsData.terms|length > 0 %}
+        <div class="cms-element-rc-defined-terms">
+            {% block element_rc_defined_terms_head %}
+                <h2 class="rc-defined-terms-title">{{ termsData.name }}</h2>
+
+                {% if termsData.description %}
+                    <p class="rc-defined-terms-description">{{ termsData.description }}</p>
+                {% endif %}
+            {% endblock %}
+
+            {% block element_rc_defined_terms_list %}
+                {# Eine Definitionsliste ist hier die richtige Auszeichnung, nicht `ul`: Sie sagt
+                   einem Vorlesewerkzeug, dass Begriff und Erklärung zusammengehören. #}
+                <dl class="rc-defined-terms-list">
+                    {% for item in termsData.terms %}
+                        {% block element_rc_defined_terms_item %}
+                            <dt class="rc-defined-term">{{ item.term }}</dt>
+
+                            {% if item.definition %}
+                                <dd class="rc-defined-term-definition">{{ item.definition|raw }}</dd>
+                            {% endif %}
+                        {% endblock %}
+                    {% endfor %}
+                </dl>
+            {% endblock %}
+        </div>
+    {% endif %}
+{% endblock %}

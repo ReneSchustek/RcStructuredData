@@ -36,6 +36,10 @@ final class RcStructuredData extends Plugin
 {
     public const CMS_ELEMENT_FAQ = 'rc-faq';
 
+    public const CMS_ELEMENT_DEFINED_TERMS = 'rc-defined-terms';
+
+    public const CMS_ELEMENT_DOCUMENTS = 'rc-documents';
+
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);

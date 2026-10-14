@@ -1,0 +1,50 @@
+{# Nachweise: sichtbare Liste von Dateien (Prüfzeugnisse, Bescheide), aus der zugleich je ein
+   `DigitalDocument` entsteht.
+
+   Wie beim Begriffssatz gilt: Ausgezeichnet wird, was auf der Seite steht. Einträge, deren Datei
+   nicht mehr existiert, hat der Resolver schon entfernt — sie erscheinen weder hier noch im Graphen. #}
+{% block element_rc_documents %}
+    {% set documentsData = element.data %}
+
+    {% if documentsData and documentsData.documents|length > 0 %}
+        <div class="cms-element-rc-documents">
+            {% block element_rc_documents_head %}
+                {% if documentsData.title %}
+                    <h2 class="rc-documents-title">{{ documentsData.title }}</h2>
+                {% endif %}
+            {% endblock %}
+
+            {% block element_rc_documents_list %}
+                <ul class="rc-documents-list list-unstyled">
+                    {% for document in documentsData.documents %}
+                        {% block element_rc_documents_item %}
+                            <li class="rc-document mb-3">
+                                <a class="rc-document-link" href="{{ document.url }}" target="_blank" rel="noopener">
+                                    {{ document.name }}
+                                </a>
+
+                                {% if document.description %}
+                                    <p class="rc-document-description mb-1">{{ document.description }}</p>
+                                {% endif %}
+
+                                {# Die Daten stehen sichtbar da, weil sie im Schema stehen — ein
+                                   Ablaufdatum, das nur die Maschine kennt, wäre eine Zweitfassung. #}
+                                {% if document.datePublished or document.expires %}
+                                    <p class="rc-document-dates small text-muted mb-0">
+                                        {% if document.datePublished %}
+                                            <span class="rc-document-published">{{ 'rcStructuredData.documents.published'|trans({'%date%': document.datePublished|format_date('medium', locale=app.request.locale)}) }}</span>
+                                        {% endif %}
+                                        {% if document.datePublished and document.expires %} · {% endif %}
+                                        {% if document.expires %}
+                                            <span class="rc-document-expires">{{ 'rcStructuredData.documents.expires'|trans({'%date%': document.expires|format_date('medium', locale=app.request.locale)}) }}</span>
+                                        {% endif %}
+                                    </p>
+                                {% endif %}
+                            </li>
+                        {% endblock %}
+                    {% endfor %}
+                </ul>
+            {% endblock %}
+        </div>
+    {% endif %}
+{% endblock %}

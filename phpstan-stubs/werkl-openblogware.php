@@ -55,6 +55,11 @@ namespace Werkl\OpenBlogware\Content\Blog {
         {
         }
 
+        /** Aus Shopwares Entity geerbt — bei nie bearbeiteten Beiträgen null. */
+        public function getUpdatedAt(): ?\DateTimeInterface
+        {
+        }
+
         public function getBlogAuthor(): ?\Werkl\OpenBlogware\Content\BlogAuthor\BlogAuthorEntity
         {
         }

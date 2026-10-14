@@ -1,0 +1,16 @@
+{% block sw_cms_element_rc_documents %}
+    <div class="sw-cms-el-rc-documents">
+        <div class="sw-cms-el-rc-documents__preview">
+            <sw-icon name="regular-file-text" small></sw-icon>
+            <span class="sw-cms-el-rc-documents__label">
+                {{ element.config.documentsTitle.value || $tc('sw-cms.elements.rc-documents.label') }}
+            </span>
+
+            <ul v-if="element.config.documents.value && element.config.documents.value.length" class="sw-cms-el-rc-documents__documents">
+                <li v-for="(item, index) in element.config.documents.value" :key="index">
+                    {{ item.name }}
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

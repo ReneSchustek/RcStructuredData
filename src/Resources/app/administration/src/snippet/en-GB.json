@@ -3,6 +3,12 @@
     "blocks": {
       "rc-faq": {
         "label": "FAQ (structured data)"
+      },
+      "rc-defined-terms": {
+        "label": "Term set"
+      },
+      "rc-documents": {
+        "label": "Certificates"
       }
     },
     "elements": {
@@ -46,6 +52,59 @@
             "label": "Duration (ISO 8601)",
             "placeholder": "e.g. PT5M30S"
           }
+        }
+      },
+      "rc-defined-terms": {
+        "label": "Term set",
+        "config": {
+          "name": {
+            "label": "Name of the set",
+            "placeholder": "for example: Requirements for safe railings",
+            "helpText": "Without a name the set is not rendered — an unnamed list of terms tells neither a reader nor a machine anything."
+          },
+          "description": {
+            "label": "Description (optional)",
+            "placeholder": "One sentence about what this collection covers"
+          },
+          "term": {
+            "label": "Term",
+            "placeholder": "for example: Railing height 90 cm"
+          },
+          "definition": {
+            "label": "Definition (optional)",
+            "placeholder": "What the term means"
+          },
+          "addItem": "Add term",
+          "removeItem": "Remove term"
+        }
+      },
+      "rc-documents": {
+        "label": "Certificates",
+        "config": {
+          "title": {
+            "label": "Heading (optional)",
+            "placeholder": "for example: Test certificates"
+          },
+          "name": {
+            "label": "Name of the document",
+            "placeholder": "for example: General building inspection test certificate P-169908-LGA",
+            "helpText": "Without a name and a file the entry is not rendered — neither on the page nor in the schema."
+          },
+          "media": {
+            "label": "File"
+          },
+          "description": {
+            "label": "Description (optional)",
+            "placeholder": "What the document proves"
+          },
+          "datePublished": {
+            "label": "Issued on (optional)"
+          },
+          "expires": {
+            "label": "Valid until (optional)"
+          },
+          "addItem": "Add document",
+          "removeItem": "Remove document"
         }
       }
     }

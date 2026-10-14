@@ -6,3 +6,7 @@
 *.jpg binary
 *.gif binary
 *.ico binary
+
+# Messprojekt: läuft gegen eine Testinstanz, gehört in kein Ausrollpaket.
+/benchmarks export-ignore
+/phpbench.json export-ignore

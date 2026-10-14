@@ -55,6 +55,11 @@ final class BlogPostingNodeProvider implements SchemaNodeProvider
             $node['datePublished'] = $datePublished;
         }
 
+        $dateModified = $this->stringValue($article, 'dateModified');
+        if ($dateModified !== '') {
+            $node['dateModified'] = $dateModified;
+        }
+
         $author = $this->stringValue($article, 'author');
         if ($author !== '') {
             $node['author'] = ['@type' => 'Person', 'name' => $author];

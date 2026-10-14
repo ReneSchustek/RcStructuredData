@@ -6,6 +6,7 @@ namespace Ruhrcoder\RcStructuredData\Tests\Unit\Twig;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Ruhrcoder\RcStructuredData\Schema\Product\ShippingDetailsProvider;
 use Ruhrcoder\RcStructuredData\Twig\StructuredDataExtension;
 use Shopware\Core\Framework\Feature;
 
@@ -28,7 +29,7 @@ final class StructuredDataExtensionTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->extension = new StructuredDataExtension();
+        $this->extension = new StructuredDataExtension($this->createMock(ShippingDetailsProvider::class));
         $this->registeredBefore = Feature::getRegisteredFeatures();
         Feature::resetRegisteredFeatures();
     }

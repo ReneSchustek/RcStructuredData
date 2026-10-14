@@ -35,6 +35,22 @@ class SchemaContextFactoryTest extends TestCase
         static::assertNull($context->getCmsPage());
     }
 
+    /**
+     * Die Startseite behält ihre Erlebniswelt — sonst entsteht aus ihren Bausteinen (Videos, FAQ,
+     * Nachweise) kein einziger Knoten. Ohne Kategorie bleiben Breadcrumb und CollectionPage aus.
+     */
+    public function testHomeContextKeepsTheCmsPageButNotTheCategory(): void
+    {
+        $category = $this->makeCategory(self::NAV_ROOT_ID, name: 'Muster Edelstahl');
+        $cmsPage = new CmsPageEntity();
+
+        $context = $this->factory()->fromCategory($category, $cmsPage, $this->salesChannelContext());
+
+        static::assertTrue($context?->isHome());
+        static::assertSame($cmsPage, $context->getCmsPage());
+        static::assertNull($context->getCategory());
+    }
+
     public function testBuildsBasicCategoryContext(): void
     {
         $category = $this->makeCategory('cat-1', name: 'Fittings');

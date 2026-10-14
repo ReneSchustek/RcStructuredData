@@ -117,6 +117,38 @@ class GraphBuilderTest extends TestCase
         static::assertSame([['@id' => 'faq'], ['@id' => 'blog']], $page['mainEntity']);
     }
 
+    /**
+     * Auf `/bauteile/glashalter/` stehen ein Video und zwei Prüfzeugnisse — alle drei gehören an
+     * `hasPart`, keines darf das andere verdrängen.
+     */
+    public function testWiresDocumentsNextToVideosIntoHasPart(): void
+    {
+        $builder = new GraphBuilder([
+            $this->provider(true, [['@type' => 'CollectionPage', '@id' => 'page']]),
+            $this->provider(true, [['@type' => 'VideoObject', '@id' => 'vid-1']]),
+            $this->provider(true, [
+                ['@type' => 'DigitalDocument', '@id' => 'doc-1'],
+                ['@type' => 'DigitalDocument', '@id' => 'doc-2'],
+            ]),
+        ]);
+
+        $page = $this->findNode($builder->build($this->makeContext()), 'page');
+
+        static::assertSame([['@id' => 'vid-1'], ['@id' => 'doc-1'], ['@id' => 'doc-2']], $page['hasPart']);
+    }
+
+    public function testSingleDocumentIsStillAList(): void
+    {
+        $builder = new GraphBuilder([
+            $this->provider(true, [['@type' => 'CollectionPage', '@id' => 'page']]),
+            $this->provider(true, [['@type' => 'DigitalDocument', '@id' => 'doc-1']]),
+        ]);
+
+        $page = $this->findNode($builder->build($this->makeContext()), 'page');
+
+        static::assertSame([['@id' => 'doc-1']], $page['hasPart']);
+    }
+
     public function testStripsDanglingReferenceWhenTargetMissing(): void
     {
         // `publisher` zeigt auf eine Organization, die nicht im Graph liegt (kein gepflegter Name)

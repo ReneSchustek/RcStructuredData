@@ -2,11 +2,17 @@
  * Administrations-Einstiegspunkt des Plugins.
  *
  * Seit v2.0.0 erzeugt das Plugin die strukturierten Daten zentral im Storefront-Graph-Builder
- * (PHP). Hier werden das CMS-Element `rc-faq` (Anzeige + Datenquelle für den FAQPage-Knoten) und
- * der dazugehörige, frei platzierbare CMS-Block `rc-faq` registriert.
+ * (PHP). Hier werden die CMS-Elemente `rc-faq` (Anzeige + Datenquelle für den FAQPage-Knoten) und
+ * `rc-defined-terms` (Begriffssatz + `DefinedTermSet`) und `rc-documents` (Nachweise +
+ * `DigitalDocument`) samt ihren frei platzierbaren Blöcken
+ * registriert.
  */
 import './module/sw-cms/element/rc-faq';
 import './module/sw-cms/block/rc-faq';
+import './module/sw-cms/element/rc-defined-terms';
+import './module/sw-cms/block/rc-defined-terms';
+import './module/sw-cms/element/rc-documents';
+import './module/sw-cms/block/rc-documents';
 import './module/sw-cms/element/youtube-video';
 import './component/rc-schema-additional-property';
 import './service/rc-schema-diagnose.api.service';

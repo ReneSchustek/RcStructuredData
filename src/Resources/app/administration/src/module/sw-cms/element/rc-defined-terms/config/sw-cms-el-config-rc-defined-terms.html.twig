@@ -1,0 +1,55 @@
+{% block sw_cms_element_rc_defined_terms_config %}
+    <div class="sw-cms-el-config-rc-defined-terms">
+        {% block sw_cms_element_rc_defined_terms_config_name %}
+            <sw-text-field
+                v-model:value="element.config.termSetName.value"
+                :label="$tc('sw-cms.elements.rc-defined-terms.config.name.label')"
+                :placeholder="$tc('sw-cms.elements.rc-defined-terms.config.name.placeholder')"
+                :help-text="$tc('sw-cms.elements.rc-defined-terms.config.name.helpText')">
+            </sw-text-field>
+        {% endblock %}
+
+        {% block sw_cms_element_rc_defined_terms_config_description %}
+            <sw-text-field
+                v-model:value="element.config.termSetDescription.value"
+                :label="$tc('sw-cms.elements.rc-defined-terms.config.description.label')"
+                :placeholder="$tc('sw-cms.elements.rc-defined-terms.config.description.placeholder')">
+            </sw-text-field>
+        {% endblock %}
+
+        {% block sw_cms_element_rc_defined_terms_config_items %}
+            <div
+                v-for="(item, index) in terms"
+                :key="index"
+                class="sw-cms-el-config-rc-defined-terms__item">
+
+                <sw-text-field
+                    v-model:value="item.term"
+                    :label="$tc('sw-cms.elements.rc-defined-terms.config.term.label')"
+                    :placeholder="$tc('sw-cms.elements.rc-defined-terms.config.term.placeholder')">
+                </sw-text-field>
+
+                <sw-text-editor
+                    v-model:value="item.definition"
+                    :label="$tc('sw-cms.elements.rc-defined-terms.config.definition.label')"
+                    :placeholder="$tc('sw-cms.elements.rc-defined-terms.config.definition.placeholder')">
+                </sw-text-editor>
+
+                <sw-button
+                    variant="ghost-danger"
+                    size="small"
+                    @click="removeTerm(index)">
+                    {{ $tc('sw-cms.elements.rc-defined-terms.config.removeItem') }}
+                </sw-button>
+            </div>
+        {% endblock %}
+
+        {% block sw_cms_element_rc_defined_terms_config_add %}
+            <sw-button
+                variant="ghost"
+                @click="addTerm">
+                {{ $tc('sw-cms.elements.rc-defined-terms.config.addItem') }}
+            </sw-button>
+        {% endblock %}
+    </div>
+{% endblock %}

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ruhrcoder\RcStructuredData\Schema\Diagnostics;
 
+use Ruhrcoder\RcStructuredData\Block\Documents\DocumentsSlotHydrator;
 use Ruhrcoder\RcStructuredData\Schema\GraphBuilder;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContextFactory;
 use RuntimeException;
@@ -32,6 +33,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
  * damit der Konsolenbefehl reine Ein-/Ausgabe bleibt (SoC). Die Slot-Konfiguration wird ohne
  * Storefront-DataResolver geladen; ein gepflegtes previewMedia-Thumbnail wird daher nicht aufgelöst
  * (Fallback auf das YouTube-Standardbild), was für die Feld-Vollständigkeit ohne Belang ist.
+ * Nachweise (rc-documents) werden dagegen aufgelöst — ohne Datei gäbe es keinen Knoten.
  */
 final class SchemaDiagnoser implements CategoryDiagnoser
 {
@@ -51,6 +53,7 @@ final class SchemaDiagnoser implements CategoryDiagnoser
         private readonly CompletenessChecker $completenessChecker,
         private readonly EntityRepository $landingPageRepository,
         private readonly PageWarningChecker $pageWarningChecker,
+        private readonly DocumentsSlotHydrator $documentsSlotHydrator,
     ) {
     }
 
@@ -64,6 +67,7 @@ final class SchemaDiagnoser implements CategoryDiagnoser
         }
 
         $cmsPage = $this->loadCmsPage($category, $salesChannelContext);
+        $this->documentsSlotHydrator->hydrate($cmsPage, $salesChannelContext->getContext());
         $schemaContext = $this->schemaContextFactory->fromCategory($category, $cmsPage, $salesChannelContext);
         if ($schemaContext === null) {
             return DiagnoseResult::analysed(
@@ -94,6 +98,7 @@ final class SchemaDiagnoser implements CategoryDiagnoser
             return DiagnoseResult::categoryNotFound();
         }
 
+        $this->documentsSlotHydrator->hydrate($landingPage->getCmsPage(), $salesChannelContext->getContext());
         $schemaContext = $this->schemaContextFactory->fromLandingPageEntity($landingPage, $salesChannelContext);
         $graph = $this->graphBuilder->build($schemaContext);
         $findings = $graph !== null ? $this->completenessChecker->check($graph) : [];

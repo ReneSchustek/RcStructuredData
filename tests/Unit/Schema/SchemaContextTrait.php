@@ -21,7 +21,7 @@ trait SchemaContextTrait
      * @param SchemaContext::TYPE_* $pageType
      * @param list<array{name: string, value: string}> $additionalProperties
      * @param array{name: string, description: string, uploadDate: string, duration: string} $videoFallback
-     * @param array{datePublished?: string, author?: string, image?: string, articleBody?: string} $article
+     * @param array{datePublished?: string, dateModified?: string, author?: string, image?: string, articleBody?: string} $article
      */
     private function makeContext(
         string $pageType = SchemaContext::TYPE_CATEGORY,

@@ -27,9 +27,9 @@ class VideoObjectNodeProviderTest extends TestCase
     public function testBuildsOneVideoObjectPerSlotWithUniqueId(): void
     {
         $page = $this->makeCmsPage(
-            $this->makeYoutubeSlot('vid-1'),
+            $this->makeYoutubeSlot('vid-1', ['rcSchemaUploadDate' => '2024-05-01']),
             $this->makeSlot('text'),
-            $this->makeYoutubeSlot('vid-2'),
+            $this->makeYoutubeSlot('vid-2', ['rcSchemaUploadDate' => '2024-05-02']),
         );
         $context = $this->makeContext(pageUrl: 'https://shop.example/fittings', cmsPage: $page);
 
@@ -43,7 +43,7 @@ class VideoObjectNodeProviderTest extends TestCase
 
     public function testPublisherReferencesOrganization(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1'));
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', ['rcSchemaUploadDate' => '2024-05-01']));
         $context = $this->makeContext(baseUrl: 'https://shop.example/', cmsPage: $page);
 
         $node = $this->provider()->provide($context)[0];
@@ -56,7 +56,10 @@ class VideoObjectNodeProviderTest extends TestCase
 
     public function testNameCascadePrefersBlockValue(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', ['rcSchemaName' => 'Block-Titel']));
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', [
+            'rcSchemaName' => 'Block-Titel',
+            'rcSchemaUploadDate' => '2024-05-01',
+        ]));
         $context = $this->makeContext(
             name: 'Seitentitel',
             cmsPage: $page,
@@ -68,7 +71,7 @@ class VideoObjectNodeProviderTest extends TestCase
 
     public function testNameCascadeFallsBackToCategoryThenPage(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1'));
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', ['rcSchemaUploadDate' => '2024-05-01']));
 
         $withCategory = $this->makeContext(
             name: 'Seitentitel',
@@ -81,14 +84,56 @@ class VideoObjectNodeProviderTest extends TestCase
         static::assertSame('Seitentitel', $this->provider()->provide($pageOnly)[0]['name']);
     }
 
-    public function testUploadDateAndDurationOmittedWhenMissing(): void
+    /**
+     * **Der Kern der Auszeichnung.** Google wertet ein VideoObject ohne `uploadDate` als kritischen
+     * Fehler — das Video erscheint dann nicht in der Suche. Ein fehlendes VideoObject ist
+     * dagegen neutral. Am 2026-08-24 standen auf Live 13 solcher Knoten auf 7 Seiten.
+     */
+    public function testAVideoWithoutAnUploadDateIsNotRenderedAtAll(): void
     {
         $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1'));
         $context = $this->makeContext(cmsPage: $page);
 
+        static::assertSame([], $this->provider()->provide($context));
+    }
+
+    /**
+     * Die Dauer allein rettet den Knoten nicht — gefordert ist das Datum.
+     */
+    public function testADurationDoesNotReplaceTheUploadDate(): void
+    {
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', ['rcSchemaDuration' => 'PT5M30S']));
+        $context = $this->makeContext(cmsPage: $page);
+
+        static::assertSame([], $this->provider()->provide($context));
+    }
+
+    /**
+     * Ein übersprungener Block darf keine Lücke in der Nummerierung hinterlassen: Die `@id`
+     * wird beim Ausgeben vergeben, nicht beim Einlesen.
+     */
+    public function testSkippedVideosLeaveNoGapInTheNumbering(): void
+    {
+        $page = $this->makeCmsPage(
+            $this->makeYoutubeSlot('ohne-datum'),
+            $this->makeYoutubeSlot('mit-datum', ['rcSchemaUploadDate' => '2024-05-01']),
+        );
+        $context = $this->makeContext(pageUrl: 'https://shop.example/fittings', cmsPage: $page);
+
+        $nodes = $this->provider()->provide($context);
+
+        static::assertCount(1, $nodes);
+        static::assertSame('https://shop.example/fittings#video-1', $nodes[0]['@id']);
+    }
+
+    public function testDurationOmittedWhenMissing(): void
+    {
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', ['rcSchemaUploadDate' => '2024-05-01']));
+        $context = $this->makeContext(cmsPage: $page);
+
         $node = $this->provider()->provide($context)[0];
 
-        static::assertArrayNotHasKey('uploadDate', $node);
+        static::assertSame('2024-05-01', $node['uploadDate']);
         static::assertArrayNotHasKey('duration', $node);
     }
 

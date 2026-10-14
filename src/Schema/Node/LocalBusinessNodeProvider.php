@@ -13,11 +13,26 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  * Liefert einen LocalBusiness-Singleton aus der Plugin-Konfiguration (lokale SEO).
  *
  * Nur aktiv, wenn eine Adresse (Straße + Ort) gepflegt ist — sonst hätte der Knoten für Google keinen
- * Wert. Ergänzt Adresse, Telefon, Geo-Koordinaten, Preisspanne und Öffnungszeiten, sofern konfiguriert.
+ * Wert. Ergänzt Adresse, Telefon, Bild, Geo-Koordinaten, Preisspanne und Öffnungszeiten, sofern konfiguriert.
+ *
+ * **Typ `HomeAndConstructionBusiness`**: ein Untertyp von LocalBusiness für Baubedarf und Handwerk; Google wertet ihn wie
+ * LocalBusiness, er beschreibt den Betrieb aber genauer. **Bild**: eigene Einstellung, sonst das Logo der Organisation;
+ * Google empfiehlt `image` für Unternehmensangaben. **Öffnungszeiten** als `openingHoursSpecification` (empfohlen statt
+ * des Textes `openingHours`); eine Zeile, die sich nicht lesen lässt, bleibt als Text erhalten.
  */
 final class LocalBusinessNodeProvider implements SchemaNodeProvider
 {
     private const CONFIG_PREFIX = 'RcStructuredData.config.';
+    private const TYPE = 'HomeAndConstructionBusiness';
+    private const DAYS = [
+        'Mo' => 'Monday',
+        'Tu' => 'Tuesday',
+        'We' => 'Wednesday',
+        'Th' => 'Thursday',
+        'Fr' => 'Friday',
+        'Sa' => 'Saturday',
+        'Su' => 'Sunday',
+    ];
     private const SHOP_NAME_KEY = 'core.basicInformation.shopName';
 
     public function __construct(
@@ -41,13 +56,14 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
         $this->addIfSet($address, 'addressCountry', $this->getString($context, 'localBusinessCountry'));
 
         $node = [
-            '@type' => 'LocalBusiness',
+            '@type' => self::TYPE,
             '@id' => $this->idFactory->localBusiness($context),
             'name' => $this->resolveName($context),
             'url' => $context->getBaseUrl(),
             'address' => $address,
         ];
 
+        $this->addIfSet($node, 'image', $this->resolveImage($context));
         $this->addIfSet($node, 'telephone', $this->getString($context, 'localBusinessPhone'));
         $this->addIfSet($node, 'priceRange', $this->getString($context, 'localBusinessPriceRange'));
 
@@ -56,9 +72,12 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
             $node['geo'] = $geo;
         }
 
-        $openingHours = $this->resolveOpeningHours($context);
-        if ($openingHours !== []) {
-            $node['openingHours'] = $openingHours;
+        [$specification, $unreadable] = self::openingHoursSpecification($this->resolveOpeningHours($context));
+        if ($specification !== []) {
+            $node['openingHoursSpecification'] = $specification;
+        }
+        if ($unreadable !== []) {
+            $node['openingHours'] = $unreadable;
         }
 
         return [$node];
@@ -95,6 +114,62 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
         $lines = preg_split('/\r\n|\r|\n/', $raw) ?: [];
 
         return array_values(array_filter(array_map('trim', $lines), static fn (string $line): bool => $line !== ''));
+    }
+
+    private function resolveImage(SchemaContext $context): string
+    {
+        $image = $this->getString($context, 'localBusinessImage');
+
+        return $image !== '' ? $image : $this->getString($context, 'organizationLogo');
+    }
+
+    /**
+     * Zeilen wie „Mo-Th 08:00-17:00" oder „Mo,We 08:00-12:00" als `OpeningHoursSpecification`.
+     *
+     * @param list<string> $lines
+     *
+     * @return array{0: list<array<string, mixed>>, 1: list<string>} Spezifikationen und nicht lesbare Zeilen
+     */
+    public static function openingHoursSpecification(array $lines): array
+    {
+        $specifications = [];
+        $unreadable = [];
+        $dayKeys = array_keys(self::DAYS);
+
+        foreach ($lines as $line) {
+            if (preg_match('/^([A-Za-z]{2}(?:-[A-Za-z]{2})?(?:\s*,\s*[A-Za-z]{2}(?:-[A-Za-z]{2})?)*)\s+(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})$/', $line, $match) !== 1) {
+                $unreadable[] = $line;
+                continue;
+            }
+
+            $days = [];
+            foreach (preg_split('/\s*,\s*/', $match[1]) ?: [] as $part) {
+                $range = explode('-', $part);
+                $from = array_search(ucfirst(strtolower($range[0])), $dayKeys, true);
+                $to = array_search(ucfirst(strtolower($range[1] ?? $range[0])), $dayKeys, true);
+                if ($from === false || $to === false || $to < $from) {
+                    $days = [];
+                    break;
+                }
+                for ($day = $from; $day <= $to; ++$day) {
+                    $days[] = 'https://schema.org/' . self::DAYS[$dayKeys[$day]];
+                }
+            }
+
+            if ($days === []) {
+                $unreadable[] = $line;
+                continue;
+            }
+
+            $specifications[] = [
+                '@type' => 'OpeningHoursSpecification',
+                'dayOfWeek' => $days,
+                'opens' => str_pad($match[2], 5, '0', \STR_PAD_LEFT),
+                'closes' => str_pad($match[3], 5, '0', \STR_PAD_LEFT),
+            ];
+        }
+
+        return [$specifications, $unreadable];
     }
 
     private function resolveName(SchemaContext $context): string

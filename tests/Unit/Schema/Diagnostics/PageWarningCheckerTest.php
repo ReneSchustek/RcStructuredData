@@ -7,6 +7,7 @@ namespace Ruhrcoder\RcStructuredData\Tests\Unit\Schema\Diagnostics;
 use PHPUnit\Framework\TestCase;
 use Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator;
 use Ruhrcoder\RcStructuredData\Schema\Diagnostics\PageWarningChecker;
+use Ruhrcoder\RcStructuredData\Schema\Extractor\YoutubeVideoExtractor;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\CmsFixtureTrait;
 use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
 use Shopware\Core\Content\Cms\DataResolver\FieldConfig;
@@ -110,9 +111,62 @@ class PageWarningCheckerTest extends TestCase
         static::assertSame([], $this->checker()->check(null, null));
     }
 
+    /**
+     * Was: Ein YouTube-Baustein, für den im Graphen kein Knoten steht.
+     * Warum: **Die dritte Anforderung an die Diagnose.** Seit 2.17.0 lässt das Plugin ein Video ohne
+     *        Veröffentlichungsdatum aus — ohne diese Meldung wäre das ein stiller Verlust:
+     *        Niemand im Backoffice sähe, **welches** Video ein Datum braucht.
+     */
+    public function testReportsAVideoThatWasLeftOut(): void
+    {
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('ypdWNKMB9ec'));
+
+        $warnings = $this->checker()->check(['@graph' => []], $page);
+
+        static::assertCount(1, $warnings);
+        static::assertSame(PageWarningChecker::WARNING_VIDEO_WITHOUT_UPLOAD_DATE, $warnings[0]['code']);
+        static::assertStringContainsString('ypdWNKMB9ec', $warnings[0]['message']);
+    }
+
+    /**
+     * Die Gegenprobe: Steht der Knoten im Graphen, gibt es nichts zu melden.
+     */
+    public function testSilentWhenTheVideoIsInTheGraph(): void
+    {
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('ypdWNKMB9ec'));
+
+        $warnings = $this->checker()->check([
+            '@graph' => [[
+                '@type' => 'VideoObject',
+                'contentUrl' => 'https://www.youtube.com/watch?v=ypdWNKMB9ec',
+                'embedUrl' => 'https://www.youtube.com/embed/ypdWNKMB9ec',
+            ]],
+        ], $page);
+
+        static::assertSame([], $warnings);
+    }
+
+    /**
+     * Zwei ausgelassene Videos stehen in **einer** Meldung — eine je Video wäre im Backoffice
+     * eine Wand aus Hinweisen.
+     */
+    public function testItNamesEveryLeftOutVideoInOneWarning(): void
+    {
+        $page = $this->makeCmsPage(
+            $this->makeYoutubeSlot('ypdWNKMB9ec'),
+            $this->makeYoutubeSlot('TQy29xs_nAM'),
+        );
+
+        $warnings = $this->checker()->check(['@graph' => []], $page);
+
+        static::assertCount(1, $warnings);
+        static::assertStringContainsString('ypdWNKMB9ec', $warnings[0]['message']);
+        static::assertStringContainsString('TQy29xs_nAM', $warnings[0]['message']);
+    }
+
     private function checker(): PageWarningChecker
     {
-        return new PageWarningChecker(new CmsSlotIterator());
+        return new PageWarningChecker(new CmsSlotIterator(), new YoutubeVideoExtractor());
     }
 
     /**

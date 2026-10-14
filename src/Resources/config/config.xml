@@ -95,6 +95,14 @@
         </input-field>
 
         <input-field>
+            <name>localBusinessImage</name>
+            <label>Business image URL (optional)</label>
+            <label lang="de-DE">Bild des Geschäfts, URL (optional)</label>
+            <helpText>Absolute URL to a photo of the business. Empty: the organization logo is used.</helpText>
+            <helpText lang="de-DE">Absolute URL zu einem Foto des Betriebs. Leer: Das Logo der Organisation wird verwendet.</helpText>
+        </input-field>
+
+        <input-field>
             <name>localBusinessLatitude</name>
             <label>Latitude (optional)</label>
             <label lang="de-DE">Breitengrad (optional)</label>
@@ -110,8 +118,8 @@
             <name>localBusinessOpeningHours</name>
             <label>Opening hours (one per line, e.g. Mo-Fr 09:00-18:00)</label>
             <label lang="de-DE">Öffnungszeiten (eine pro Zeile, z. B. Mo-Fr 09:00-18:00)</label>
-            <helpText>Schema.org openingHours format, e.g. "Mo-Fr 09:00-18:00" or "Sa 10:00-14:00".</helpText>
-            <helpText lang="de-DE">Schema.org-openingHours-Format, z. B. „Mo-Fr 09:00-18:00" oder „Sa 10:00-14:00".</helpText>
+            <helpText>One line per opening time, e.g. "Mo-Th 08:00-17:00", "Fr 08:00-15:00" or "Mo,We 08:00-12:00". Output as openingHoursSpecification.</helpText>
+            <helpText lang="de-DE">Eine Zeile je Öffnungszeit, z. B. „Mo-Th 08:00-17:00", „Fr 08:00-15:00" oder „Mo,We 08:00-12:00" (Tage englisch abgekürzt). Ausgegeben als openingHoursSpecification.</helpText>
         </input-field>
     </card>
 

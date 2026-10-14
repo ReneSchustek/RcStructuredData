@@ -1,0 +1,8 @@
+{
+    "rcStructuredData": {
+        "documents": {
+            "published": "Issued on %date%",
+            "expires": "valid until %date%"
+        }
+    }
+}

@@ -1,0 +1,6 @@
+datum;fassung;rechner;instanz;art;messung;ms;streuung
+2026-10-05;2.20.0;Testsystem;Kopie;seite;Startseite;881;HTTP 200
+2026-10-05;2.20.0;Testsystem;Kopie;seite;Kategorie Bausätze;746;HTTP 200
+2026-10-05;2.20.0;Testsystem;Kopie;seite;Landingpage;579;HTTP 200
+2026-10-05;2.20.0;Testsystem;Kopie;dienst;YoutubeEnricherBench::benchEmptyCache;24.686;±4.02% Speicher 13.047mb
+2026-10-05;2.20.0;Testsystem;Kopie;dienst;YoutubeEnricherBench::benchFilledCache;0.003;±17.01% Speicher 13.047mb

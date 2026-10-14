@@ -104,6 +104,9 @@ final class YoutubeApiMetadataEnricher implements VideoMetadataEnricher
                 'key' => $apiKey,
             ],
             'timeout' => self::TIMEOUT_SECONDS,
+            // `timeout` begrenzt nur die Pause zwischen zwei Datenpaketen; eine tröpfelnde Antwort hielte
+            // den Seitenaufbau sonst länger auf. `max_duration` begrenzt den ganzen Aufruf.
+            'max_duration' => self::TIMEOUT_SECONDS,
         ]);
 
         // Nicht-200 (z. B. 403 Quota) wirft — der Aufrufer cacht dann nicht und fällt still zurück.

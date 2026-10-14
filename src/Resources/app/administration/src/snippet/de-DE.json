@@ -3,6 +3,12 @@
     "blocks": {
       "rc-faq": {
         "label": "FAQ (strukturierte Daten)"
+      },
+      "rc-defined-terms": {
+        "label": "Begriffssatz"
+      },
+      "rc-documents": {
+        "label": "Nachweise"
       }
     },
     "elements": {
@@ -46,6 +52,59 @@
             "label": "Dauer (ISO 8601)",
             "placeholder": "z. B. PT5M30S"
           }
+        }
+      },
+      "rc-defined-terms": {
+        "label": "Begriffssatz",
+        "config": {
+          "name": {
+            "label": "Name des Satzes",
+            "placeholder": "zum Beispiel: Vorgaben für sichere Geländer",
+            "helpText": "Ohne Namen wird der Satz nicht ausgegeben — eine namenlose Begriffsliste sagt weder einem Leser noch einer Maschine etwas."
+          },
+          "description": {
+            "label": "Erläuterung (freiwillig)",
+            "placeholder": "Ein Satz darüber, worum es in dieser Sammlung geht"
+          },
+          "term": {
+            "label": "Begriff",
+            "placeholder": "zum Beispiel: Geländerhöhe 90 cm"
+          },
+          "definition": {
+            "label": "Erklärung (freiwillig)",
+            "placeholder": "Was der Begriff bedeutet"
+          },
+          "addItem": "Begriff hinzufügen",
+          "removeItem": "Begriff entfernen"
+        }
+      },
+      "rc-documents": {
+        "label": "Nachweise",
+        "config": {
+          "title": {
+            "label": "Überschrift (freiwillig)",
+            "placeholder": "zum Beispiel: Prüfzeugnisse"
+          },
+          "name": {
+            "label": "Name des Nachweises",
+            "placeholder": "zum Beispiel: Allgemeines bauaufsichtliches Prüfzeugnis P-169908-LGA",
+            "helpText": "Ohne Namen und ohne Datei wird der Eintrag nicht ausgegeben — weder auf der Seite noch im Schema."
+          },
+          "media": {
+            "label": "Datei"
+          },
+          "description": {
+            "label": "Beschreibung (freiwillig)",
+            "placeholder": "Was der Nachweis belegt"
+          },
+          "datePublished": {
+            "label": "Ausgestellt am (freiwillig)"
+          },
+          "expires": {
+            "label": "Gültig bis (freiwillig)"
+          },
+          "addItem": "Nachweis hinzufügen",
+          "removeItem": "Nachweis entfernen"
         }
       }
     }

@@ -36,6 +36,11 @@ final class GraphBuilder
         'FAQPage' => ['property' => 'mainEntity', 'multiple' => false],
         'BlogPosting' => ['property' => 'mainEntity', 'multiple' => false],
         'VideoObject' => ['property' => 'hasPart', 'multiple' => true],
+        // Ein Nachweis ist wie ein Video ein Werk, das die Seite enthält und verlinkt.
+        'DigitalDocument' => ['property' => 'hasPart', 'multiple' => true],
+        // Ein Begriffssatz ist kein Teil der Seite, sondern das, wovon sie handelt —
+        // deshalb `about` und nicht `hasPart`. Mehrere Sätze je Seite sind normal.
+        'DefinedTermSet' => ['property' => 'about', 'multiple' => true],
     ];
 
     /**

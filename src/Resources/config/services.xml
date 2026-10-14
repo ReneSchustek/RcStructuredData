@@ -43,17 +43,33 @@
 
         <service id="Ruhrcoder\RcStructuredData\Schema\Node\CollectionPageNodeProvider">
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\ContentPageDetector"/>
             <tag name="rc_schema.node_provider"/>
         </service>
 
         <service id="Ruhrcoder\RcStructuredData\Schema\Node\WebPageNodeProvider">
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\ContentPageDetector"/>
             <tag name="rc_schema.node_provider"/>
         </service>
 
         <service id="Ruhrcoder\RcStructuredData\Schema\Node\FaqPageNodeProvider">
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\FaqCmsBlockExtractor"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\DefinedTermSetNodeProvider">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\DefinedTermsCmsBlockExtractor"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <tag name="rc_schema.node_provider"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Node\DigitalDocumentNodeProvider">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\DocumentsCmsBlockExtractor"/>
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
             <tag name="rc_schema.node_provider"/>
         </service>
@@ -93,9 +109,17 @@
 
         <!-- CMS-Block-Extraktion (Datenquelle für FAQ/Video aus sichtbaren Blöcken) -->
         <service id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Cms\ContentPageDetector">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
+        </service>
         <service id="Ruhrcoder\RcStructuredData\Schema\Extractor\FaqCmsBlockExtractor">
             <argument type="service" id="Shopware\Core\Framework\Util\HtmlSanitizer"/>
         </service>
+        <service id="Ruhrcoder\RcStructuredData\Schema\Extractor\DefinedTermsCmsBlockExtractor">
+            <argument type="service" id="Shopware\Core\Framework\Util\HtmlSanitizer"/>
+        </service>
+        <service id="Ruhrcoder\RcStructuredData\Schema\Extractor\DocumentsCmsBlockExtractor"/>
         <service id="Ruhrcoder\RcStructuredData\Schema\Extractor\YoutubeVideoExtractor"/>
         <service id="Ruhrcoder\RcStructuredData\Schema\Extractor\ProductListingExtractor"/>
 
@@ -104,6 +128,7 @@
 
         <service id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\PageWarningChecker">
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\YoutubeVideoExtractor"/>
         </service>
 
         <service id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\SchemaDiagnoser">
@@ -116,6 +141,7 @@
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\CompletenessChecker"/>
             <argument type="service" id="landing_page.repository"/>
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\PageWarningChecker"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Block\Documents\DocumentsSlotHydrator"/>
         </service>
 
         <service id="Ruhrcoder\RcStructuredData\Command\DiagnoseCommand">
@@ -135,6 +161,29 @@
             <tag name="shopware.cms.data_resolver"/>
         </service>
 
+        <!-- rc-defined-terms CMS-Element: registriert den Element-Typ und liefert die Begriffsliste -->
+        <service id="Ruhrcoder\RcStructuredData\Block\DefinedTerms\DataResolver\DefinedTermsResolver">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\DefinedTermsCmsBlockExtractor"/>
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
+
+        <!-- rc-documents CMS-Element: Nachweise als Dateien, sichtbar verlinkt und als DigitalDocument ausgezeichnet -->
+        <service id="Ruhrcoder\RcStructuredData\Block\Documents\DataResolver\DocumentsResolver">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\DocumentsCmsBlockExtractor"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Block\Documents\DocumentsStructBuilder"/>
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
+        <service id="Ruhrcoder\RcStructuredData\Block\Documents\DocumentsStructBuilder">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\DocumentsCmsBlockExtractor"/>
+        </service>
+        <!-- Dieselbe Auflösung für die Diagnose, die die Seite ohne Storefront lädt -->
+        <service id="Ruhrcoder\RcStructuredData\Block\Documents\DocumentsSlotHydrator">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\DocumentsCmsBlockExtractor"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Block\Documents\DocumentsStructBuilder"/>
+            <argument type="service" id="media.repository"/>
+        </service>
+
         <!-- Storefront-Anbindung: hängt den Graphen als Page-Extension an -->
         <service id="Ruhrcoder\RcStructuredData\Subscriber\SchemaGraphSubscriber">
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\SchemaContextFactory"/>
@@ -145,7 +194,25 @@
         </service>
 
         <!-- Beantwortet der Vorlage, ob der Kern WebSite und Organization schon selbst ausgibt -->
+        <!-- Versanddetails für offers.shippingDetails.
+
+             Der Preis kommt aus RcProductFeedShippingExtension, das ihn für den Warenstrom
+             ohnehin vorberechnet. `on-invalid="null"`: Ohne dieses Plugin bleibt der Dienst leer,
+             und die strukturierten Daten kommen ohne `shippingRate` aus. -->
+        <service id="Ruhrcoder\RcStructuredData\Schema\Product\RcProductFeedShippingRate">
+            <argument type="service"
+                      id="Ruhrcoder\RcProductFeedShippingExtension\Service\ShippingCostCalculatorService"
+                      on-invalid="null"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Product\ShippingDetailsProvider">
+            <argument type="service" id="country.repository"/>
+            <argument type="service" id="shipping_method.repository"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Product\RcProductFeedShippingRate"/>
+        </service>
+
         <service id="Ruhrcoder\RcStructuredData\Twig\StructuredDataExtension">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Product\ShippingDetailsProvider"/>
             <tag name="twig.extension"/>
         </service>
     </services>
