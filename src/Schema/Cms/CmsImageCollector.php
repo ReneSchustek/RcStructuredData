@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Ruhrcoder\RcStructuredData\Schema\Cms;
 
+use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
+use Shopware\Core\Content\Cms\CmsException;
 use Shopware\Core\Content\Cms\CmsPageEntity;
+use Shopware\Core\Content\Cms\DataResolver\FieldConfig;
+use Shopware\Core\Content\Cms\DataResolver\FieldConfigCollection;
 use Shopware\Core\Content\Media\MediaCollection;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
@@ -75,9 +79,15 @@ class CmsImageCollector
      * Die Bildquellen der sichtbaren Teile einer Erlebniswelt, in Seitenreihenfolge, ohne Dopplung:
      * `id:<Medienkennung>` oder `url:<Bildadresse aus HTML>`.
      *
+     * `$slotOverrides` sind die Einstellungen, die eine Kategorie oder Landingpage je Baustein überschreibt (`slotConfig`).
+     * Auf der Seite setzt sie der Kern beim Auflösen ein; die Sitemap liest die Erlebniswelt unaufgelöst und reicht sie
+     * hier herein.
+     *
+     * @param array<string, mixed> $slotOverrides
+     *
      * @return list<string>
      */
-    public static function sources(?CmsPageEntity $page): array
+    public static function sources(?CmsPageEntity $page, array $slotOverrides = []): array
     {
         $sources = [];
         foreach ($page?->getSections() ?? [] as $section) {
@@ -93,7 +103,8 @@ class CmsImageCollector
                 self::addId($sources, $block->getBackgroundMediaId());
 
                 foreach ($block->getSlots() ?? [] as $slot) {
-                    foreach ($slot->getFieldConfig() as $field) {
+                    $override = $slotOverrides[$slot->getUniqueIdentifier()] ?? null;
+                    foreach (self::fieldConfig($slot, \is_array($override) ? $override : null) as $field) {
                         self::walk($sources, $field->getName(), $field->getValue());
                     }
                     foreach (self::products($slot->getData()) as $product) {
@@ -140,6 +151,34 @@ class CmsImageCollector
             array_map(static fn (string $src): string => trim(html_entity_decode($src, \ENT_QUOTES | \ENT_HTML5, 'UTF-8')), $matches[1]),
             static fn (string $src): bool => $src !== '' && !str_starts_with($src, 'data:'),
         ));
+    }
+
+    /**
+     * Die Einstellungen eines Bausteins, mit Überschreibung. Eine Einstellung ohne `source` lässt der Kern mit einer
+     * Ausnahme scheitern; für die Bildersuche zählt der Baustein dann einfach nicht.
+     *
+     * @param array<string, mixed>|null $override
+     */
+    private static function fieldConfig(CmsSlotEntity $slot, ?array $override): FieldConfigCollection
+    {
+        try {
+            if ($override === null) {
+                return $slot->getFieldConfig();
+            }
+
+            $config = $slot->getTranslation('config');
+            $config = array_replace(\is_array($config) ? $config : [], $override);
+            $collection = new FieldConfigCollection();
+            foreach ($config as $key => $data) {
+                if (\is_array($data) && \is_string($data['source'] ?? null)) {
+                    $collection->add(new FieldConfig((string) $key, $data['source'], $data['value'] ?? null));
+                }
+            }
+
+            return $collection;
+        } catch (CmsException) {
+            return new FieldConfigCollection();
+        }
     }
 
     /**

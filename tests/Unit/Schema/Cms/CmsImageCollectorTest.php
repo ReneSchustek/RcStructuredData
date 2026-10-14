@@ -108,6 +108,31 @@ final class CmsImageCollectorTest extends TestCase
     }
 
     /**
+     * Was: Bildbaustein, dessen Bild eine Kategorie überschreibt (`slotConfig`), wie ihn die Sitemap unaufgelöst liest.
+     * Erwartet: das Bild der Überschreibung statt des Layoutbildes.
+     */
+    public function testSlotOverridesReplaceTheLayoutImage(): void
+    {
+        $slot = new CmsSlotEntity();
+        $slot->setId('slot-x');
+        $slot->setUniqueIdentifier('slot-x');
+        $slot->setSlot('image');
+        $slot->setConfig(['media' => ['source' => 'static', 'value' => self::A]]);
+        $slot->setTranslated(['config' => ['media' => ['source' => 'static', 'value' => self::A]]]);
+
+        $block = new CmsBlockEntity();
+        $block->setUniqueIdentifier('block-x');
+        $block->setSlots(new CmsSlotCollection([$slot]));
+        $section = new CmsSectionEntity();
+        $section->setUniqueIdentifier('section-x');
+        $section->setBlocks(new CmsBlockCollection([$block]));
+        $page = $this->page([$section]);
+
+        static::assertSame([self::A], CmsImageCollector::mediaIds($page));
+        static::assertSame(['id:' . self::B], CmsImageCollector::sources($page, ['slot-x' => ['media' => ['source' => 'static', 'value' => self::B]]]));
+    }
+
+    /**
      * @param list<CmsSectionEntity> $sections
      */
     private function page(array $sections): CmsPageEntity

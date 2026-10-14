@@ -229,5 +229,32 @@
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Product\ShippingDetailsProvider"/>
             <tag name="twig.extension"/>
         </service>
+
+        <!-- Bilder in der Sitemap: Namensraum im Wurzelelement, Bilder je Eintrag an den vier Lieferanten des Kerns. -->
+        <service id="Ruhrcoder\RcStructuredData\Sitemap\SitemapImageNamespaceSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="Ruhrcoder\RcStructuredData\Sitemap\SitemapImageLoader">
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="category.repository"/>
+            <argument type="service" id="landing_page.repository"/>
+            <argument type="service" id="media.repository"/>
+        </service>
+        <service id="Ruhrcoder\RcStructuredData\Sitemap\ImageUrlProvider.product" class="Ruhrcoder\RcStructuredData\Sitemap\ImageUrlProvider" decorates="Shopware\Core\Content\Sitemap\Provider\ProductUrlProvider">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Sitemap\SitemapImageLoader"/>
+        </service>
+        <service id="Ruhrcoder\RcStructuredData\Sitemap\ImageUrlProvider.category" class="Ruhrcoder\RcStructuredData\Sitemap\ImageUrlProvider" decorates="Shopware\Core\Content\Sitemap\Provider\CategoryUrlProvider">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Sitemap\SitemapImageLoader"/>
+        </service>
+        <service id="Ruhrcoder\RcStructuredData\Sitemap\ImageUrlProvider.landing_page" class="Ruhrcoder\RcStructuredData\Sitemap\ImageUrlProvider" decorates="Shopware\Core\Content\Sitemap\Provider\LandingPageUrlProvider">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Sitemap\SitemapImageLoader"/>
+        </service>
+        <service id="Ruhrcoder\RcStructuredData\Sitemap\ImageUrlProvider.home" class="Ruhrcoder\RcStructuredData\Sitemap\ImageUrlProvider" decorates="Shopware\Core\Content\Sitemap\Provider\HomeUrlProvider">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Sitemap\SitemapImageLoader"/>
+        </service>
     </services>
 </container>

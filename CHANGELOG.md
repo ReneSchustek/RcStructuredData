@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.24.0] - 2026-10-14: Bilder in der Sitemap
+
+> **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`, danach `sitemap:generate`.
+
+### Neu
+
+- **Bilder in der Sitemap:** Jeder Eintrag für Produkt, Kategorie, Landingpage und Startseite trägt die Bilder der
+  Seite als `<image:image>`, der Namensraum `xmlns:image` steht im Wurzelelement. Produkte: die Galerie, Titelbild
+  zuerst. Kategorien, Startseite, Landingpages: das Kategoriebild und die sichtbaren Bilder der Erlebniswelt aus
+  derselben Sammelstelle wie `image` im Graphen, mit den Überschreibungen je Baustein. Höchstens 60 je Seite. Seiten und
+  Reihenfolge bleiben, wie der Kern sie liefert; keine zweite Sitemap-Datei.
+
+### Behoben
+
+- Ein Baustein mit unvollständiger Einstellung (ohne `source`) ließ die Bildersuche scheitern; er zählt jetzt einfach
+  nicht.
+
 ## [2.23.0] - 2026-10-14: Alle sichtbaren Bilder im Graphen
 
 > **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`.
