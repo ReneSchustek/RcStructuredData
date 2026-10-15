@@ -11,7 +11,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 /**
  * Unveränderliches Value Object mit allem, was die Provider zum Bau ihrer Knoten brauchen.
  *
- * Sämtliche Auflösung (übersetzte Werte, URLs, Locale) passiert einmalig im Subscriber;
+ * Sämtliche Auflösung (übersetzte Werte, URLs, Locale) passiert einmalig in der SchemaContextFactory;
  * die Provider rechnen nur noch zusammen, fragen aber selbst keine Daten mehr ab (TDA/SoC).
  */
 final class SchemaContext

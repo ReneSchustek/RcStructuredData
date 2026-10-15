@@ -13,7 +13,10 @@
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\SchemaContextFactory"/>
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\GraphBuilder"/>
             <argument type="service" id="Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Blog\BlogArticleResolver"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Blog\BlogArticleResolver"/>
     </services>
 </container>

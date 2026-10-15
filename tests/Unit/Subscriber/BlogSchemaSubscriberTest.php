@@ -8,6 +8,7 @@ use Closure;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Ruhrcoder\RcStructuredData\Blog\BlogArticleResolver;
 use Ruhrcoder\RcStructuredData\Schema\GraphBuilder;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContextFactory;
@@ -40,6 +41,7 @@ if (!class_exists(BlogPageLoadedEvent::class)) {
  * und die Erlebniswelt des Beitrags.
  */
 #[CoversClass(BlogSchemaSubscriber::class)]
+#[CoversClass(BlogArticleResolver::class)]
 final class BlogSchemaSubscriberTest extends TestCase
 {
     private const ENTRY_ID = '0190aa000000000000000000000000e1';
@@ -166,7 +168,7 @@ final class BlogSchemaSubscriberTest extends TestCase
             Context::createDefaultContext(),
         ));
 
-        return new BlogSchemaSubscriber(new SchemaContextFactory($seoUrlReplacer), new GraphBuilder([$provider]), $cmsPageLoader);
+        return new BlogSchemaSubscriber(new SchemaContextFactory($seoUrlReplacer), new GraphBuilder([$provider]), $cmsPageLoader, new BlogArticleResolver());
     }
 
     private function entry(

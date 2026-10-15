@@ -33,7 +33,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * 3. Bilder im HTML von Text- und Twig-Bausteinen (`<img src>`), etwa Kategoriekacheln oder Porträts, die nicht als
  *    Medium, sondern als Markup gepflegt sind.
  */
-class CmsImageCollector
+final class CmsImageCollector
 {
     private const MEDIA_KEYS = ['media', 'mediaId', 'previewMedia'];
 

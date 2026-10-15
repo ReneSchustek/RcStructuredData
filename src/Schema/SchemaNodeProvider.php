@@ -8,9 +8,8 @@ namespace Ruhrcoder\RcStructuredData\Schema;
  * Vertrag für einen einzelnen Schema.org-Knoten-Lieferanten ("graph piece").
  *
  * Jeder Provider ist für genau einen Schema-Typ zuständig (SRP) und entscheidet selbst,
- * ob er auf der aktuellen Seite gebraucht wird. Neue Schema-Typen (Article, Product,
- * LocalBusiness, ...) werden durch eine weitere getaggte Implementierung ergänzt, ohne
- * bestehende Provider, den GraphBuilder oder die Ausgabe zu ändern (OCP).
+ * ob er auf der aktuellen Seite gebraucht wird. Ein neuer Schema-Typ kommt als weitere getaggte Implementierung hinzu,
+ * ohne bestehende Provider, den GraphBuilder oder die Ausgabe zu ändern (OCP).
  */
 interface SchemaNodeProvider
 {

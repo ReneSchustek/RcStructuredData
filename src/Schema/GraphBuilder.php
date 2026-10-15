@@ -9,8 +9,8 @@ namespace Ruhrcoder\RcStructuredData\Schema;
  *
  * Ablauf: passende Provider per supports() filtern, ihre Knoten einsammeln, über "@id"
  * deduplizieren (Singletons), anschließend die Seiten-Knoten mit ihren Unterknoten
- * (FAQPage, VideoObject) verdrahten. Die Verdrahtung ist der "Hook", über den 02b/02c
- * ihre Knoten allein durch Hinzufügen eines Providers an die Seite hängen.
+ * (FAQPage, VideoObject) verdrahten. Über diese Verdrahtung hängt ein neuer Lieferant seine Knoten an die Seite, ohne
+ * dass sich hier etwas ändert.
  */
 final class GraphBuilder
 {

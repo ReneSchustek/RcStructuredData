@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.25.0] - 2026-10-15: Diagnose prüft mehr Typen
+
+> **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`.
+
+### Geändert
+
+- Die Vollständigkeitsprüfung der Diagnose kennt jetzt auch Blogbeiträge, Brotkrumen, Produktlisten und den
+  Geschäftseintrag. Bisher meldete sie diese Knoten als vollständig, ohne sie zu prüfen.
+- Scheitert die Anreicherung über die YouTube-Schnittstelle, steht das als Warnung mit der Videokennung im Protokoll,
+  nicht mehr als Info ohne Kontext.
+- Die Felder eines Blogbeitrags liest eine eigene Klasse; der Subscriber verbindet nur noch.
+
+### Intern
+
+- Sechs Klassen sind `final`, die Diagnose von Kategorie und Landingpage läuft über einen gemeinsamen Weg, das
+  Diagnoseergebnis spricht von Seiten statt von Kategorien. Veraltete und falsche Kommentare berichtigt.
+
 ## [2.24.2] - 2026-10-15: Tests für alle Klassen, Abdeckung 95,96 %
 
 > **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`.

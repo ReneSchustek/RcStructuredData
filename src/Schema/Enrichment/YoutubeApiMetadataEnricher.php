@@ -55,9 +55,11 @@ final class YoutubeApiMetadataEnricher implements VideoMetadataEnricher
         } catch (Throwable $exception) {
             // Sicherheitsnetz für Fehler der Cache-Infrastruktur selbst (der Netzwerk-/Quota-
             // Fehlerpfad wird bereits im Callback abgefangen und negativ gecacht).
-            $this->logger->info(
-                'YouTube-API-Anreicherung fehlgeschlagen: ' . $this->redactKey($exception->getMessage(), $apiKey),
-            );
+            $this->logger->warning('YouTube-API-Anreicherung fehlgeschlagen', [
+                'videoId' => $videoId,
+                'exception' => $exception::class,
+                'message' => $this->redactKey($exception->getMessage(), $apiKey),
+            ]);
 
             return null;
         }
@@ -79,9 +81,11 @@ final class YoutubeApiMetadataEnricher implements VideoMetadataEnricher
             // (inkl. ?key=…) enthalten, daher wird er aus der Meldung redigiert. Das Log läuft
             // nur beim Cache-Miss (nicht bei jedem Treffer auf den Negativ-Eintrag) → kein Spam.
             $item->expiresAfter(self::CACHE_TTL_MISS);
-            $this->logger->info(
-                'YouTube-API-Anreicherung fehlgeschlagen: ' . $this->redactKey($exception->getMessage(), $apiKey),
-            );
+            $this->logger->warning('YouTube-API-Anreicherung fehlgeschlagen', [
+                'videoId' => $videoId,
+                'exception' => $exception::class,
+                'message' => $this->redactKey($exception->getMessage(), $apiKey),
+            ]);
 
             return null;
         }

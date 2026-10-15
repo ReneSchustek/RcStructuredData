@@ -15,17 +15,16 @@ use Twig\TwigFunction;
  * Beantwortet der Vorlage die eine Frage, die sie selbst nicht beantworten kann:
  * Gibt Shopware WebSite und Organization bereits im globalen Block aus?
  *
- * Warum das nicht in Twig geht: Die Vorlage prüfte bisher `not feature('JSON_LD_DATA')`.
- * Das trug, solange es das Flag gibt. Mit Shopware 6.8 verschwindet es, und
- * `Feature::isActive()` liefert für ein unbekanntes Flag `false` — die Bedingung wäre also
- * erfüllt, obwohl der Kern seinen globalen Block dort sehr wohl rendert. WebSite und
- * Organization stünden doppelt im `<head>`.
+ * Warum das nicht in Twig geht: `not feature('JSON_LD_DATA')` trägt nur, solange es das Flag
+ * gibt. Mit Shopware 6.8 verschwindet es, und `Feature::isActive()` liefert für ein unbekanntes
+ * Flag `false` — die Bedingung wäre erfüllt, obwohl der Kern seinen globalen Block rendert.
+ * WebSite und Organization stünden doppelt im `<head>`.
  *
  * Eine Versionsabfrage gibt es in Storefront-Vorlagen nicht, und jedes Flag, das man
  * ersatzweise heranzöge, verschwindet mit derselben Hauptversion. Beantwortbar ist die Frage
  * nur in PHP — über `Feature::has()`, das die Existenz des Flags von seinem Zustand trennt.
  */
-class StructuredDataExtension extends AbstractExtension
+final class StructuredDataExtension extends AbstractExtension
 {
     private const JSON_LD_FLAG = 'JSON_LD_DATA';
 

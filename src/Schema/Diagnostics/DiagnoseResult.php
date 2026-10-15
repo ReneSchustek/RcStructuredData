@@ -16,15 +16,15 @@ final class DiagnoseResult
      * @param list<array{code: string, message: string}> $warnings
      */
     private function __construct(
-        public readonly bool $categoryFound,
-        public readonly string $categoryName,
+        public readonly bool $pageFound,
+        public readonly string $pageName,
         public readonly ?array $graph,
         public readonly array $findings,
         public readonly array $warnings = [],
     ) {
     }
 
-    public static function categoryNotFound(): self
+    public static function notFound(): self
     {
         return new self(false, '', null, [], []);
     }
@@ -34,9 +34,9 @@ final class DiagnoseResult
      * @param list<array{type: string, id: string, missingRequired: list<string>, missingRecommended: list<string>}> $findings
      * @param list<array{code: string, message: string}> $warnings
      */
-    public static function analysed(string $categoryName, ?array $graph, array $findings, array $warnings = []): self
+    public static function analysed(string $pageName, ?array $graph, array $findings, array $warnings = []): self
     {
-        return new self(true, $categoryName, $graph, $findings, $warnings);
+        return new self(true, $pageName, $graph, $findings, $warnings);
     }
 
     public function nodeCount(): int

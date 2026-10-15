@@ -54,8 +54,8 @@ final class SchemaDiagnoseController
     private function toResponse(DiagnoseResult $result): JsonResponse
     {
         return new JsonResponse([
-            'found' => $result->categoryFound,
-            'name' => $result->categoryName,
+            'found' => $result->pageFound,
+            'name' => $result->pageName,
             'hasGraph' => $result->graph !== null,
             'nodeCount' => $result->nodeCount(),
             'findings' => $result->findings,

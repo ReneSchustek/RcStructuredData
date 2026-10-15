@@ -11,26 +11,20 @@ use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
 use Shopware\Core\Content\Cms\CmsPageEntity;
 
 /**
- * Meldet zwei Zustände, die eine Seite still falsch auszeichnen.
+ * Meldet drei Zustände, in denen Graph und Seite nicht zusammenpassen.
  *
- * Der CompletenessChecker sieht nur den Graphen, den dieses Plugin selbst baut. Beide Fehler
- * unten stehen aber im Verhältnis zwischen Graph und Seite und sind dort nicht zu sehen:
+ * Der CompletenessChecker sieht nur den Graphen, den dieses Plugin baut. Die drei Fehler unten liegen im Verhältnis
+ * zwischen Graph und Seite und sind am Graphen allein nicht zu erkennen:
  *
- * 1. **Handgeschriebenes JSON-LD auf derselben Seite.** Steht in einem Slot ein eigener
- *    `ld+json`-Block, trägt die Seite zwei Auszeichnungen. Sie können auseinanderlaufen, und
- *    genau das ist auf den Blogbeiträgen passiert: zwanzig Fragen und fünf HowTo-Schritte, von
- *    denen keiner auf der Seite sichtbar war — ein Richtlinienverstoß, den niemand bemerkt hat.
- * 3. **Ein Video, das ausgelassen wurde.** Fehlt einem YouTube-Baustein das Veröffentlichungs-
- *    datum, gibt das Plugin für ihn seit 2.17.0 gar keinen Knoten aus — ein unvollständiges
- *    VideoObject ist für Google ein kritischer Fehler, ein fehlendes neutral. Ohne diese Meldung
- *    wäre die Auslassung ein stiller Verlust: Niemand im Backoffice sähe, **welches** Video ein
- *    Datum braucht.
+ * 1. Handgeschriebenes JSON-LD auf derselben Seite. Steht in einem Baustein ein eigener `ld+json`-Block, trägt die Seite
+ *    zwei Auszeichnungen, die auseinanderlaufen können, etwa Fragen, die auf der Seite gar nicht zu sehen sind.
+ * 2. Ein Video ohne Knoten. Fehlt einem YouTube-Baustein das Veröffentlichungsdatum, gibt das Plugin für ihn keinen
+ *    Knoten aus: Ein unvollständiges VideoObject ist für Google ein kritischer Fehler, ein fehlendes neutral. Die Meldung
+ *    nennt, welches Video ein Datum braucht.
+ * 3. `FAQPage` ohne FAQ-Baustein. Meldet der Graph eine FAQ, ohne dass ein `rc-faq`-Baustein auf der Seite steht, stammt
+ *    sie aus einer anderen Quelle und ist womöglich für keinen Besucher sichtbar.
  *
- * 2. **`FAQPage` ohne einen FAQ-Baustein.** Der Graph entsteht aus dem sichtbaren Seiteninhalt.
- *    Meldet er trotzdem eine FAQ, ohne dass ein `rc-faq`-Baustein auf der Seite steht, stammt
- *    sie aus einer anderen Quelle — der Verdacht auf eine FAQ, die kein Besucher sieht.
- *
- * Beide Prüfungen kosten nichts: Sie laufen über die ohnehin geladenen Slots.
+ * Alle drei Prüfungen laufen über die ohnehin geladenen Bausteine und kosten keine Abfrage.
  */
 final class PageWarningChecker
 {
@@ -73,17 +67,17 @@ final class PageWarningChecker
             ];
         }
 
-        $ausgelassen = $this->videosWithoutNode($graph, $slots);
-        if ($ausgelassen !== []) {
+        $omittedVideoIds = $this->videosWithoutNode($graph, $slots);
+        if ($omittedVideoIds !== []) {
             $warnings[] = [
                 'code' => self::WARNING_VIDEO_WITHOUT_UPLOAD_DATE,
                 'message' => sprintf(
                     'Für %s ist kein VideoObject entstanden — es fehlt das Veröffentlichungsdatum. '
                     . 'Ein unvollständiger Knoten wäre für Google ein kritischer Fehler; gepflegt wird '
                     . 'das Datum am Baustein oder an der Seite.',
-                    \count($ausgelassen) === 1
-                        ? 'das Video ' . $ausgelassen[0]
-                        : 'die Videos ' . implode(', ', $ausgelassen)
+                    \count($omittedVideoIds) === 1
+                        ? 'das Video ' . $omittedVideoIds[0]
+                        : 'die Videos ' . implode(', ', $omittedVideoIds)
                 ),
             ];
         }
@@ -113,7 +107,7 @@ final class PageWarningChecker
      */
     private function videosWithoutNode(?array $graph, array $slots): array
     {
-        $fehlend = [];
+        $missing = [];
 
         foreach ($slots as $slot) {
             if (!$this->videoExtractor->supports($slot)) {
@@ -122,17 +116,17 @@ final class PageWarningChecker
 
             foreach ($this->videoExtractor->extract($slot) as $video) {
                 $videoId = $video['videoId'];
-                if ($videoId === '' || \in_array($videoId, $fehlend, true)) {
+                if ($videoId === '' || \in_array($videoId, $missing, true)) {
                     continue;
                 }
 
                 if (!$this->graphCarriesVideo($graph, $videoId)) {
-                    $fehlend[] = $videoId;
+                    $missing[] = $videoId;
                 }
             }
         }
 
-        return $fehlend;
+        return $missing;
     }
 
     /**
@@ -145,9 +139,9 @@ final class PageWarningChecker
                 continue;
             }
 
-            foreach (['contentUrl', 'embedUrl'] as $feld) {
-                $wert = $node[$feld] ?? '';
-                if (\is_string($wert) && str_contains($wert, $videoId)) {
+            foreach (['contentUrl', 'embedUrl'] as $field) {
+                $value = $node[$field] ?? '';
+                if (\is_string($value) && str_contains($value, $videoId)) {
                     return true;
                 }
             }

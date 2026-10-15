@@ -21,13 +21,12 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Werkl\OpenBlogware\Page\Blog\BlogPageLoadedEvent;
 
 /**
- * Basis-Plugin-Klasse der Schema.org-CMS-Erweiterung.
+ * Plugin-Klasse der strukturierten Daten.
  *
- * Seit v2.0.0 ist das Plugin ein Schema Graph Builder: Es erzeugt auf Kategorie- und
- * Landingpages im Storefront einen zusammenhängenden JSON-LD-`@graph` (Organization,
- * WebSite, CollectionPage/WebPage, BreadcrumbList, später FAQPage/VideoObject), verknüpft
- * über `@id`. Die Daten werden zentral im Plugin gepflegt (Konfiguration + Category-Custom-
- * Fields), nicht als rohes JSON im CMS-HTML.
+ * Das Plugin erzeugt auf Startseite, Kategorie-, Landing- und Blogseiten einen zusammenhängenden JSON-LD-`@graph`
+ * (Organization, WebSite, Seite, Brotkrumen, FAQ, Videos, Begriffe, Dokumente und weitere), verknüpft über `@id`. Die
+ * Daten kommen aus der Konfiguration, den Zusatzfeldern und den Bausteinen der Erlebniswelt, nicht aus rohem JSON im
+ * HTML.
  *
  * Der Lifecycle legt nur das Custom-Field-Set `rc_schema` an; die eigentliche Logik liegt in
  * den getaggten Schema-Providern (`src/Schema/Node`) und dem GraphBuilder.

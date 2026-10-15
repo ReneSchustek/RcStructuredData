@@ -42,13 +42,13 @@ final class DiagnoseCommand extends Command
         $identifier = (string) $input->getArgument('category');
 
         $result = $this->diagnoser->diagnose($identifier);
-        if (!$result->categoryFound) {
+        if (!$result->pageFound) {
             $io->error(sprintf('Keine Kategorie zu "%s" gefunden.', $identifier));
 
             return Command::FAILURE;
         }
 
-        $io->title(sprintf('Schema-Diagnose: %s', $result->categoryName));
+        $io->title(sprintf('Schema-Diagnose: %s', $result->pageName));
 
         if ($result->graph === null) {
             $io->warning('Für diese Kategorie wird kein Graph erzeugt (z. B. Startseite/Root).');

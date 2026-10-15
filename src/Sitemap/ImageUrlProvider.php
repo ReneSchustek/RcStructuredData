@@ -15,7 +15,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  * Kern sie liefert. Eine eigene Bilder-Sitemap neben der des Kerns gibt es nicht, weil sie ab dem ersten Tag veralten
  * würde.
  */
-class ImageUrlProvider extends AbstractUrlProvider
+final class ImageUrlProvider extends AbstractUrlProvider
 {
     public function __construct(
         private readonly AbstractUrlProvider $decorated,

@@ -88,8 +88,8 @@ final class SchemaDiagnoserTest extends TestCase
             contextFactory: $contextFactory,
         )->diagnose('Handläufe');
 
-        self::assertTrue($result->categoryFound);
-        self::assertSame('Handläufe', $result->categoryName);
+        self::assertTrue($result->pageFound);
+        self::assertSame('Handläufe', $result->pageName);
         self::assertNotNull($result->graph);
         self::assertSame(1, $result->nodeCount());
         self::assertSame((new CompletenessChecker())->check($result->graph), $result->findings);
@@ -114,7 +114,7 @@ final class SchemaDiagnoserTest extends TestCase
 
         $result = $this->diagnoser(categories: $categories, channels: $channels)->diagnose(self::CATEGORY_ID);
 
-        self::assertTrue($result->categoryFound);
+        self::assertTrue($result->pageFound);
         self::assertSame([], $channels->searches, 'Beide Kanalabfragen gestellt');
     }
 
@@ -148,9 +148,9 @@ final class SchemaDiagnoserTest extends TestCase
             landingPages: $landingPages,
         );
 
-        self::assertFalse($diagnoser->diagnose('Gibt es nicht')->categoryFound);
-        self::assertFalse($diagnoser->diagnoseLandingPage('keine-kennung')->categoryFound);
-        self::assertFalse($diagnoser->diagnoseLandingPage(self::LANDING_ID)->categoryFound);
+        self::assertFalse($diagnoser->diagnose('Gibt es nicht')->pageFound);
+        self::assertFalse($diagnoser->diagnoseLandingPage('keine-kennung')->pageFound);
+        self::assertFalse($diagnoser->diagnoseLandingPage(self::LANDING_ID)->pageFound);
         self::assertSame([], $landingPages->searches);
     }
 
@@ -169,8 +169,8 @@ final class SchemaDiagnoserTest extends TestCase
         $result = $this->diagnoser(landingPages: self::repository(LandingPageCollection::class, [new LandingPageCollection([$landingPage])]))
             ->diagnoseLandingPage(self::LANDING_ID);
 
-        self::assertTrue($result->categoryFound);
-        self::assertSame('Aktion', $result->categoryName);
+        self::assertTrue($result->pageFound);
+        self::assertSame('Aktion', $result->pageName);
         self::assertNotNull($result->graph);
     }
 
@@ -186,7 +186,7 @@ final class SchemaDiagnoserTest extends TestCase
         $result = $this->diagnoser(categories: self::repository(CategoryCollection::class, [new CategoryCollection([$root])]), nodes: [])
             ->diagnose(self::ROOT_ID);
 
-        self::assertTrue($result->categoryFound);
+        self::assertTrue($result->pageFound);
         self::assertNull($result->graph);
         self::assertSame([], $result->findings);
     }

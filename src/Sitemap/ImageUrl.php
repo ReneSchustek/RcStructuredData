@@ -12,7 +12,7 @@ use Shopware\Core\Content\Sitemap\Struct\Url;
  * Der Kern klont jeden Eintrag je Domäne und setzt erst dann die volle Adresse; die Bilder reisen im Klon mit. Relative
  * Bildadressen (aus HTML-Bausteinen) bekommen beim Schreiben Schema und Rechner der Seitenadresse.
  */
-class ImageUrl extends Url
+final class ImageUrl extends Url
 {
     /**
      * @var list<string>

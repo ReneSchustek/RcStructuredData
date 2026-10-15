@@ -10,8 +10,8 @@ use Shopware\Core\Content\Cms\CmsPageEntity;
 /**
  * Liefert alle Slots einer aufgelösten CmsPage flach (Sections → Blocks → Slots).
  *
- * Gemeinsame Traversierung für alle CMS-block-basierten Provider (FAQ in 02b, Video in 02c) —
- * vermeidet doppelte Iterationslogik.
+ * Gemeinsamer Durchlauf für alle Lieferanten, die Bausteine auswerten (FAQ, Video, Begriffe, Dokumente), damit keiner
+ * ihn selbst nachbaut.
  */
 final class CmsSlotIterator
 {

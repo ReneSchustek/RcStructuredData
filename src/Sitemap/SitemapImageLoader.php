@@ -31,7 +31,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  *
  * Je Stapel des Kerns (eine Seite Einträge) eine Abfrage je Art, dazu eine für die Medien der Erlebniswelten.
  */
-class SitemapImageLoader
+final class SitemapImageLoader
 {
     /**
      * Dieselbe Obergrenze wie {@see CmsImageCollector}, damit ein Eintrag nicht mehr Bilder nennt als der Graph.

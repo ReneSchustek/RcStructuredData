@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * Der Namensraum für `<image:image>` im Wurzelelement der Sitemap. Der Kern sieht dafür ein Ereignis vor.
  */
-class SitemapImageNamespaceSubscriber implements EventSubscriberInterface
+final class SitemapImageNamespaceSubscriber implements EventSubscriberInterface
 {
     public const NAMESPACE = 'http://www.google.com/schemas/sitemap-image/1.1';
 

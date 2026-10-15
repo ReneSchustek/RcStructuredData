@@ -15,7 +15,7 @@ class DiagnoseCommandTest extends TestCase
 {
     public function testReportsCategoryNotFound(): void
     {
-        $tester = $this->tester(DiagnoseResult::categoryNotFound());
+        $tester = $this->tester(DiagnoseResult::notFound());
 
         $exitCode = $tester->execute(['category' => 'Unbekannt']);
 

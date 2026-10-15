@@ -7,9 +7,10 @@ namespace Ruhrcoder\RcStructuredData\Schema\Diagnostics;
 /**
  * Prüft einen fertigen JSON-LD-Graphen gegen die von Google geforderten/empfohlenen Felder.
  *
- * Kennt je Schema-Typ, den das Plugin erzeugt, die Pflicht- und Empfehlungs-Felder und meldet
- * pro Knoten die Lücken. Reine Analyse ohne Ausgabe (SoC) — die Formatierung (Debug-Kommentar,
- * Konsole) übernehmen die Aufrufer über describe().
+ * Kennt die Pflicht- und Empfehlungsfelder der Typen, für die Google Anforderungen veröffentlicht (Seiten, Organisation,
+ * Video, FAQ, Blogbeitrag, Brotkrumen, Listen, Geschäft) und meldet je Knoten die Lücken. Typen ohne solche Anforderungen
+ * (WebSite, Person, DefinedTermSet, DigitalDocument) prüft er nicht; für sie heißt „keine Lücke“ nur „nicht geprüft“.
+ * Reine Analyse ohne Ausgabe (SoC) — die Formatierung (Debug-Kommentar, Konsole) übernehmen die Aufrufer über describe().
  */
 final class CompletenessChecker
 {
@@ -36,6 +37,22 @@ final class CompletenessChecker
         'WebPage' => [
             'required' => ['name', 'url'],
             'recommended' => ['description'],
+        ],
+        'BlogPosting' => [
+            'required' => [],
+            'recommended' => ['headline', 'image', 'datePublished', 'dateModified', 'author'],
+        ],
+        'BreadcrumbList' => [
+            'required' => ['itemListElement'],
+            'recommended' => [],
+        ],
+        'ItemList' => [
+            'required' => ['itemListElement'],
+            'recommended' => [],
+        ],
+        'HomeAndConstructionBusiness' => [
+            'required' => ['name', 'address'],
+            'recommended' => ['url', 'telephone', 'openingHoursSpecification', 'geo', 'image'],
         ],
     ];
 

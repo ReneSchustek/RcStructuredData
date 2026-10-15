@@ -6,6 +6,7 @@ namespace Ruhrcoder\RcStructuredData\Schema\Diagnostics;
 
 use Ruhrcoder\RcStructuredData\Block\Documents\DocumentsSlotHydrator;
 use Ruhrcoder\RcStructuredData\Schema\GraphBuilder;
+use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContextFactory;
 use RuntimeException;
 use Shopware\Core\Content\Category\CategoryCollection;
@@ -63,29 +64,16 @@ final class SchemaDiagnoser implements CategoryDiagnoser
 
         $category = $this->findCategory($identifier, $salesChannelContext);
         if ($category === null) {
-            return DiagnoseResult::categoryNotFound();
+            return DiagnoseResult::notFound();
         }
 
         $cmsPage = $this->loadCmsPage($category, $salesChannelContext);
         $this->documentsSlotHydrator->hydrate($cmsPage, $salesChannelContext->getContext());
-        $schemaContext = $this->schemaContextFactory->fromCategory($category, $cmsPage, $salesChannelContext);
-        if ($schemaContext === null) {
-            return DiagnoseResult::analysed(
-                (string) $category->getTranslation('name'),
-                null,
-                [],
-                $this->pageWarningChecker->check(null, $cmsPage),
-            );
-        }
 
-        $graph = $this->graphBuilder->build($schemaContext);
-        $findings = $graph !== null ? $this->completenessChecker->check($graph) : [];
-
-        return DiagnoseResult::analysed(
+        return $this->analyse(
             (string) $category->getTranslation('name'),
-            $graph,
-            $findings,
-            $this->pageWarningChecker->check($graph, $cmsPage),
+            $this->schemaContextFactory->fromCategory($category, $cmsPage, $salesChannelContext),
+            $cmsPage,
         );
     }
 
@@ -95,19 +83,31 @@ final class SchemaDiagnoser implements CategoryDiagnoser
 
         $landingPage = $this->findLandingPage($landingPageId, $salesChannelContext);
         if ($landingPage === null) {
-            return DiagnoseResult::categoryNotFound();
+            return DiagnoseResult::notFound();
         }
 
         $this->documentsSlotHydrator->hydrate($landingPage->getCmsPage(), $salesChannelContext->getContext());
-        $schemaContext = $this->schemaContextFactory->fromLandingPageEntity($landingPage, $salesChannelContext);
-        $graph = $this->graphBuilder->build($schemaContext);
-        $findings = $graph !== null ? $this->completenessChecker->check($graph) : [];
+
+        return $this->analyse(
+            (string) $landingPage->getTranslation('name'),
+            $this->schemaContextFactory->fromLandingPageEntity($landingPage, $salesChannelContext),
+            $landingPage->getCmsPage(),
+        );
+    }
+
+    /**
+     * Graph, Lücken und Seitenwarnungen einer gefundenen Seite. Ohne Kontext oder ohne Knoten gibt es keinen Graphen;
+     * die Warnungen zur Seite selbst gelten trotzdem.
+     */
+    private function analyse(string $name, ?SchemaContext $schemaContext, ?CmsPageEntity $cmsPage): DiagnoseResult
+    {
+        $graph = $schemaContext !== null ? $this->graphBuilder->build($schemaContext) : null;
 
         return DiagnoseResult::analysed(
-            (string) $landingPage->getTranslation('name'),
+            $name,
             $graph,
-            $findings,
-            $this->pageWarningChecker->check($graph, $landingPage->getCmsPage()),
+            $graph !== null ? $this->completenessChecker->check($graph) : [],
+            $this->pageWarningChecker->check($graph, $cmsPage),
         );
     }
 

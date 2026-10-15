@@ -60,11 +60,32 @@ class CompletenessCheckerTest extends TestCase
         static::assertSame(['name'], $findings[0]['missingRequired']);
     }
 
-    public function testUnknownTypesAreIgnored(): void
+    public function testTypesWithoutGoogleRequirementsAreIgnored(): void
     {
-        $document = ['@graph' => [['@type' => 'BreadcrumbList', '@id' => 'bc']]];
+        $document = ['@graph' => [['@type' => 'WebSite', '@id' => 'web'], ['@type' => 'Person', '@id' => 'person']]];
 
         static::assertSame([], (new CompletenessChecker())->check($document));
+    }
+
+    /**
+     * Was: Brotkrumen ohne Einträge, ein Blogbeitrag nur mit Überschrift, ein Geschäft ohne Adresse.
+     * Warum: Für diese Typen veröffentlicht Google Anforderungen; die Diagnose darf sie nicht als vollständig melden.
+     * Erwartet: je Knoten die fehlenden Pflicht- und Empfehlungsfelder.
+     */
+    public function testBreadcrumbsBlogPostsAndBusinessesAreChecked(): void
+    {
+        $document = ['@graph' => [
+            ['@type' => 'BreadcrumbList', '@id' => 'bc'],
+            ['@type' => 'BlogPosting', '@id' => 'post', 'headline' => 'Geländer planen'],
+            ['@type' => 'HomeAndConstructionBusiness', '@id' => 'shop', 'name' => 'Muster', 'url' => 'https://shop.example/'],
+        ]];
+
+        $findings = (new CompletenessChecker())->check($document);
+
+        static::assertSame(['itemListElement'], $findings[0]['missingRequired']);
+        static::assertSame([], $findings[1]['missingRequired']);
+        static::assertSame(['image', 'datePublished', 'dateModified', 'author'], $findings[1]['missingRecommended']);
+        static::assertSame(['address'], $findings[2]['missingRequired']);
     }
 
     public function testDescribeProducesReadableLines(): void

@@ -284,8 +284,6 @@ final class CustomFieldsInstaller
 
         $idByName = [];
         foreach ($this->customFieldRepository->search($criteria, $context)->getEntities() as $entity) {
-            // Die Sammlung führt laut Typangabe nur Felder, und deren Name ist ein Text —
-            // beide Prüfungen können nicht fehlschlagen.
             $idByName[$entity->getName()] = $entity->getId();
         }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ruhrcoder\RcStructuredData\Subscriber;
 
-use DateTimeInterface;
+use Ruhrcoder\RcStructuredData\Blog\BlogArticleResolver;
 use Ruhrcoder\RcStructuredData\Schema\GraphBuilder;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContextFactory;
 use Ruhrcoder\RcStructuredData\Schema\SchemaGraphStruct;
@@ -19,8 +19,8 @@ use Werkl\OpenBlogware\Page\Blog\BlogPageLoadedEvent;
  * Hängt den BlogPosting-@graph an WerklOpenBlogware-Blog-Detailseiten.
  *
  * Wird nur registriert, wenn WerklOpenBlogware installiert ist (bedingtes blog.xml-Load in
- * Plugin::build()). Die Werkl-spezifische Feldauflösung ist hier gekapselt; Kontext-Aufbau und
- * Graph-Bau sind delegiert (Subscriber = reine Verdrahtung, keine Schema-Logik).
+ * Plugin::build()). Die Felder des Beitrags liest der BlogArticleResolver, Kontext und Graph bauen
+ * Fabrik und GraphBuilder; der Subscriber verbindet nur.
  */
 final class BlogSchemaSubscriber implements EventSubscriberInterface
 {
@@ -28,6 +28,7 @@ final class BlogSchemaSubscriber implements EventSubscriberInterface
         private readonly SchemaContextFactory $contextFactory,
         private readonly GraphBuilder $graphBuilder,
         private readonly SalesChannelCmsPageLoaderInterface $cmsPageLoader,
+        private readonly BlogArticleResolver $articleResolver,
     ) {
     }
 
@@ -43,7 +44,7 @@ final class BlogSchemaSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $name = $this->firstNonEmpty($entry->getTitle(), $entry->getMetaTitle());
+        $name = $this->articleResolver->headline($entry);
         if ($name === '') {
             return;
         }
@@ -51,10 +52,10 @@ final class BlogSchemaSubscriber implements EventSubscriberInterface
         $context = $this->contextFactory->forBlog(
             $entry->getId(),
             $name,
-            $this->firstNonEmpty($entry->getTeaser(), $entry->getMetaDescription()),
+            $this->articleResolver->summary($entry),
             $event->getSalesChannelContext()->getLanguageInfo()->localeCode,
             $event->getSalesChannelContext(),
-            $this->resolveArticle($entry),
+            $this->articleResolver->article($entry),
             $this->loadArticleCmsPage($event),
         );
 
@@ -83,67 +84,5 @@ final class BlogSchemaSubscriber implements EventSubscriberInterface
             ->first();
 
         return $cmsPage instanceof CmsPageEntity ? $cmsPage : null;
-    }
-
-    /**
-     * @return array{datePublished: string, dateModified: string, author: string, image: string, articleBody: string}
-     */
-    private function resolveArticle(BlogEntryEntity $entry): array
-    {
-        return [
-            'datePublished' => $entry->getPublishedAt()->format(DateTimeInterface::ATOM),
-            'dateModified' => $this->resolveDateModified($entry),
-            'author' => $this->resolveAuthor($entry),
-            'image' => $entry->getMedia()?->getUrl() ?? '',
-            'articleBody' => $this->toPlainText($entry->getContent()),
-        ];
-    }
-
-    /**
-     * Ein nie bearbeiteter Beitrag hat kein Änderungsdatum. Dann gilt das Datum der
-     * Veröffentlichung — nicht das heutige, wie es entsteht, wenn man `null` durch eine
-     * Datumsformatierung schickt. Genau dieser Fehler steckt im Block von WerklOpenBlogware.
-     */
-    private function resolveDateModified(BlogEntryEntity $entry): string
-    {
-        return ($entry->getUpdatedAt() ?? $entry->getPublishedAt())->format(DateTimeInterface::ATOM);
-    }
-
-    private function resolveAuthor(BlogEntryEntity $entry): string
-    {
-        $author = $entry->getBlogAuthor();
-        if ($author === null) {
-            return '';
-        }
-
-        $displayName = $author->getDisplayName();
-        if (\is_string($displayName) && trim($displayName) !== '') {
-            return trim($displayName);
-        }
-
-        return trim($author->getFullName());
-    }
-
-    private function firstNonEmpty(?string ...$values): string
-    {
-        foreach ($values as $value) {
-            if (\is_string($value) && trim($value) !== '') {
-                return trim($value);
-            }
-        }
-
-        return '';
-    }
-
-    private function toPlainText(?string $value): string
-    {
-        if (!\is_string($value) || $value === '') {
-            return '';
-        }
-
-        $stripped = strip_tags($value);
-        $collapsed = preg_replace('/\s+/u', ' ', $stripped) ?? $stripped;
-
-        return trim($collapsed);
     }
 }
