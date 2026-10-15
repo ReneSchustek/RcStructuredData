@@ -217,6 +217,7 @@
             <argument type="service"
                       id="Ruhrcoder\RcProductFeedShippingExtension\Service\ShippingCostCalculatorService"
                       on-invalid="null"/>
+            <argument type="service" id="logger"/>
         </service>
 
         <service id="Ruhrcoder\RcStructuredData\Schema\Product\ShippingDetailsProvider">

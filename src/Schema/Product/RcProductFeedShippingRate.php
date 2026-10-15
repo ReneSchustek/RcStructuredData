@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ruhrcoder\RcStructuredData\Schema\Product;
 
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Ruhrcoder\RcProductFeedShippingExtension\Service\ShippingCostCalculatorService;
 use Throwable;
 
@@ -25,6 +27,7 @@ final class RcProductFeedShippingRate implements PrecalculatedShippingRate
 {
     public function __construct(
         private readonly ?ShippingCostCalculatorService $calculator = null,
+        private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
@@ -36,9 +39,17 @@ final class RcProductFeedShippingRate implements PrecalculatedShippingRate
 
         try {
             $result = $this->calculator->lookupCached($productId, $countryIso, $salesChannelId);
-        } catch (Throwable) {
-            // Fail-Soft: Die strukturierten Daten sind ein Zusatz. Ein Fehler im anderen Plugin
-            // darf die Produktseite nicht mit einem 500 abreißen — dann fehlt eben der Preis.
+        } catch (Throwable $e) {
+            // Die strukturierten Daten sind ein Zusatz: Ein Fehler im Versand-Plugin darf die Produktseite nicht mit einem
+            // 500 abreißen, dann fehlt der Versandpreis. Protokolliert, damit ein dauerhafter Ausfall auffällt.
+            $this->logger->warning('Versandpreis für die strukturierten Daten nicht lesbar', [
+                'productId' => $productId,
+                'countryIso' => $countryIso,
+                'salesChannelId' => $salesChannelId,
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
+            ]);
+
             return null;
         }
 

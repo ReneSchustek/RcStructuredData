@@ -109,7 +109,8 @@ final class YoutubeApiMetadataEnricher implements VideoMetadataEnricher
             'max_duration' => self::TIMEOUT_SECONDS,
         ]);
 
-        // Nicht-200 (z. B. 403 Quota) wirft — der Aufrufer cacht dann nicht und fällt still zurück.
+        // Ein anderer Status als 200 (etwa 403 bei erschöpftem Kontingent) wirft; fetchWithTtl() speichert den
+        // Fehlschlag dann eine Stunde negativ und protokolliert ihn.
         $status = $response->getStatusCode();
         if ($status !== 200) {
             throw new RuntimeException('YouTube-API-Status ' . $status);

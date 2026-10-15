@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ruhrcoder\RcStructuredData\Tests\Unit\Schema\Product;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Ruhrcoder\RcProductFeedShippingExtension\Service\ShippingCostCalculatorService;
 use Ruhrcoder\RcProductFeedShippingExtension\Struct\ShippingCalculationResult;
 use Ruhrcoder\RcStructuredData\Schema\Product\RcProductFeedShippingRate;
@@ -71,6 +72,7 @@ final class RcProductFeedShippingRateTest extends TestCase
      * Was: Der fremde Dienst wirft.
      * Warum: Die strukturierten Daten sind ein Zusatz. Ein Fehler im anderen Plugin darf die
      *        Produktseite nicht mit einem 500 abreißen.
+     * Erwartet: kein Preis, eine Warnung im Protokoll.
      */
     public function testAFailingLookupDoesNotBreakThePage(): void
     {
@@ -81,7 +83,14 @@ final class RcProductFeedShippingRateTest extends TestCase
             }
         };
 
-        self::assertNull((new RcProductFeedShippingRate($calculator))->rateFor('produkt-1', 'DE', 'kanal-1'));
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects(self::once())->method('warning')->with(
+            self::anything(),
+            self::callback(static fn (array $context): bool => $context['productId'] === 'produkt-1' && $context['exception'] === RuntimeException::class),
+        );
+
+        // Kein Serverfehler, aber protokolliert, damit ein dauerhafter Ausfall auffällt.
+        self::assertNull((new RcProductFeedShippingRate($calculator, $logger))->rateFor('produkt-1', 'DE', 'kanal-1'));
     }
 
     private function calculator(?ShippingCalculationResult $result): ShippingCostCalculatorService

@@ -54,18 +54,28 @@ ohnehin pflegen.
 
 ## Was macht das Plugin konkret?
 
-Auf jeder Kategorie- und Landingpage erzeugt das Plugin **einen einzigen, zusammenhängenden
-Datenblock** (`@graph`) mit folgenden Bausteinen – je nachdem, was auf der Seite vorhanden ist:
+Auf Startseite, Kategorie- und Landingpages sowie auf Blogbeiträgen erzeugt das Plugin **einen einzigen,
+zusammenhängenden Datenblock** (`@graph`) mit folgenden Bausteinen, je nachdem, was auf der Seite vorhanden ist:
 
 | Baustein | Bedeutung in einfachen Worten |
 |----------|-------------------------------|
-| **CollectionPage** | „Das ist eine Kategorie-/Übersichtsseite" (bewusst kein Produkt-Etikett). |
-| **WebPage** | „Das ist eine Landingpage/Inhaltsseite." |
+| **CollectionPage** | „Das ist eine Kategorie- oder Übersichtsseite", mit allen sichtbaren Bildern der Seite. |
+| **WebPage** | „Das ist eine Inhaltsseite" (Startseite, Landingpage ohne Liste), ebenfalls mit ihren Bildern. |
+| **ItemList** | Die Produkte, Beiträge oder Unterkategorien, die eine Seite auflistet. |
 | **BreadcrumbList** | Der Navigationspfad der Seite, automatisch aus der Shop-Navigation. |
-| **Organization** | Ihre Firmenangaben (Name, Logo, Social-Media-Profile). |
+| **Organization** | Ihre Firmenangaben (Name, Logo, Social-Media-Profile, Kontaktpunkt). |
+| **LocalBusiness** | Ihr Geschäft vor Ort: Anschrift, Telefon, Preisspanne, Bild, Lage und Öffnungszeiten. |
 | **WebSite** | Angaben zur Website inkl. optionalem Suchfeld für Google. |
 | **FAQPage** | Frage-Antwort-Listen aus dem FAQ-Block (siehe unten). |
 | **VideoObject** | Videoangaben aus einem YouTube-Video-Block der Seite. |
+| **DefinedTermSet** | Begriffserklärungen aus dem Baustein „Begriffe". |
+| **DigitalDocument** | Nachweise und Dokumente aus dem Baustein „Dokumente" (z. B. Prüfzeugnisse). |
+| **Person** | Mitarbeiter aus den Team-Bausteinen, nur mit Name und Funktion. |
+| **BlogPosting** | Blogbeiträge mit Titel, Autor, Datum und Bild. |
+
+Auf Produktseiten ergänzt das Plugin die Versanddetails (Versandkosten aus dem Versand-Plugin, sofern installiert).
+Die Sitemap des Shops nennt zu jeder Seite ihre Bilder (`<image:image>`): bei Produkten die Galerie, bei Kategorien,
+Landingpages und der Startseite die sichtbaren Bilder der Erlebniswelt.
 
 Alle Bausteine sind sauber miteinander verknüpft, und die von Shopware selbst erzeugten,
 getrennten Schema-Angaben werden auf diesen Seiten **ersetzt** (kein doppeltes Schema).
@@ -128,6 +138,13 @@ Angaben zu Ihrem Unternehmen. Werden von Google für die Firmendarstellung genut
 - **Such-URL-Vorlage** – optional. Ermöglicht Google, ein Suchfeld für Ihren Shop anzuzeigen.
   Die Adresse muss den Platzhalter `{search_term_string}` enthalten, z. B.
   `https://ihr-shop.de/search?search={search_term_string}`.
+
+### Geschäft vor Ort (LocalBusiness)
+
+Für Kunden, die vorbeikommen oder anrufen: Straße, Postleitzahl, Ort, Land, Telefon, Preisspanne (z. B. `€€`), ein
+Bild des Geschäfts, Breiten- und Längengrad sowie die Öffnungszeiten (eine Zeile je Zeitraum, z. B.
+`Mo-Th 08:00-17:00`, Tage englisch abgekürzt). Felder, die leer bleiben, fehlen im Datenblock; ohne Straße und Ort
+entsteht kein LocalBusiness, und die Lage erscheint nur mit Breiten- und Längengrad zusammen.
 
 ### 3. YouTube-Data-API (optional)
 

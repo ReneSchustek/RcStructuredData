@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.24.1] - 2026-10-15: Versandpreis-Ausfall sichtbar, README vollständig
+
+> **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`.
+
+### Behoben
+
+- Fällt der Versandpreis aus dem Versand-Plugin aus, steht das jetzt als Warnung im Protokoll (mit Produkt, Land und
+  Verkaufskanal). Die Produktseite läuft wie bisher ohne Versandpreis weiter.
+
+### Dokumentation
+
+- README nennt alle Bausteine (Startseite, ItemList, LocalBusiness, Begriffe, Dokumente, Mitarbeiter, Blogbeiträge,
+  Versanddetails) und die Bilder in der Sitemap; neuer Abschnitt zur Einrichtung von LocalBusiness.
+
 ## [2.24.0] - 2026-10-14: Bilder in der Sitemap
 
 > **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`, danach `sitemap:generate`.
