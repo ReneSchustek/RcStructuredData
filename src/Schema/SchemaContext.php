@@ -25,7 +25,7 @@ final class SchemaContext
      * @param self::TYPE_* $pageType
      * @param list<array{name: string, value: string}> $additionalProperties
      * @param array{name: string, description: string, uploadDate: string, duration: string} $videoFallback
-     * @param array{datePublished?: string, author?: string, image?: string, articleBody?: string} $article
+     * @param array{datePublished?: string, dateModified?: string, author?: string, image?: string, articleBody?: string} $article
      */
     public function __construct(
         private readonly string $pageType,
@@ -135,7 +135,7 @@ final class SchemaContext
     /**
      * Artikel-Metadaten für den BlogPosting-Knoten (nur bei TYPE_BLOG befüllt).
      *
-     * @return array{datePublished?: string, author?: string, image?: string, articleBody?: string}
+     * @return array{datePublished?: string, dateModified?: string, author?: string, image?: string, articleBody?: string}
      */
     public function getArticle(): array
     {

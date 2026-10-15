@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.24.2] - 2026-10-15: Tests für alle Klassen, Abdeckung 95,96 %
+
+> **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`.
+
+### Behoben
+
+- Fehlt der Plugin-Klasse beim Installieren der Container, meldet sie das jetzt mit ihrer eigenen Fehlermeldung statt mit
+  einem PHP-Fehler über eine nicht belegte Eigenschaft.
+
+### Tests
+
+- Neue Tests für Sitemap-Bilder, Seiten- und Blog-Subscriber, Diagnose samt Schnittstelle, die Bausteine „Begriffe“ und
+  „Dokumente“, die Zusatzfelder, den Lebenszyklus des Plugins und die Bildersuche in Erlebniswelten. Abdeckung gemessen:
+  1.617 von 1.685 Zeilen (95,96 %).
+
 ## [2.24.1] - 2026-10-15: Versandpreis-Ausfall sichtbar, README vollständig
 
 > **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`.

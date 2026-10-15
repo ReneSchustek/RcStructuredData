@@ -84,7 +84,9 @@ final class RcStructuredData extends Plugin
     // Während install()/activate() sind plugin-eigene Services noch nicht im DI-Container.
     private function getCustomFieldsInstaller(): CustomFieldsInstaller
     {
-        $container = $this->container;
+        // `?? null`, weil die Eigenschaft vor setContainer() gar nicht belegt ist; ein direkter Zugriff bräche mit einem
+        // Fehler ab, bevor die Prüfung greift.
+        $container = $this->container ?? null;
         if ($container === null) {
             throw new RuntimeException('Plugin container is not available.');
         }

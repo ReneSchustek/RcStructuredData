@@ -125,7 +125,7 @@ final class SchemaContextFactory
      * Die CmsPage wird durchgereicht, damit block-basierte Provider (FAQPage aus rc-faq, VideoObject)
      * auch auf Blog-Detailseiten greifen; ohne passende Blöcke entsteht kein zusätzlicher Knoten.
      *
-     * @param array{datePublished?: string, author?: string, image?: string, articleBody?: string} $article
+     * @param array{datePublished?: string, dateModified?: string, author?: string, image?: string, articleBody?: string} $article
      */
     public function forBlog(
         string $articleId,
