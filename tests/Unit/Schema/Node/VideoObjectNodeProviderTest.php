@@ -85,7 +85,7 @@ class VideoObjectNodeProviderTest extends TestCase
     }
 
     /**
-     * **Der Kern der Auszeichnung.** Google wertet ein VideoObject ohne `uploadDate` als kritischen
+     * Google wertet ein VideoObject ohne `uploadDate` als kritischen
      * Fehler — das Video erscheint dann nicht in der Suche. Ein fehlendes VideoObject ist
      * dagegen neutral.
      */

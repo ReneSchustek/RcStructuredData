@@ -8,7 +8,7 @@ const { Application } = Shopware;
  * Begriffssatz — eine sichtbare Liste von Fachbegriffen, aus der zugleich das `DefinedTermSet`
  * entsteht.
  *
- * **Warum es dieses Element gibt:** Steht ein Begriffssatz nur als handgeschriebenes JSON-LD da,
+ * Steht ein Begriffssatz nur als handgeschriebenes JSON-LD da,
  * liegt die Auszeichnung neben der Seite statt in ihr und ist beim ersten Umbau der Seite still
  * veraltet. Hier stammt beides aus derselben Pflege.
  */

@@ -63,12 +63,12 @@ final class FaqCmsBlockExtractor implements CmsBlockSchemaExtractor
      * Backoffice und wird in der Storefront mit `|raw` ausgegeben, damit Absätze und Listen
      * erhalten bleiben.
      *
-     * **Deshalb muss sie durch den Sanitizer.** Ohne ihn wird aus einem Redakteursrecht ein
+     * Deshalb muss sie durch den Sanitizer. Ohne ihn wird aus einem Redakteursrecht ein
      * Vollzugriff: Wer `cms:update` hat, könnte Javascript einschleusen, das in der Sitzung
      * jedes Besuchers läuft — auch in der eines Administrators, der die Seite ansieht. Der
      * Sanitizer ersetzt hier das Escaping, er ergänzt es nicht.
      *
-     * Die Frage geht bewusst **nicht** diesen Weg: Sie wird escaped ausgegeben und ist damit
+     * Die Frage geht bewusst nicht diesen Weg: Sie wird escaped ausgegeben und ist damit
      * ungefährlich. Durch den Sanitizer geschickt, stünden erlaubte Auszeichnungen hinterher
      * als sichtbarer Text auf der Seite.
      */

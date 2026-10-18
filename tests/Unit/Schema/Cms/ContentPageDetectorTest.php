@@ -91,7 +91,7 @@ class ContentPageDetectorTest extends TestCase
     }
 
     /**
-     * Was: Ohne Erlebniswelt bleibt es beim bisherigen Verhalten.
+     * Was: Ohne Erlebniswelt ist die Seite keine Inhaltsseite.
      * Warum: Wo nichts zu unterscheiden ist, wäre eine Vermutung schlechter als der Bestand.
      */
     public function testWithoutACmsPageNothingChanges(): void

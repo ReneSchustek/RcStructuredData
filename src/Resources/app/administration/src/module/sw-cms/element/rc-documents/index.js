@@ -8,7 +8,7 @@ const { Application } = Shopware;
  * Nachweise — eine sichtbare Liste von Dateien (Prüfzeugnisse, Bescheide), aus der zugleich je ein
  * `DigitalDocument` entsteht.
  *
- * **Warum es dieses Element gibt:** Steht ein Prüfzeugnis nur als Verweis in einem freien
+ * Steht ein Prüfzeugnis nur als Verweis in einem freien
  * Textblock, bleibt für den Nachweis allein handgeschriebenes JSON-LD. Was ein Verweis *ist*,
  * sagt ein Verweis nicht — hier wird es gepflegt.
  */

@@ -14,11 +14,11 @@ use Ruhrcoder\RcStructuredData\Schema\SchemaNodeProvider;
 /**
  * Erzeugt aus den rc-documents-Slots der Seite je Nachweis einen `DigitalDocument`-Knoten.
  *
- * **Gelesen wird der aufgelöste Slot, nicht die Konfiguration.** Die Adresse der Datei steht erst
+ * Gelesen wird der aufgelöste Slot, nicht die Konfiguration. Die Adresse der Datei steht erst
  * fest, wenn der `DocumentsResolver` das Medium geladen hat; ein Eintrag, dessen Datei fehlt, ist
  * dort schon herausgefallen. Der Graph zeichnet damit genau aus, was die Seite verlinkt.
  *
- * **Kein `publisher`.** Ein Prüfzeugnis stellt die Prüfstelle aus, nicht der Shop. Den Shop als
+ * Kein `publisher`. Ein Prüfzeugnis stellt die Prüfstelle aus, nicht der Shop. Den Shop als
  * Herausgeber einzutragen, wäre die eine Angabe, die an diesem Knoten sicher falsch ist.
  */
 final class DigitalDocumentNodeProvider implements SchemaNodeProvider

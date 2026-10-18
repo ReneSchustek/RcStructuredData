@@ -21,9 +21,9 @@ use Shopware\Core\System\DeliveryTime\DeliveryTimeEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 /**
- * Die drei Felder, die Google in `offers.shippingDetails` vermisst hat.
+ * Die drei Felder, die Google in `offers.shippingDetails` vermisst.
  *
- * **Die fachliche Trennung, um die es geht:** `handlingTime` ist die Zeit im Haus (steht am
+ * `handlingTime` ist die Zeit im Haus (steht am
  * Produkt), `transitTime` die Zeit auf der Straße (steht an der Versandart). Beide aus derselben
  * Quelle zu nehmen wäre für den Kunden eine doppelt gezählte Woche — deshalb hat jeder der beiden
  * Werte hier seinen eigenen Test.
@@ -43,7 +43,7 @@ final class ShippingDetailsProviderTest extends TestCase
 
     /**
      * Was: Bearbeitungszeit vom Produkt, Laufzeit von der Versandart.
-     * Warum: Der Befund. Shopware gibt nur die Bearbeitungszeit aus; ohne `transitTime` meldet
+     * Warum: Shopware gibt nur die Bearbeitungszeit aus; ohne `transitTime` meldet
      *        Google ein fehlendes Pflichtfeld.
      */
     public function testItSeparatesHandlingTimeFromTransitTime(): void
@@ -62,9 +62,8 @@ final class ShippingDetailsProviderTest extends TestCase
 
     /**
      * Was: Ein Produkt ohne Lieferzeit.
-     * Warum: **Der Fall der sechs Stichproben vom 2026-08-24**, bei denen Shopware
-     *        `shippingDetails` deshalb ganz wegließ. Die Laufzeit und die Länder stehen trotzdem
-     *        zur Verfügung — die Angabe wird also nicht mehr leer.
+     * Warum: Ohne Lieferzeit am Produkt lässt Shopware `shippingDetails` ganz weg. Die Laufzeit
+     *        und die Länder stehen trotzdem zur Verfügung, die Angabe bleibt also nicht leer.
      */
     public function testAProductWithoutADeliveryTimeStillGetsTransitTime(): void
     {
@@ -90,7 +89,7 @@ final class ShippingDetailsProviderTest extends TestCase
 
     /**
      * Was: Ohne den Warenstrom.
-     * Warum: Akzeptanzkriterium 4 des Briefs — das Plugin läuft unverändert weiter, nur ohne
+     * Warum: Das Plugin läuft ohne den Warenstrom unverändert weiter, nur ohne
      *        Preis. Ein `shippingRate` von 0,00 € wäre eine Zusage, die der Shop nicht hält.
      */
     public function testWithoutAPrecalculatedRateTheFieldStaysAway(): void

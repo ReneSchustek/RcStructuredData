@@ -7,11 +7,11 @@ namespace Ruhrcoder\RcStructuredData\Schema\Product;
 /**
  * Woher der Versandpreis für `offers.shippingDetails.shippingRate` kommt.
  *
- * **Warum eine eigene Schnittstelle und nicht der Dienst des anderen Plugins:** Die Zahl liegt
- * in `RcProductFeedShippingExtension`, das sie für den Warenstrom ohnehin je Produkt und Land
- * vorberechnet. Dieses Plugin darf davon aber nicht abhängen — es muss ohne den Warenstrom
- * unverändert laufen. Die Schnittstelle trennt die Frage („was kostet der Versand für dieses
- * Produkt nach dort?") von der einen Antwort, die es heute darauf gibt.
+ * Die Zahl liegt in `RcProductFeedShippingExtension`, das sie für den Warenstrom ohnehin je Produkt
+ * und Land vorberechnet. Dieses Plugin darf davon aber nicht abhängen, es muss ohne den Warenstrom
+ * unverändert laufen; deshalb die eigene Schnittstelle statt des fremden Dienstes. Sie trennt die
+ * Frage („was kostet der Versand für dieses Produkt nach dort?") von der Antwort, die das andere
+ * Plugin darauf gibt.
  */
 interface PrecalculatedShippingRate
 {

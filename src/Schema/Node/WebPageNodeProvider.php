@@ -12,7 +12,7 @@ use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 /**
  * Landingpages, die Startseite, Blog-Detailseiten und Inhaltsseiten werden als WebPage abgebildet.
  *
- * **Inhaltsseiten sind Kategorien ohne Liste** — Impressum, AGB, Kontakt, Widerrufsrecht,
+ * Inhaltsseiten sind Kategorien ohne Liste — Impressum, AGB, Kontakt, Widerrufsrecht,
  * Datenschutzerklärung, Anfahrt, Versand und Zahlung. Sie tragen eine Erlebniswelt vom Typ `page`.
  * Als `CollectionPage` wären sie falsch ausgezeichnet: Der Typ sagt „Seite mit einer Liste von
  * Einträgen", und eine solche Liste gibt es dort nicht.

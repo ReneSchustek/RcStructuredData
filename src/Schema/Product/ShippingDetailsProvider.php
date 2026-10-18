@@ -20,7 +20,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  * `shippingDestination` und `transitTime`. Shopware selbst gibt nur die Bearbeitungszeit aus
  * (`handlingTime` aus der Lieferzeit des Produkts); alles andere kennt die Kernvorlage nicht.
  *
- * **Die Trennung, um die es fachlich geht:** `handlingTime` ist die Zeit im Haus, bis die Ware
+ * `handlingTime` ist die Zeit im Haus, bis die Ware
  * das Lager verlässt — sie steht am Produkt. `transitTime` ist die Zeit auf der Straße; sie
  * steht an der Versandart. Beide in dasselbe Feld zu schreiben, wäre für den Kunden eine
  * doppelt gezählte Woche.
@@ -156,10 +156,9 @@ class ShippingDetailsProvider
     /**
      * Die Laufzeit der Versandart — notfalls nachgeladen.
      *
-     * **Warum nachladen und nicht einfach am Kontext ablesen:** Shopware baut den Kontext mit den
-     * Verknüpfungen, die der Bestellvorgang braucht; die Lieferzeit der Versandart gehört nicht
-     * dazu. Am 2026-08-24 auf einer Kopie des Shops gemessen: `getDeliveryTime()` liefert `null`, obwohl an
-     * der Versandart eine Lieferzeit hängt. Ohne diesen Nachschlag bliebe `transitTime` genau das
+     * Am Kontext lässt sie sich nicht einfach ablesen: Shopware baut den Kontext mit den
+     * Verknüpfungen, die der Bestellvorgang braucht, und die Lieferzeit der Versandart gehört nicht
+     * dazu. `getDeliveryTime()` liefert dann `null`, obwohl an der Versandart eine Lieferzeit hängt. Ohne diesen Nachschlag bliebe `transitTime` genau das
      * Feld, das Google vermisst.
      */
     private function transitTime(SalesChannelContext $context): ?DeliveryTimeEntity

@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * — Datengrundlage für die sichtbare Diagnose-Karte in der Kategorie-Detailseite. Reine Delegation an
  * den Diagnoser (SoC).
  *
- * **Beide Routen verlangen ein Recht.** Der Bereich `api` erzwingt nur eine gültige Anmeldung; ohne
+ * Beide Routen verlangen ein Recht. Der Bereich `api` erzwingt nur eine gültige Anmeldung; ohne
  * `_acl` käme jeder Zugang an die Diagnose, auch eine Integration, die für einen einzigen eng
  * geschnittenen Zweck angelegt wurde. Verlangt wird das Leserecht auf die Entität, über die
  * Auskunft gegeben wird — kein eigenes Recht, solange ein Recht des Kerns die Frage beantwortet.

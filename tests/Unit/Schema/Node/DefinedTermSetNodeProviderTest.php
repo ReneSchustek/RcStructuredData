@@ -52,7 +52,7 @@ class DefinedTermSetNodeProviderTest extends TestCase
     }
 
     /**
-     * Zwei Begriffssätze werden bewusst **nicht** verschmolzen — anders als die FAQ. Jeder Satz
+     * Zwei Begriffssätze werden bewusst nicht verschmolzen — anders als die FAQ. Jeder Satz
      * trägt einen eigenen Namen, und der ist bei einem Begriffssatz die halbe Aussage.
      */
     public function testTwoSetsKeepTheirOwnNames(): void
@@ -115,7 +115,7 @@ class DefinedTermSetNodeProviderTest extends TestCase
     }
 
     /**
-     * Die Erklärung ist freiwillig: Alle sieben Sätze im Bestand tragen heute nur Namen.
+     * Die Erklärung ist freiwillig, denn viele Begriffssätze tragen nur Namen.
      */
     public function testDefinitionIsOptionalButUsedWhenPresent(): void
     {

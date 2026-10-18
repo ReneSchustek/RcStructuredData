@@ -115,7 +115,7 @@ class PageWarningCheckerTest extends TestCase
      * Was: Ein YouTube-Baustein, für den im Graphen kein Knoten steht.
      * Warum: Das Plugin lässt ein Video ohne
      *        Veröffentlichungsdatum aus — ohne diese Meldung wäre das ein stiller Verlust:
-     *        Niemand im Backoffice sähe, **welches** Video ein Datum braucht.
+     *        Niemand im Backoffice sähe, welches Video ein Datum braucht.
      */
     public function testReportsAVideoThatWasLeftOut(): void
     {
@@ -147,7 +147,7 @@ class PageWarningCheckerTest extends TestCase
     }
 
     /**
-     * Zwei ausgelassene Videos stehen in **einer** Meldung — eine je Video wäre im Backoffice
+     * Zwei ausgelassene Videos stehen in einer Meldung — eine je Video wäre im Backoffice
      * eine Wand aus Hinweisen.
      */
     public function testItNamesEveryLeftOutVideoInOneWarning(): void

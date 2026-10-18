@@ -18,7 +18,7 @@ require_once __DIR__ . '/ForeignPluginStubs.php';
 /**
  * Die Anbindung an den Warenstrom — und was passiert, wenn es ihn nicht gibt.
  *
- * **Warum die Fremdklassen hier nachgebildet werden:** `RcProductFeedShippingExtension` ist keine
+ * `RcProductFeedShippingExtension` ist keine
  * Abhängigkeit dieses Plugins und liegt beim Testlauf nicht im Ladepfad. Die Nachbildung trägt
  * genau die Berührungsfläche, die der Adapter benutzt — mehr würde eine Kopplung vortäuschen,
  * die es nicht gibt. Dieselben Symbole stehen als Stub für die statische Analyse bereit.
@@ -27,8 +27,7 @@ final class RcProductFeedShippingRateTest extends TestCase
 {
     /**
      * Was: Der Warenstrom ist nicht installiert.
-     * Warum: **Der wichtigste Fall.** Akzeptanzkriterium 4 des Briefs verlangt, dass dieses
-     *        Plugin ohne das andere unverändert läuft.
+     * Warum: Dieses Plugin muss ohne das andere unverändert laufen.
      */
     public function testWithoutTheFeedPluginThereIsNoRate(): void
     {
@@ -48,7 +47,7 @@ final class RcProductFeedShippingRateTest extends TestCase
 
     /**
      * Was: Der Warenstrom liefert einen Ersatzwert.
-     * Warum: **Ein Ersatzwert ist geraten.** Er stammt aus der Voreinstellung des Kanals, nicht
+     * Warum: Ein Ersatzwert ist geraten. Er stammt aus der Voreinstellung des Kanals, nicht
      *        aus der Berechnung für dieses Produkt. Als Angabe an Google wäre er eine Zusage über
      *        einen Preis, den der Shop so nicht ermittelt hat.
      */

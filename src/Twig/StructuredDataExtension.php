@@ -44,7 +44,7 @@ final class StructuredDataExtension extends AbstractExtension
     /**
      * Die Versanddetails eines Produkts für `offers.shippingDetails`.
      *
-     * **Warum in PHP und nicht in der Vorlage:** Die Länder des Verkaufskanals stehen nicht am
+     * Die Länder des Verkaufskanals stehen nicht am
      * Kontext, sondern in einer eigenen Zuordnung, und der vorberechnete Versandpreis liegt in
      * einem anderen Plugin. Beides in Twig zu holen hieße, in der Vorlage Datenbankabfragen zu
      * bauen — und der Preis wäre dort ohnehin nicht erreichbar (Shopware sperrt beim Rendern
@@ -68,8 +68,8 @@ final class StructuredDataExtension extends AbstractExtension
             return Feature::isActive(self::JSON_LD_FLAG);
         }
 
-        // Kein Flag mehr: Shopware hat die strukturierten Daten fest eingebaut (ab 6.8).
-        // Der Kern gibt sie dann immer aus.
+        // Ohne das Flag (Shopware 6.8) sind die strukturierten Daten fest eingebaut, und der Kern
+        // gibt sie immer aus.
         return true;
     }
 }

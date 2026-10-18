@@ -11,11 +11,10 @@ use Shopware\Core\Framework\Util\HtmlSanitizer;
 /**
  * Liest einen Begriffssatz aus einem rc-defined-terms-CMS-Slot.
  *
- * **Warum es diesen Baustein gibt.** Sieben Kategorieseiten tragen heute handgeschriebenes
- * JSON-LD mit einem `DefinedTermSet` — fachliches Wissen des Betriebs (Normen, Vorgaben,
- * Fachbegriffe), das sich aus keinem Produktdatensatz ableiten lässt. Fielen die Handblöcke
- * ersatzlos, ginge diese Auszeichnung verloren. Dieser Baustein holt sie ins Plugin, und zwar
- * nach derselben Regel wie alles andere hier: **Ausgezeichnet wird, was auf der Seite steht.**
+ * Ein `DefinedTermSet` trägt fachliches Wissen des Betriebs (Normen, Vorgaben, Fachbegriffe),
+ * das sich aus keinem Produktdatensatz ableiten lässt; ohne diesen Baustein bliebe es
+ * handgeschriebenem JSON-LD überlassen. Der Baustein holt es ins Plugin, und zwar nach derselben
+ * Regel wie alles andere hier: Ausgezeichnet wird, was auf der Seite steht.
  * Die Begriffe erscheinen sichtbar; das Schema ist ihr Abbild, nicht ihre Zweitfassung.
  *
  * Einzige Auswertungsstelle für rc-defined-terms: Sowohl der Storefront-Resolver (sichtbare
@@ -60,8 +59,8 @@ final class DefinedTermsCmsBlockExtractor implements CmsBlockSchemaExtractor
                 continue;
             }
 
-            // **Die Erklärung darf fehlen.** Alle sieben Sätze im Bestand tragen heute nur
-            // Namen; ein `DefinedTerm` ohne Erklärung ist gültig. Ein Begriff ohne *Namen*
+            // Die Erklärung darf fehlen: Viele Begriffssätze tragen nur Namen, und ein
+            // `DefinedTerm` ohne Erklärung ist gültig. Ein Begriff ohne *Namen*
             // dagegen ist nichts — der fällt oben weg.
             $terms[] = [
                 'term' => $term,
@@ -86,7 +85,7 @@ final class DefinedTermsCmsBlockExtractor implements CmsBlockSchemaExtractor
      * Die Erklärung kommt aus dem Textbearbeiter des Backoffice und wird in der Storefront mit
      * `|raw` ausgegeben, damit Absätze und Listen erhalten bleiben.
      *
-     * **Deshalb muss sie durch den Sanitizer** — dieselbe Begründung wie bei der FAQ-Antwort:
+     * Deshalb muss sie durch den Sanitizer — dieselbe Begründung wie bei der FAQ-Antwort:
      * Ohne ihn wird aus einem Redakteursrecht ein Vollzugriff. Der Begriff selbst geht bewusst
      * nicht diesen Weg; er wird escaped ausgegeben und stünde sonst mit sichtbaren Auszeichnungen
      * auf der Seite.

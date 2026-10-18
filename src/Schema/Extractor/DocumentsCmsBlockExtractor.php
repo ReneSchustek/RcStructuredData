@@ -15,7 +15,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * Liest die Einträge eines rc-documents-CMS-Slots: Nachweise wie Prüfzeugnisse, die als Datei in
  * der Medienverwaltung liegen.
  *
- * **Warum es diesen Baustein gibt.** Stehen ein bauaufsichtliches Prüfzeugnis und sein
+ * Stehen ein bauaufsichtliches Prüfzeugnis und sein
  * Verlängerungsbescheid als Verweise in einem freien Textblock, die Daten dazu in einer Tabelle
  * daneben, lässt sich daraus kein `DigitalDocument` ableiten, ohne Fließtext zu deuten. Was ein
  * Verweis *ist*, sagt ein Verweis nicht, und die Auszeichnung bliebe dem handgeschriebenen JSON-LD
@@ -58,7 +58,7 @@ final class DocumentsCmsBlockExtractor implements CmsBlockSchemaExtractor
                 continue;
             }
 
-            // **Name und Datei sind Pflicht.** Ein Nachweis ohne Namen ist ein nackter Verweis,
+            // Name und Datei sind Pflicht. Ein Nachweis ohne Namen ist ein nackter Verweis,
             // einer ohne Datei ein Versprechen ohne Beleg — beides fällt weg.
             $name = $this->cleanText($rawDocument['name'] ?? null);
             // Kleinschreibung vor der Prüfung: `Uuid::isValid()` lehnt Großbuchstaben ab.
@@ -95,7 +95,7 @@ final class DocumentsCmsBlockExtractor implements CmsBlockSchemaExtractor
     /**
      * Liefert den Tag als `JJJJ-MM-TT` oder leer.
      *
-     * **Warum ein Zeitpunkt umgerechnet wird, statt ihn abzuschneiden:** Ein Datumsfeld im
+     * Der Zeitpunkt wird umgerechnet statt abgeschnitten, denn ein Datumsfeld im
      * Backoffice kann „4. Juli, 0 Uhr" als `2026-07-03T22:00:00.000Z` speichern. Die ersten zehn
      * Zeichen wären dann der 3. Juli — ein Prüfzeugnis, das einen Tag früher abläuft, als darauf
      * steht. In der Zone der Redaktion gelesen, ist es wieder der 4.

@@ -17,7 +17,7 @@ use Throwable;
  * nullable Typ-Hint verlangt bei null keinen Autoload — die fremde Klasse wird dann nie
  * geladen. Dasselbe Muster wie beim A/B-Schalter in RcCheckoutEnhancer.
  *
- * **Ausdrücklich nur der Zwischenspeicher.** `lookupCached()` schlägt nach, rechnet aber
+ * Ausdrücklich nur der Zwischenspeicher. `lookupCached()` schlägt nach, rechnet aber
  * nicht: Die Berechnung braucht die Warenkorb-Regelauswertung und läuft während des Renderns
  * einer Vorlage grundsätzlich in eine Ausnahme (Shopware sperrt dort `RuleEntity::payload`).
  * Wer hier rechnen wollte, bekäme auf jeder Produktseite eine Ausnahme und im besten Fall

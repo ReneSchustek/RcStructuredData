@@ -2,17 +2,17 @@
 
 {# Ergänzt `offers.shippingDetails` um die drei Felder, die Google vermisst.
 
-   **Warum nur der Skript-Block überschrieben wird:** Die Kernvorlage baut ihre Daten in einem
+   Überschrieben wird nur der Skript-Block. Die Kernvorlage baut ihre Daten in einem
    einzigen großen Block auf; ihn zu kopieren hieße, 350 Zeilen Kernlogik (Varianten,
    ProductGroup, Verfügbarkeits-Kaskade, Bewertungen) mitzuschleppen und bei jedem Shopware-Update
    nachzuziehen. Der Skript-Block ist der letzte vor der Ausgabe — dort steht `productData`
    fertig, und eine einzige Zusammenführung reicht.
 
-   **Nur beim einzelnen Angebot:** Bei Varianten gibt der Kern ein `AggregateOffer` aus. Dort
+   Ergänzt wird nur das einzelne Angebot. Bei Varianten gibt der Kern ein `AggregateOffer` aus. Dort
    gehören Versanddetails nicht hin — sie beschreiben ein konkretes Angebot, nicht eine Spanne.
 
-   Der Kern setzt heute nur `deliveryTime.handlingTime` und lässt `shippingDetails` ganz weg,
-   wenn das Produkt keine Lieferzeit trägt (auf Live 6 von 23 Stichproben). Deshalb wird das
+   Der Kern setzt nur `deliveryTime.handlingTime` und lässt `shippingDetails` ganz weg,
+   wenn das Produkt keine Lieferzeit trägt. Deshalb wird das
    ganze Objekt ersetzt und nicht ergänzt: Unser Bau enthält die Bearbeitungszeit ebenfalls. #}
 {% block page_product_detail_json_ld_script %}
     {% set rcShippingDetails = rc_schema_shipping_details(page.product, context) %}

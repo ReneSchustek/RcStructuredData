@@ -46,7 +46,7 @@ final class SchemaDiagnoseControllerAclTest extends TestCase
     }
 
     /**
-     * Die Gegenprobe gegen das Vergessen: **jede** öffentliche Methode mit einer Route trägt
+     * Die Gegenprobe gegen das Vergessen: jede öffentliche Methode mit einer Route trägt
      * ein Recht — nicht nur die beiden, die dieser Test namentlich kennt.
      */
     public function testNoRouteIsLeftWithoutAnAcl(): void

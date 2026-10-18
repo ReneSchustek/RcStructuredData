@@ -73,10 +73,9 @@ final class StructuredDataExtensionTest extends TestCase
     }
 
     /**
-     * Der eigentliche Zweck: Ab Shopware 6.8 ist das Flag entfernt. Die frühere Abfrage
-     * `not feature('JSON_LD_DATA')` hätte sich hier ins Gegenteil verkehrt, weil
-     * `Feature::isActive()` für ein unbekanntes Flag `false` liefert — WebSite und
-     * Organization wären doppelt im Kopfbereich gelandet.
+     * In Shopware 6.8 fehlt das Flag. Eine Abfrage `not feature('JSON_LD_DATA')` verkehrte
+     * sich hier ins Gegenteil, weil `Feature::isActive()` für ein unbekanntes Flag `false`
+     * liefert, und WebSite und Organization stünden doppelt im Kopfbereich.
      */
     public function testCoreRendersWhenTheFlagIsGone(): void
     {

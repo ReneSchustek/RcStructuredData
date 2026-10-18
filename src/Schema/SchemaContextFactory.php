@@ -80,10 +80,10 @@ final class SchemaContextFactory
     }
 
     /**
-     * Baut den Home-Kontext (Startseite): Homepage-Signale **ohne Category** — dadurch feuern
+     * Baut den Home-Kontext (Startseite): Homepage-Signale ohne Category — dadurch feuern
      * Organization/WebSite (Singletons) und WebPage, aber keine CollectionPage/Breadcrumb/ItemList.
      *
-     * **Die Erlebniswelt reist mit.** Fehlte sie hier, fehlte auch jeder Knoten aus einem Baustein:
+     * Die Erlebniswelt reist mit. Fehlte sie hier, fehlte auch jeder Knoten aus einem Baustein:
      * Die Videos der Startseite stünden nur im handgeschriebenen JSON-LD, obwohl das Plugin sie
      * auszeichnen kann. Was als Baustein auf der Seite steht (Video, FAQ,
      * Begriffssatz, Nachweise), ist sichtbarer Inhalt — auf der Startseite wie überall.

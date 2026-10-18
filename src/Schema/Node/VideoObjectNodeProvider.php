@@ -52,8 +52,8 @@ final class VideoObjectNodeProvider implements SchemaNodeProvider
 
                 // Ohne Datum wird der Knoten gar nicht erst ausgegeben.
                 //
-                // **Warum lieber nichts als etwas:** Google wertet ein VideoObject ohne
-                // `uploadDate` als **kritischen Fehler** — das Video erscheint dann nicht in der
+                // Google wertet ein VideoObject ohne
+                // `uploadDate` als kritischen Fehler — das Video erscheint dann nicht in der
                 // Suche, und die Meldung steht in der Search Console. Ein fehlendes VideoObject
                 // ist dagegen neutral: Die Seite wird bewertet wie jede ohne Video.
                 //

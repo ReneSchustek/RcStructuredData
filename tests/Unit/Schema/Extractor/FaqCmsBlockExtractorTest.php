@@ -87,7 +87,7 @@ class FaqCmsBlockExtractorTest extends TestCase
     }
 
     /**
-     * Die Gegenprobe: Die Frage wird **nicht** durch den Sanitizer geschickt.
+     * Die Gegenprobe: Die Frage wird nicht durch den Sanitizer geschickt.
      *
      * Sie wird in der Storefront escaped ausgegeben und ist damit ungefährlich. Ginge sie
      * durch den Sanitizer, stünden erlaubte Auszeichnungen hinterher als sichtbarer Text auf

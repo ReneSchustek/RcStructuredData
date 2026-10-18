@@ -15,9 +15,9 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  * Nur aktiv, wenn eine Adresse (Straße + Ort) gepflegt ist — sonst hätte der Knoten für Google keinen
  * Wert. Ergänzt Adresse, Telefon, Bild, Geo-Koordinaten, Preisspanne und Öffnungszeiten, sofern konfiguriert.
  *
- * **Typ `HomeAndConstructionBusiness`**: ein Untertyp von LocalBusiness für Baubedarf und Handwerk; Google wertet ihn wie
- * LocalBusiness, er beschreibt den Betrieb aber genauer. **Bild**: eigene Einstellung, sonst das Logo der Organisation;
- * Google empfiehlt `image` für Unternehmensangaben. **Öffnungszeiten** als `openingHoursSpecification` (empfohlen statt
+ * Typ `HomeAndConstructionBusiness`: ein Untertyp von LocalBusiness für Baubedarf und Handwerk; Google wertet ihn wie
+ * LocalBusiness, er beschreibt den Betrieb aber genauer. Bild: eigene Einstellung, sonst das Logo der Organisation;
+ * Google empfiehlt `image` für Unternehmensangaben. Öffnungszeiten als `openingHoursSpecification` (empfohlen statt
  * des Textes `openingHours`); eine Zeile, die sich nicht lesen lässt, bleibt als Text erhalten.
  */
 final class LocalBusinessNodeProvider implements SchemaNodeProvider

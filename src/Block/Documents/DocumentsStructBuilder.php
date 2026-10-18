@@ -39,7 +39,7 @@ final class DocumentsStructBuilder
         foreach ($this->extractor->extract($slot) as $document) {
             $file = $media?->get($document['mediaId']);
 
-            // **Gelöschte Datei, kein Eintrag.** Ein Nachweis, dessen Datei fehlt, wäre auf der
+            // Gelöschte Datei, kein Eintrag. Ein Nachweis, dessen Datei fehlt, wäre auf der
             // Seite ein toter Verweis und im Schema die Behauptung eines Belegs, den es nicht gibt.
             if (!$file instanceof MediaEntity || $file->getUrl() === '') {
                 continue;

@@ -9,11 +9,11 @@
     @id-Verweise (isPartOf/seller/copyrightHolder) aufgelöst sind. Gibt er sie aus, halten wir uns
     zurück — sonst stünden sie doppelt im <head>.
 
-    Die Frage beantwortet `rc_schema_core_renders_global_json_ld()` und nicht mehr das Flag direkt:
+    Die Frage beantwortet `rc_schema_core_renders_global_json_ld()` und nicht das Flag direkt:
     Mit 6.8 verschwindet `JSON_LD_DATA`, und `Feature::isActive()` liefert für ein unbekanntes Flag
-    `false` — die alte Bedingung `not feature(...)` hätte sich damit ins Gegenteil verkehrt.
+    `false`; eine Bedingung `not feature(...)` verkehrte sich damit ins Gegenteil.
 
-    Hinweis: Bei deaktiviertem Flag rendert der Core zusätzlich Microdata im Body — das bleibt
+    Bei deaktiviertem Flag rendert der Core zusätzlich Microdata im Body — das bleibt
     parallel bestehen (identisch zum Verhalten auf Kategorieseiten, kein Blocker).
 #}
 {% block layout_head_json_ld %}

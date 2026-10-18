@@ -13,7 +13,7 @@ use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
  * Kategorieseiten, die eine Liste führen, werden als CollectionPage abgebildet — niemals als
  * Product.
  *
- * **Nicht jede Kategorie führt eine Liste.** Impressum, AGB, Kontakt und die übrigen Inhaltsseiten
+ * Nicht jede Kategorie führt eine Liste. Impressum, AGB, Kontakt und die übrigen Inhaltsseiten
  * sind im Shop ebenfalls Kategorien, tragen aber eine Erlebniswelt vom Typ `page`. Für sie ist
  * `WebPage` richtig; die Unterscheidung trifft der ContentPageDetector.
  */

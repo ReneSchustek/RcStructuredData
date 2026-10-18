@@ -97,7 +97,7 @@ final class PageWarningChecker
      * Die Videos der Seite, für die im Graphen kein Knoten steht.
      *
      * Verglichen wird über die Videokennung in `contentUrl` und `embedUrl` — die `@id` des
-     * Knotens trägt sie nicht. Die Kaskade wird dabei **nicht** nachgebaut: Was am Ende
+     * Knotens trägt sie nicht. Die Kaskade wird dabei nicht nachgebaut: Was am Ende
      * herauskam, steht im Graphen, und nur das zählt.
      *
      * @param array<string, mixed>|null $graph
