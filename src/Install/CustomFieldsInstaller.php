@@ -73,7 +73,7 @@ final class CustomFieldsInstaller
                 'name' => 'rc_schema_additional_properties',
                 'type' => CustomFieldTypes::JSON,
                 'config' => [
-                    // Eigener Admin-Renderer (Name/Wert-Repeater) — Shopware rendert JSON-Felder
+                    // Eigener Admin-Renderer (Name/Wert-Repeater): Shopware rendert JSON-Felder
                     // sonst nicht als bearbeitbare Liste. sw-form-field-renderer wählt die
                     // Komponente über componentName.
                     'componentName' => 'rc-schema-additional-property',

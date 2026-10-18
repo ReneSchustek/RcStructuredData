@@ -10,7 +10,7 @@ use Ruhrcoder\RcStructuredData\Schema\IdFactory;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 
 /**
- * Kategorieseiten, die eine Liste führen, werden als CollectionPage abgebildet — niemals als
+ * Kategorieseiten, die eine Liste führen, werden als CollectionPage abgebildet, niemals als
  * Product.
  *
  * Nicht jede Kategorie führt eine Liste. Impressum, AGB, Kontakt und die übrigen Inhaltsseiten

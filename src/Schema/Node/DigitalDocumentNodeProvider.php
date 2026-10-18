@@ -69,7 +69,7 @@ final class DigitalDocumentNodeProvider implements SchemaNodeProvider
             'url' => $document['url'],
         ];
 
-        // Freiwillige Angaben erscheinen nur, wenn sie gepflegt sind — ein leeres `expires` hieße
+        // Freiwillige Angaben erscheinen nur, wenn sie gepflegt sind. Ein leeres `expires` hieße
         // für einen Leser des Graphen nicht „unbefristet", sondern „kaputt".
         foreach (['description', 'encodingFormat', 'datePublished', 'expires'] as $field) {
             if ($document[$field] !== '') {

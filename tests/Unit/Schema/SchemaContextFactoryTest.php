@@ -71,7 +71,7 @@ class SchemaContextFactoryTest extends TestCase
     }
 
     /**
-     * Die Startseite behält ihre Erlebniswelt — sonst entsteht aus ihren Bausteinen (Videos, FAQ,
+     * Die Startseite behält ihre Erlebniswelt, sonst entsteht aus ihren Bausteinen (Videos, FAQ,
      * Nachweise) kein einziger Knoten. Ohne Kategorie bleiben Breadcrumb und CollectionPage aus.
      */
     public function testHomeContextKeepsTheCmsPageButNotTheCategory(): void

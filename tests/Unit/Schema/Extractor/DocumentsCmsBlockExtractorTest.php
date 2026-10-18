@@ -82,7 +82,7 @@ class DocumentsCmsBlockExtractorTest extends TestCase
         return [
             'Tag bleibt Tag' => ['2031-07-03', '2031-07-03'],
             // Ein Datumsfeld kann „4. Juli, 0 Uhr hier" als UTC-Zeitpunkt speichern. Abgeschnitten
-            // wäre das der 3. Juli — ein Prüfzeugnis, das einen Tag früher abläuft als darauf steht.
+            // wäre das der 3. Juli: ein Prüfzeugnis, das einen Tag früher abläuft als darauf steht.
             'Mitternacht Sommerzeit als UTC' => ['2026-07-03T22:00:00.000Z', '2026-07-04'],
             'Mitternacht Winterzeit als UTC' => ['2026-01-03T23:00:00.000Z', '2026-01-04'],
             'Zeitpunkt mit Zone' => ['2026-07-04T00:00:00+02:00', '2026-07-04'],

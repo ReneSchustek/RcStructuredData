@@ -24,7 +24,7 @@ Component.register('sw-cms-el-config-rc-defined-terms', {
             this.initElementConfig('rc-defined-terms');
 
             // Nebenwirkungsfreie Initialisierung außerhalb des Computed-Getters (kein
-            // State-Write während des Renderns) — dieselbe Vorsicht wie bei rc-faq.
+            // State-Write während des Renderns), dieselbe Vorsicht wie bei rc-faq.
             if (!Array.isArray(this.element.config.terms.value)) {
                 this.element.config.terms.value = [];
             }

@@ -18,8 +18,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 /**
  * Registriert das rc-documents-CMS-Element und löst die gepflegten Dateien zu Adressen auf.
  *
- * Die Medien werden über die Sammelabfrage der Erlebniswelt geladen (`collect()`), nicht einzeln —
- * so bleibt es bei einer Abfrage je Baustein, gleich wie viele Nachweise er trägt.
+ * Die Medien werden über die Sammelabfrage der Erlebniswelt geladen (`collect()`), nicht einzeln.
+ * So bleibt es bei einer Abfrage je Baustein, gleich wie viele Nachweise er trägt.
  */
 final class DocumentsResolver extends AbstractCmsElementResolver
 {

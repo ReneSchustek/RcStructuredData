@@ -77,7 +77,7 @@ class PageWarningCheckerTest extends TestCase
     }
 
     /**
-     * Ein Knoten darf laut JSON-LD mehrere Typen tragen — der Hinweis muss ihn trotzdem finden.
+     * Ein Knoten darf laut JSON-LD mehrere Typen tragen, der Hinweis muss ihn trotzdem finden.
      */
     public function testFindsFaqPageInAListOfTypes(): void
     {
@@ -114,7 +114,7 @@ class PageWarningCheckerTest extends TestCase
     /**
      * Was: Ein YouTube-Baustein, für den im Graphen kein Knoten steht.
      * Warum: Das Plugin lässt ein Video ohne
-     *        Veröffentlichungsdatum aus — ohne diese Meldung wäre das ein stiller Verlust:
+     *        Veröffentlichungsdatum aus. Ohne diese Meldung wäre das ein stiller Verlust:
      *        Niemand im Backoffice sähe, welches Video ein Datum braucht.
      */
     public function testReportsAVideoThatWasLeftOut(): void
@@ -147,7 +147,7 @@ class PageWarningCheckerTest extends TestCase
     }
 
     /**
-     * Zwei ausgelassene Videos stehen in einer Meldung — eine je Video wäre im Backoffice
+     * Zwei ausgelassene Videos stehen in einer Meldung; eine je Video wäre im Backoffice
      * eine Wand aus Hinweisen.
      */
     public function testItNamesEveryLeftOutVideoInOneWarning(): void
@@ -170,7 +170,7 @@ class PageWarningCheckerTest extends TestCase
     }
 
     /**
-     * Slot mit freiem Markup. Gesetzt wird die rohe `config` — so kommt sie aus der Datenbank,
+     * Slot mit freiem Markup. Gesetzt wird die rohe `config`, denn so kommt sie aus der Datenbank,
      * wenn der Slot ohne Storefront-Auflösung geladen wird, wie in der Diagnose.
      */
     private function makeMarkupSlot(string $type, string $markup): CmsSlotEntity

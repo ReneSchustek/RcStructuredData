@@ -1,7 +1,7 @@
 <?php
 
 // Symbol-Definitionen für die optionale WerklOpenBlogware-Integration.
-// Nur für die statische Analyse (phpstan scanFiles) — zur Laufzeit stammen die Klassen aus dem
+// Nur für die statische Analyse (phpstan scanFiles); zur Laufzeit stammen die Klassen aus dem
 // installierten Blog-Plugin; der zugehörige Subscriber wird nur bedingt registriert (Plugin::build()).
 
 namespace Werkl\OpenBlogware\Page\Blog {
@@ -55,7 +55,7 @@ namespace Werkl\OpenBlogware\Content\Blog {
         {
         }
 
-        /** Aus Shopwares Entity geerbt — bei nie bearbeiteten Beiträgen null. */
+        /** Aus Shopwares Entity geerbt, bei nie bearbeiteten Beiträgen null. */
         public function getUpdatedAt(): ?\DateTimeInterface
         {
         }

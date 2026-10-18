@@ -16,7 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
  * Löst die rc-documents-Slots einer Erlebniswelt auf, die ohne Storefront geladen wurde.
  *
  * Die Diagnose-Karte lädt die Seite über das Repository, nicht über die Storefront. Ohne
- * diesen Schritt fehlten ihr die Nachweise, während die Seite sie ausliefert — die Karte meldete
+ * diesen Schritt fehlten ihr die Nachweise, während die Seite sie ausliefert. Die Karte meldete
  * dann eine Lücke, die es nicht gibt. Für Bilder ist das hinnehmbar (es gibt einen Rückfall), für
  * Nachweise nicht: Ohne aufgelöste Datei gibt es keinen Knoten.
  */

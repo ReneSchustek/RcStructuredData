@@ -34,7 +34,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
  * damit der Konsolenbefehl reine Ein-/Ausgabe bleibt (SoC). Die Slot-Konfiguration wird ohne
  * Storefront-DataResolver geladen; ein gepflegtes previewMedia-Thumbnail wird daher nicht aufgelöst
  * (Fallback auf das YouTube-Standardbild), was für die Feld-Vollständigkeit ohne Belang ist.
- * Nachweise (rc-documents) werden dagegen aufgelöst — ohne Datei gäbe es keinen Knoten.
+ * Nachweise (rc-documents) werden dagegen aufgelöst, denn ohne Datei gäbe es keinen Knoten.
  */
 final class SchemaDiagnoser implements CategoryDiagnoser
 {
@@ -146,7 +146,7 @@ final class SchemaDiagnoser implements CategoryDiagnoser
             throw new RuntimeException('Kein aktiver Sales-Channel gefunden.');
         }
 
-        // Die Default-Sprache der Sales-Channel ist garantiert in ihrer Sprachliste — anders als
+        // Die Default-Sprache der Sales-Channel ist garantiert in ihrer Sprachliste, anders als
         // die System-Sprache, die der Context-Factory-Default sonst annimmt.
         return $this->salesChannelContextFactory->create(
             Uuid::randomHex(),

@@ -80,7 +80,7 @@ class DigitalDocumentNodeProviderTest extends TestCase
     }
 
     /**
-     * Ohne aufgelöste Datei gibt es keine Adresse — und ohne Adresse keinen Nachweis.
+     * Ohne aufgelöste Datei gibt es keine Adresse, und ohne Adresse keinen Nachweis.
      */
     public function testUnresolvedSlotProducesNoNode(): void
     {

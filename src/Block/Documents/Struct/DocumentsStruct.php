@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Struct\Struct;
 /**
  * Trägt die Nachweise eines rc-documents-Slots ins Storefront-Template und in den Graphen.
  *
- * Enthalten sind nur Einträge, deren Datei gefunden wurde — mit ihrer Adresse. Die sichtbare Liste
+ * Enthalten sind nur Einträge, deren Datei gefunden wurde (mit ihrer Adresse). Die sichtbare Liste
  * und die `DigitalDocument`-Knoten lesen beide aus diesem Objekt und können deshalb nicht
  * auseinanderlaufen: Was nicht verlinkt wird, wird auch nicht ausgezeichnet.
  */

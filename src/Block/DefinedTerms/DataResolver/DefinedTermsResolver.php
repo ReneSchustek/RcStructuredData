@@ -17,8 +17,8 @@ use Shopware\Core\Content\Cms\DataResolver\ResolverContext\ResolverContext;
  * Registriert das rc-defined-terms-CMS-Element und stellt den Begriffssatz für die Anzeige bereit.
  *
  * Die Daten liegen vollständig in der Slot-Konfiguration, deshalb ist `collect()` leer. Das
- * Auswerten teilt sich der Resolver mit dem `DefinedTermSetNodeProvider` über den Extraktor —
- * sichtbarer Inhalt und `DefinedTermSet` stammen so aus einer Quelle.
+ * Auswerten teilt sich der Resolver mit dem `DefinedTermSetNodeProvider` über den Extraktor.
+ * Sichtbarer Inhalt und `DefinedTermSet` stammen so aus einer Quelle.
  */
 final class DefinedTermsResolver extends AbstractCmsElementResolver
 {

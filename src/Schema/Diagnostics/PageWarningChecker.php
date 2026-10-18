@@ -96,7 +96,7 @@ final class PageWarningChecker
     /**
      * Die Videos der Seite, für die im Graphen kein Knoten steht.
      *
-     * Verglichen wird über die Videokennung in `contentUrl` und `embedUrl` — die `@id` des
+     * Verglichen wird über die Videokennung in `contentUrl` und `embedUrl`, denn die `@id` des
      * Knotens trägt sie nicht. Die Kaskade wird dabei nicht nachgebaut: Was am Ende
      * herauskam, steht im Graphen, und nur das zählt.
      *
@@ -194,7 +194,7 @@ final class PageWarningChecker
     /**
      * Gesucht wird in beiden Ablagen derselben Sache: `config` trägt die rohen Werte, wie sie in
      * der Datenbank stehen, `fieldConfig` die aufgelösten. Je nachdem, wie der Slot geladen wurde,
-     * ist die eine oder die andere gefüllt — geprüft werden deshalb beide.
+     * ist die eine oder die andere gefüllt. Geprüft werden deshalb beide.
      */
     private function containsJsonLd(CmsSlotEntity $slot): bool
     {

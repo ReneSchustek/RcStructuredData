@@ -1,7 +1,7 @@
 <?php
 
 // Symbol-Definitionen für die optionale Anbindung an RcProductFeedShippingExtension.
-// Nur für die statische Analyse (phpstan scanFiles) — zur Laufzeit kommt der Dienst aus dem
+// Nur für die statische Analyse (phpstan scanFiles). Zur Laufzeit kommt der Dienst aus dem
 // installierten Warenstrom-Plugin, und ohne dieses bleibt die Abhängigkeit null
 // (services.xml: on-invalid="null").
 

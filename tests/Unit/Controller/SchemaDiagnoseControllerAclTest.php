@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * Nagelt fest, dass beide Diagnose-Routen ein Recht verlangen.
  *
  * Der Bereich `api` erzwingt nur eine gültige Anmeldung. Ohne `_acl` käme jeder Zugang an die
- * Diagnose — auch eine Integration, die für einen einzigen, eng geschnittenen Zweck angelegt
+ * Diagnose, auch eine Integration, die für einen einzigen, eng geschnittenen Zweck angelegt
  * wurde. Der Fehler wäre still: Die Route antwortet ordnungsgemäß, nur eben jedem.
  *
  * Der Test liest die Angaben an der Methode selbst. Damit fällt auch auf, wenn jemand später
@@ -24,8 +24,8 @@ final class SchemaDiagnoseControllerAclTest extends TestCase
 {
     /**
      * Erwartetes Recht je Methode. Verlangt wird das Leserecht auf die Entität, über die
-     * Auskunft gegeben wird — kein eigenes Recht, solange ein Recht des Kerns die Frage
-     * beantwortet.
+     * Auskunft gegeben wird (kein eigenes Recht, solange ein Recht des Kerns die Frage
+     * beantwortet).
      */
     private const EXPECTED_ACL = [
         'diagnoseCategory' => 'category:read',
@@ -47,7 +47,7 @@ final class SchemaDiagnoseControllerAclTest extends TestCase
 
     /**
      * Die Gegenprobe gegen das Vergessen: jede öffentliche Methode mit einer Route trägt
-     * ein Recht — nicht nur die beiden, die dieser Test namentlich kennt.
+     * ein Recht, nicht nur die beiden, die dieser Test namentlich kennt.
      */
     public function testNoRouteIsLeftWithoutAnAcl(): void
     {

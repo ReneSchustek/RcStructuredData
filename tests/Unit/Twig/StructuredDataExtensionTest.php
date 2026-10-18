@@ -11,7 +11,7 @@ use Ruhrcoder\RcStructuredData\Twig\StructuredDataExtension;
 use Shopware\Core\Framework\Feature;
 
 /**
- * Die drei Zustände, die es geben kann — und der dritte ist der Grund für diese Klasse.
+ * Die drei Zustände, die es geben kann, und der dritte ist der Grund für diese Klasse.
  */
 #[CoversClass(StructuredDataExtension::class)]
 final class StructuredDataExtensionTest extends TestCase

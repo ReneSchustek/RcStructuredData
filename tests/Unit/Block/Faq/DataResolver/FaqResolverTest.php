@@ -74,7 +74,7 @@ class FaqResolverTest extends TestCase
     }
 
     /**
-     * Der Sanitizer ist hier nicht der Prüfgegenstand — was er entfernt, ist im Kern geprüft
+     * Der Sanitizer ist hier nicht der Prüfgegenstand. Was er entfernt, ist im Kern geprüft
      * und im Test des Extractors festgehalten. Diese Doublette reicht den Text durch, damit
      * die Zusicherungen dieses Tests den Resolver messen und nicht den Sanitizer.
      */

@@ -25,7 +25,7 @@ final class GraphBuilder
 
     /**
      * Abbildung "verknüpfter Knoten-Typ => Eigenschaft am Seiten-Knoten".
-     * Die Verknüpfung wird erst gesetzt, wenn der Zielknoten wirklich existiert — so
+     * Die Verknüpfung wird erst gesetzt, wenn der Zielknoten wirklich existiert. So
      * entstehen keine hängenden "@id"-Referenzen. Erweiterung erfolgt hier zentral.
      *
      * @var array<string, array{property: string, multiple: bool}>
@@ -38,7 +38,7 @@ final class GraphBuilder
         'VideoObject' => ['property' => 'hasPart', 'multiple' => true],
         // Ein Nachweis ist wie ein Video ein Werk, das die Seite enthält und verlinkt.
         'DigitalDocument' => ['property' => 'hasPart', 'multiple' => true],
-        // Ein Begriffssatz ist kein Teil der Seite, sondern das, wovon sie handelt —
+        // Ein Begriffssatz ist kein Teil der Seite, sondern das, wovon sie handelt,
         // deshalb `about` und nicht `hasPart`. Mehrere Sätze je Seite sind normal.
         'DefinedTermSet' => ['property' => 'about', 'multiple' => true],
     ];
@@ -89,7 +89,7 @@ final class GraphBuilder
                     continue;
                 }
 
-                // Erstes Vorkommen gewinnt — Singletons bleiben dadurch eindeutig.
+                // Erstes Vorkommen gewinnt. Singletons bleiben dadurch eindeutig.
                 $nodes[$id] ??= $node;
             }
         }
@@ -133,7 +133,7 @@ final class GraphBuilder
         foreach ($byProperty as $property => $data) {
             $references = $data['references'];
             // Array, sobald die Property als multiple deklariert ist ODER mehrere Typen
-            // darauf verweisen — sonst der Einzelwert (schema.org-konform, bestehendes Verhalten).
+            // darauf verweisen, sonst der Einzelwert (schema.org-konform, bestehendes Verhalten).
             $nodes[$pageId][$property] = ($data['multiple'] || \count($references) > 1)
                 ? $references
                 : $references[0];

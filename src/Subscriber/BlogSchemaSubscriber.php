@@ -68,7 +68,7 @@ final class BlogSchemaSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Lädt die dem Blog-Eintrag zugeordnete CMS-Seite (der Artikel-Inhalt mit etwaigem rc-faq-Block) —
+     * Lädt die dem Blog-Eintrag zugeordnete CMS-Seite (der Artikel-Inhalt mit etwaigem rc-faq-Block),
      * nicht das globale Blog-Detail-Layout aus getPage()->getCmsPage(). Nur so wird ein FAQ-Block je
      * Artikel erkannt. Ohne zugeordnete Seite bleibt es beim reinen BlogPosting.
      */

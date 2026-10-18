@@ -86,7 +86,7 @@ class VideoObjectNodeProviderTest extends TestCase
 
     /**
      * Google wertet ein VideoObject ohne `uploadDate` als kritischen
-     * Fehler — das Video erscheint dann nicht in der Suche. Ein fehlendes VideoObject ist
+     * Fehler; das Video erscheint dann nicht in der Suche. Ein fehlendes VideoObject ist
      * dagegen neutral.
      */
     public function testAVideoWithoutAnUploadDateIsNotRenderedAtAll(): void
@@ -98,7 +98,7 @@ class VideoObjectNodeProviderTest extends TestCase
     }
 
     /**
-     * Die Dauer allein rettet den Knoten nicht — gefordert ist das Datum.
+     * Die Dauer allein rettet den Knoten nicht: Gefordert ist das Datum.
      */
     public function testADurationDoesNotReplaceTheUploadDate(): void
     {
@@ -209,7 +209,7 @@ class VideoObjectNodeProviderTest extends TestCase
         ]));
         $context = $this->makeContext(cmsPage: $page);
 
-        // Enricher wirft, falls er doch aufgerufen wird — beweist das Quota-schonende Gating.
+        // Enricher wirft, falls er doch aufgerufen wird. Das beweist das Quota-schonende Gating.
         $throwingEnricher = new class () implements VideoMetadataEnricher {
             public function enrich(string $videoId): ?array
             {

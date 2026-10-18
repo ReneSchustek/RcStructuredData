@@ -24,7 +24,7 @@ Component.register('sw-cms-el-config-rc-documents', {
             this.initElementConfig('rc-documents');
 
             // Nebenwirkungsfreie Initialisierung außerhalb des Computed-Getters (kein
-            // State-Write während des Renderns) — dieselbe Vorsicht wie bei rc-faq.
+            // State-Write während des Renderns); dieselbe Vorsicht wie bei rc-faq.
             if (!Array.isArray(this.element.config.documents.value)) {
                 this.element.config.documents.value = [];
             }

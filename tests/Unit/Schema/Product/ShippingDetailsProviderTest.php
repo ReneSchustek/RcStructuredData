@@ -25,7 +25,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  *
  * `handlingTime` ist die Zeit im Haus (steht am
  * Produkt), `transitTime` die Zeit auf der Straße (steht an der Versandart). Beide aus derselben
- * Quelle zu nehmen wäre für den Kunden eine doppelt gezählte Woche — deshalb hat jeder der beiden
+ * Quelle zu nehmen wäre für den Kunden eine doppelt gezählte Woche, deshalb hat jeder der beiden
  * Werte hier seinen eigenen Test.
  */
 final class ShippingDetailsProviderTest extends TestCase
@@ -102,7 +102,7 @@ final class ShippingDetailsProviderTest extends TestCase
 
     /**
      * Was: Keine einzige Angabe kommt zustande.
-     * Warum: Dann darf kein leeres `OfferShippingDetails` entstehen — ein Objekt, das nur seinen
+     * Warum: Dann darf kein leeres `OfferShippingDetails` entstehen: Ein Objekt, das nur seinen
      *        eigenen Typ nennt, ist für Google ein unvollständiges Feld statt eines fehlenden.
      */
     public function testWithoutAnySourceThereAreNoShippingDetails(): void

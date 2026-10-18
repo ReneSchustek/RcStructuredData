@@ -16,11 +16,11 @@ use RuntimeException;
 require_once __DIR__ . '/ForeignPluginStubs.php';
 
 /**
- * Die Anbindung an den Warenstrom — und was passiert, wenn es ihn nicht gibt.
+ * Die Anbindung an den Warenstrom, und was passiert, wenn es ihn nicht gibt.
  *
  * `RcProductFeedShippingExtension` ist keine
  * Abhängigkeit dieses Plugins und liegt beim Testlauf nicht im Ladepfad. Die Nachbildung trägt
- * genau die Berührungsfläche, die der Adapter benutzt — mehr würde eine Kopplung vortäuschen,
+ * genau die Berührungsfläche, die der Adapter benutzt. Mehr würde eine Kopplung vortäuschen,
  * die es nicht gibt. Dieselben Symbole stehen als Stub für die statische Analyse bereit.
  */
 final class RcProductFeedShippingRateTest extends TestCase

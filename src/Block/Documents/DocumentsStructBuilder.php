@@ -17,7 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
  *
  * Zwei Wege laden die Medien: die Storefront über die Sammelabfrage der Erlebniswelt
  * (`DocumentsResolver`), die Diagnose-Karte über das Medien-Repository (`DocumentsSlotHydrator`).
- * Zusammengesetzt wird an dieser einen Stelle — sonst könnten Seite und Diagnose verschiedene
+ * Zusammengesetzt wird an dieser einen Stelle, sonst könnten Seite und Diagnose verschiedene
  * Nachweise zählen.
  */
 final class DocumentsStructBuilder

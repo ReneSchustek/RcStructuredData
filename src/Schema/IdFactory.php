@@ -8,7 +8,7 @@ namespace Ruhrcoder\RcStructuredData\Schema;
  * Erzeugt stabile, eindeutige "@id"-Werte für die Graph-Knoten.
  *
  * Singletons (Organization, WebSite) hängen an der Basis-URL und sind so seitenübergreifend
- * identisch — dadurch können alle Seiten denselben Knoten per "@id" referenzieren. Seiten-
+ * identisch. Dadurch können alle Seiten denselben Knoten per "@id" referenzieren. Seiten-
  * gebundene Knoten (Breadcrumb, FAQ, Video) hängen an der jeweiligen Seiten-URL.
  */
 final class IdFactory

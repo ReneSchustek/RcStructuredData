@@ -5,7 +5,7 @@ import './preview';
 const { Application } = Shopware;
 
 /**
- * Begriffssatz — eine sichtbare Liste von Fachbegriffen, aus der zugleich das `DefinedTermSet`
+ * Begriffssatz: eine sichtbare Liste von Fachbegriffen, aus der zugleich das `DefinedTermSet`
  * entsteht.
  *
  * Steht ein Begriffssatz nur als handgeschriebenes JSON-LD da,

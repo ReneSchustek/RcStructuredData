@@ -16,7 +16,7 @@ use Ruhrcoder\RcStructuredData\Schema\SchemaNodeProvider;
  * Je Slot entsteht ein eigener Satz, anders als bei der FAQ. Fragen einer Seite gehören
  * fachlich zusammen und werden zu *einer* `FAQPage` zusammengeführt. Begriffssätze nicht: „Normen
  * für Geländer" und „Werkstoffe" sind zwei Sammlungen mit je eigenem Namen. Sie zu verschmelzen
- * hieße, einen Namen zu verlieren — und der Name ist bei einem Begriffssatz die halbe Aussage.
+ * hieße, einen Namen zu verlieren, und der Name ist bei einem Begriffssatz die halbe Aussage.
  *
  * Ein Satz ohne Namen wird nicht ausgegeben. `DefinedTermSet` ohne `name` ist für einen Leser
  * wie für eine Maschine eine namenlose Liste; sie sagt nichts, kostet aber Glaubwürdigkeit. Das
@@ -99,7 +99,7 @@ final class DefinedTermSetNodeProvider implements SchemaNodeProvider
     /**
      * Entfernt die Auszeichnung aus der Erklärung, die bei der FAQ-Antwort erhalten bleibt.
      *
-     * Google erlaubt in `acceptedAnswer.text` ausdrücklich einfache Auszeichnung — Absätze und
+     * Google erlaubt in `acceptedAnswer.text` ausdrücklich einfache Auszeichnung: Absätze und
      * Listen bleiben dort erhalten. Für `DefinedTerm.description` gibt es diese Zusage nicht;
      * dort stünde ein `<p>` als sichtbarer Text im Suchergebnis. Die Anzeige auf der Seite behält
      * ihre Auszeichnung, das Schema bekommt denselben Satz als reinen Text.

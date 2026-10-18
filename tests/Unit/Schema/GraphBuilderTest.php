@@ -118,7 +118,7 @@ class GraphBuilderTest extends TestCase
     }
 
     /**
-     * Auf `/bauteile/glashalter/` stehen ein Video und zwei Prüfzeugnisse — alle drei gehören an
+     * Auf `/bauteile/glashalter/` stehen ein Video und zwei Prüfzeugnisse. Alle drei gehören an
      * `hasPart`, keines darf das andere verdrängen.
      */
     public function testWiresDocumentsNextToVideosIntoHasPart(): void

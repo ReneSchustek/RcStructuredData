@@ -1,19 +1,19 @@
 {% sw_extends '@Storefront/storefront/page/product-detail/meta.html.twig' %}
 
 {#
-    Produktdetailseiten geben strukturierte Daten als JSON-LD aus — unabhängig
+    Produktdetailseiten geben strukturierte Daten als JSON-LD aus, unabhängig
     vom Feature-Flag JSON_LD_DATA. Statt die Produkt-Logik in PHP nachzubauen (Varianten/ProductGroup,
     Maße, Videos, Verfügbarkeits-Kaskade) binden wir die gepflegten Core-Partials wieder ein (DRY).
 
     Gibt der Kern WebSite + Organization nicht selbst aus, ergänzen wir sie hier, damit die
     @id-Verweise (isPartOf/seller/copyrightHolder) aufgelöst sind. Gibt er sie aus, halten wir uns
-    zurück — sonst stünden sie doppelt im <head>.
+    zurück (sonst stünden sie doppelt im <head>).
 
     Die Frage beantwortet `rc_schema_core_renders_global_json_ld()` und nicht das Flag direkt:
     Mit 6.8 verschwindet `JSON_LD_DATA`, und `Feature::isActive()` liefert für ein unbekanntes Flag
     `false`; eine Bedingung `not feature(...)` verkehrte sich damit ins Gegenteil.
 
-    Bei deaktiviertem Flag rendert der Core zusätzlich Microdata im Body — das bleibt
+    Bei deaktiviertem Flag rendert der Core zusätzlich Microdata im Body. Das bleibt
     parallel bestehen (identisch zum Verhalten auf Kategorieseiten, kein Blocker).
 #}
 {% block layout_head_json_ld %}

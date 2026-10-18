@@ -43,7 +43,7 @@ final class RcStructuredData extends Plugin
     {
         parent::build($container);
 
-        // Blog-Article-Schema nur registrieren, wenn WerklOpenBlogware installiert ist — sonst
+        // Blog-Article-Schema nur registrieren, wenn WerklOpenBlogware installiert ist, sonst
         // verwiese der Subscriber auf ein nicht vorhandenes Event. class_exists lädt die Klasse
         // nicht, wenn sie fehlt (kein harter Fehler).
         if (class_exists(BlogPageLoadedEvent::class)) {

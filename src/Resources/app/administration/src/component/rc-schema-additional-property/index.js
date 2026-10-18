@@ -40,7 +40,7 @@ Component.register('rc-schema-additional-property', {
             handler(newValue) {
                 const incoming = Array.isArray(newValue) ? newValue : [];
 
-                // Rebuild nur, wenn sich der Wert wirklich unterscheidet — verhindert eine
+                // Rebuild nur, wenn sich der Wert wirklich unterscheidet. Das verhindert eine
                 // Endlosschleife mit dem eigenen update:value-Emit (und Fokus-Verlust im Feld).
                 if (JSON.stringify(incoming) === JSON.stringify(this.normalize(this.items))) {
                     return;

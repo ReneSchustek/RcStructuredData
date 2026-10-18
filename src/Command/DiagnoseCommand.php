@@ -17,7 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * Baut den Schema-Graphen einer Kategorie und listet fehlende Google-Felder je Knoten.
  *
  * Macht die Lücken vor dem Rich-Results-Test sichtbar, ohne die Storefront aufzurufen.
- * Die eigentliche Analyse liegt im SchemaDiagnoser — der Befehl ist reine Ein-/Ausgabe (SoC).
+ * Die eigentliche Analyse liegt im SchemaDiagnoser; der Befehl ist reine Ein-/Ausgabe (SoC).
  */
 #[AsCommand(
     name: 'rc-schema:diagnose',

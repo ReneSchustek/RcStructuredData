@@ -101,7 +101,7 @@ class PageNodeProviderTest extends TestCase
 
     /**
      * Was: Eine Kategorie mit Produktliste bleibt CollectionPage.
-     * Warum: Genau dafür gibt es den Typ — die Änderung darf den Regelfall nicht mitnehmen.
+     * Warum: Genau dafür gibt es den Typ. Die Änderung darf den Regelfall nicht mitnehmen.
      */
     public function testProductCategoryStaysCollectionPage(): void
     {

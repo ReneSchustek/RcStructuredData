@@ -16,7 +16,7 @@ use Throwable;
  * Holt fehlende VideoObject-Metadaten über die YouTube-Data-API (videos.list).
  *
  * Greift nur bei gesetztem API-Key. Antworten werden gecacht (Quota-Schonung), Netzwerk-/Quota-
- * Fehler führen zu `null` (stiller Fallback auf die manuelle Pflege) — nie zu einem Seitenfehler.
+ * Fehler führen zu `null` (stiller Fallback auf die manuelle Pflege), nie zu einem Seitenfehler.
  * Der API-Key stammt aus `system_config` und taucht weder im Output noch im Log auf.
  */
 final class YoutubeApiMetadataEnricher implements VideoMetadataEnricher
@@ -73,11 +73,11 @@ final class YoutubeApiMetadataEnricher implements VideoMetadataEnricher
         try {
             $data = $this->fetch($videoId, $apiKey);
         } catch (Throwable $exception) {
-            // Netzwerk-/Quota-/Transportfehler (z. B. 403) NEGATIV cachen — sonst würde ein
+            // Netzwerk-/Quota-/Transportfehler (z. B. 403) NEGATIV cachen, sonst würde ein
             // defekter/quota-erschöpfter API-Zustand jeden HTTP-Cache-Miss-Render erneut mit
             // einem bis zu TIMEOUT_SECONDS blockierenden, scheiternden Call belasten. Wird die
             // Exception dagegen aus dem Callback geworfen, speichert Symfony das Item nicht.
-            // Der API-Key darf nie ins Log — Transport-Meldungen können die Request-URL
+            // Der API-Key darf nie ins Log: Transport-Meldungen können die Request-URL
             // (inkl. ?key=…) enthalten, daher wird er aus der Meldung redigiert. Das Log läuft
             // nur beim Cache-Miss (nicht bei jedem Treffer auf den Negativ-Eintrag) → kein Spam.
             $item->expiresAfter(self::CACHE_TTL_MISS);

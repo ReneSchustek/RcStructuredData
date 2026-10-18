@@ -80,7 +80,7 @@ trait CmsFixtureTrait
 
     /**
      * Ein rc-documents-Slot: freiwillige Überschrift und die gepflegten Nachweise. Die Einträge
-     * sind bewusst lose typisiert — die Tests schieben auch Unbrauchbares hinein.
+     * sind bewusst lose typisiert: Die Tests schieben auch Unbrauchbares hinein.
      *
      * @param list<mixed> $documents
      */

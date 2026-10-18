@@ -87,7 +87,7 @@ final class SchemaContext
     }
 
     /**
-     * SEO-URL-Platzhalter der Startseite — Basis für stabile "@id"-Fragmente.
+     * SEO-URL-Platzhalter der Startseite, Basis für stabile "@id"-Fragmente.
      */
     public function getBaseUrl(): string
     {

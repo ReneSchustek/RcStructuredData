@@ -17,12 +17,12 @@ use Twig\TwigFunction;
  *
  * Warum das nicht in Twig geht: `not feature('JSON_LD_DATA')` trägt nur, solange es das Flag
  * gibt. Mit Shopware 6.8 verschwindet es, und `Feature::isActive()` liefert für ein unbekanntes
- * Flag `false` — die Bedingung wäre erfüllt, obwohl der Kern seinen globalen Block rendert.
+ * Flag `false`. Die Bedingung wäre erfüllt, obwohl der Kern seinen globalen Block rendert.
  * WebSite und Organization stünden doppelt im `<head>`.
  *
  * Eine Versionsabfrage gibt es in Storefront-Vorlagen nicht, und jedes Flag, das man
  * ersatzweise heranzöge, verschwindet mit derselben Hauptversion. Beantwortbar ist die Frage
- * nur in PHP — über `Feature::has()`, das die Existenz des Flags von seinem Zustand trennt.
+ * nur in PHP, über `Feature::has()`, das die Existenz des Flags von seinem Zustand trennt.
  */
 final class StructuredDataExtension extends AbstractExtension
 {
@@ -47,7 +47,7 @@ final class StructuredDataExtension extends AbstractExtension
      * Die Länder des Verkaufskanals stehen nicht am
      * Kontext, sondern in einer eigenen Zuordnung, und der vorberechnete Versandpreis liegt in
      * einem anderen Plugin. Beides in Twig zu holen hieße, in der Vorlage Datenbankabfragen zu
-     * bauen — und der Preis wäre dort ohnehin nicht erreichbar (Shopware sperrt beim Rendern
+     * bauen, und der Preis wäre dort ohnehin nicht erreichbar (Shopware sperrt beim Rendern
      * die Felder, die die Berechnung braucht).
      *
      * @return array<string, mixed>|null
@@ -58,7 +58,7 @@ final class StructuredDataExtension extends AbstractExtension
     }
 
     /**
-     * `true`, wenn der Kern WebSite und Organization selbst ausgibt — dann darf das Plugin
+     * `true`, wenn der Kern WebSite und Organization selbst ausgibt; dann darf das Plugin
      * sie nicht noch einmal liefern.
      */
     public function coreRendersGlobalJsonLd(): bool

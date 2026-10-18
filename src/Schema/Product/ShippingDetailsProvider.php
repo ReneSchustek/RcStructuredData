@@ -16,17 +16,17 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 /**
  * Baut `offers.shippingDetails` für die Produktseite.
  *
- * Ohne diesen Anbieter meldet die Search Console drei fehlende Felder — `shippingRate`,
+ * Ohne diesen Anbieter meldet die Search Console drei fehlende Felder: `shippingRate`,
  * `shippingDestination` und `transitTime`. Shopware selbst gibt nur die Bearbeitungszeit aus
  * (`handlingTime` aus der Lieferzeit des Produkts); alles andere kennt die Kernvorlage nicht.
  *
  * `handlingTime` ist die Zeit im Haus, bis die Ware
- * das Lager verlässt — sie steht am Produkt. `transitTime` ist die Zeit auf der Straße; sie
+ * das Lager verlässt (sie steht am Produkt). `transitTime` ist die Zeit auf der Straße; sie
  * steht an der Versandart. Beide in dasselbe Feld zu schreiben, wäre für den Kunden eine
  * doppelt gezählte Woche.
  */
 // Bewusst nicht `final`: Die Twig-Erweiterung wird in ihren Tests gegen ein Test-Double dieses
-// Anbieters geprüft — dort geht es um die Flag-Frage, nicht um die Versanddetails.
+// Anbieters geprüft. Dort geht es um die Flag-Frage, nicht um die Versanddetails.
 class ShippingDetailsProvider
 {
     /** @var array<string, list<string>> Länder je Verkaufskanal, einmal je Aufruf gelesen */
@@ -154,7 +154,7 @@ class ShippingDetailsProvider
     }
 
     /**
-     * Die Laufzeit der Versandart — notfalls nachgeladen.
+     * Die Laufzeit der Versandart, notfalls nachgeladen.
      *
      * Am Kontext lässt sie sich nicht einfach ablesen: Shopware baut den Kontext mit den
      * Verknüpfungen, die der Bestellvorgang braucht, und die Lieferzeit der Versandart gehört nicht

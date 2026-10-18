@@ -13,7 +13,7 @@ use Shopware\Core\Content\Cms\SalesChannel\Struct\ImageStruct;
  * Einzige Parsing-Stelle für youtube-video: aus der `videoID` werden die YouTube-URLs
  * abgeleitet, das Thumbnail stammt aus dem gepflegten `previewMedia` (vom Core-Resolver als
  * ImageStruct an den Slot gehängt) oder dem YouTube-Standardbild. Die vier per Admin-Override
- * ergänzten Metadatenfelder werden roh durchgereicht — die Lücken-Füll-Kaskade (Category/Seite)
+ * ergänzten Metadatenfelder werden roh durchgereicht; die Lücken-Füll-Kaskade (Category/Seite)
  * liegt bewusst im VideoObjectNodeProvider, weil dort der Seiten-Kontext verfügbar ist.
  */
 final class YoutubeVideoExtractor implements CmsBlockSchemaExtractor

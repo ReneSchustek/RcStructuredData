@@ -14,7 +14,7 @@ use Throwable;
  *
  * Der Dienst ist optional (`services.xml`: `on-invalid="null"`): Fehlt der Warenstrom, ist
  * `$calculator` null, und die strukturierten Daten kommen ohne `shippingRate` aus. Der
- * nullable Typ-Hint verlangt bei null keinen Autoload — die fremde Klasse wird dann nie
+ * nullable Typ-Hint verlangt bei null keinen Autoload; die fremde Klasse wird dann nie
  * geladen. Dasselbe Muster wie beim A/B-Schalter in RcCheckoutEnhancer.
  *
  * Ausdrücklich nur der Zwischenspeicher. `lookupCached()` schlägt nach, rechnet aber

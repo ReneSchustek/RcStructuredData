@@ -12,7 +12,7 @@ use Shopware\Core\Framework\Util\HtmlSanitizer;
  * Liest die Frage/Antwort-Paare aus einem rc-faq-CMS-Slot.
  *
  * Einzige Parsing-Stelle für rc-faq: sowohl der Storefront-DataResolver (sichtbares
- * Accordion) als auch der FaqPageNodeProvider (Schema) nutzen diesen Extractor — dadurch
+ * Accordion) als auch der FaqPageNodeProvider (Schema) nutzen diesen Extractor. Dadurch
  * sind sichtbarer Inhalt und FAQPage per Konstruktion identisch.
  */
 final class FaqCmsBlockExtractor implements CmsBlockSchemaExtractor
@@ -59,13 +59,13 @@ final class FaqCmsBlockExtractor implements CmsBlockSchemaExtractor
     }
 
     /**
-     * Die Antwort trägt gewollt Auszeichnungen — sie kommt aus dem Textbearbeiter des
+     * Die Antwort trägt gewollt Auszeichnungen, denn sie kommt aus dem Textbearbeiter des
      * Backoffice und wird in der Storefront mit `|raw` ausgegeben, damit Absätze und Listen
      * erhalten bleiben.
      *
      * Deshalb muss sie durch den Sanitizer. Ohne ihn wird aus einem Redakteursrecht ein
      * Vollzugriff: Wer `cms:update` hat, könnte Javascript einschleusen, das in der Sitzung
-     * jedes Besuchers läuft — auch in der eines Administrators, der die Seite ansieht. Der
+     * jedes Besuchers läuft, auch in der eines Administrators, der die Seite ansieht. Der
      * Sanitizer ersetzt hier das Escaping, er ergänzt es nicht.
      *
      * Die Frage geht bewusst nicht diesen Weg: Sie wird escaped ausgegeben und ist damit

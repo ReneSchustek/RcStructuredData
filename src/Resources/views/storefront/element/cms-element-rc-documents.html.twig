@@ -2,7 +2,7 @@
    `DigitalDocument` entsteht.
 
    Wie beim Begriffssatz gilt: Ausgezeichnet wird, was auf der Seite steht. Einträge, deren Datei
-   nicht mehr existiert, hat der Resolver schon entfernt — sie erscheinen weder hier noch im Graphen. #}
+   nicht mehr existiert, hat der Resolver schon entfernt. Sie erscheinen weder hier noch im Graphen. #}
 {% block element_rc_documents %}
     {% set documentsData = element.data %}
 
@@ -27,7 +27,7 @@
                                     <p class="rc-document-description mb-1">{{ document.description }}</p>
                                 {% endif %}
 
-                                {# Die Daten stehen sichtbar da, weil sie im Schema stehen — ein
+                                {# Die Daten stehen sichtbar da, weil sie im Schema stehen. Ein
                                    Ablaufdatum, das nur die Maschine kennt, wäre eine Zweitfassung. #}
                                 {% if document.datePublished or document.expires %}
                                     <p class="rc-document-dates small text-muted mb-0">

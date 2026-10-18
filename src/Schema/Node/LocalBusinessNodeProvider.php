@@ -12,7 +12,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 /**
  * Liefert einen LocalBusiness-Singleton aus der Plugin-Konfiguration (lokale SEO).
  *
- * Nur aktiv, wenn eine Adresse (Straße + Ort) gepflegt ist — sonst hätte der Knoten für Google keinen
+ * Nur aktiv, wenn eine Adresse (Straße + Ort) gepflegt ist, sonst hätte der Knoten für Google keinen
  * Wert. Ergänzt Adresse, Telefon, Bild, Geo-Koordinaten, Preisspanne und Öffnungszeiten, sofern konfiguriert.
  *
  * Typ `HomeAndConstructionBusiness`: ein Untertyp von LocalBusiness für Baubedarf und Handwerk; Google wertet ihn wie

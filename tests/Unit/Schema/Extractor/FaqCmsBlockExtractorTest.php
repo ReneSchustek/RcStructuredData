@@ -64,7 +64,7 @@ class FaqCmsBlockExtractorTest extends TestCase
      *        Vollzugriff: Eingeschleustes Javascript liefe in der Sitzung jedes Besuchers,
      *        auch in der eines Administrators, der die Seite ansieht.
      *
-     * Geprüft wird die Weitergabe, nicht das Ergebnis — was entfernt wird, entscheidet der
+     * Geprüft wird die Weitergabe, nicht das Ergebnis. Was entfernt wird, entscheidet der
      * Kern und ist dort geprüft.
      */
     public function testTheAnswerIsPassedThroughTheSanitizer(): void
@@ -91,7 +91,7 @@ class FaqCmsBlockExtractorTest extends TestCase
      *
      * Sie wird in der Storefront escaped ausgegeben und ist damit ungefährlich. Ginge sie
      * durch den Sanitizer, stünden erlaubte Auszeichnungen hinterher als sichtbarer Text auf
-     * der Seite — eine Verschlechterung ohne Sicherheitsgewinn.
+     * der Seite, eine Verschlechterung ohne Sicherheitsgewinn.
      */
     public function testTheQuestionIsLeftUntouched(): void
     {

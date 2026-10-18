@@ -85,7 +85,7 @@ class YoutubeApiMetadataEnricherTest extends TestCase
 
     public function testNegativelyCachesErrorStatusAcrossCalls(): void
     {
-        // Nach einem 403 (Quota) darf ein zweiter enrich() KEINEN weiteren HTTP-Call auslösen —
+        // Nach einem 403 (Quota) darf ein zweiter enrich() KEINEN weiteren HTTP-Call auslösen,
         // sonst würde ein quota-erschöpfter API-Zustand jeden Cache-Miss-Render erneut mit einem
         // blockierenden, scheiternden Call belasten. Nur EINE Antwort im Mock: ein zweiter
         // Aufruf schlüge fehl, wenn der Fehler nicht negativ gecacht würde.

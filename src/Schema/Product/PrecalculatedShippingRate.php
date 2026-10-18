@@ -16,7 +16,7 @@ namespace Ruhrcoder\RcStructuredData\Schema\Product;
 interface PrecalculatedShippingRate
 {
     /**
-     * Der vorberechnete Versandpreis — oder `null`, wenn keiner vorliegt.
+     * Der vorberechnete Versandpreis, oder `null`, wenn keiner vorliegt.
      *
      * `null` ist der Normalfall ohne den Warenstrom und darf niemals als „kostenlos"
      * durchgehen: Ein `shippingRate` von 0,00 € wäre eine Zusage, die der Shop nicht hält.

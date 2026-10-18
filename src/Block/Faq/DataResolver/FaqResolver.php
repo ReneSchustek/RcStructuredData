@@ -17,7 +17,7 @@ use Shopware\Core\Content\Cms\DataResolver\ResolverContext\ResolverContext;
  * Registriert das rc-faq-CMS-Element und stellt die Frage/Antwort-Paare fürs Accordion bereit.
  *
  * Die Daten liegen vollständig in der Slot-Konfiguration (keine DB-Abfrage), daher ist collect()
- * leer. Das Parsing teilt sich der Resolver mit dem FaqPageNodeProvider über den Extractor —
+ * leer. Das Parsing teilt sich der Resolver mit dem FaqPageNodeProvider über den Extractor;
  * sichtbarer Inhalt und FAQPage stammen so aus einer Quelle.
  */
 final class FaqResolver extends AbstractCmsElementResolver

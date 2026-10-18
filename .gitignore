@@ -1,5 +1,5 @@
 # ============================================================
-# .gitignore – RcStructuredData
+# .gitignore (RcStructuredData)
 # ============================================================
 
 # Lokale Arbeits- und Werkzeugdateien (nicht Teil des Plugins)
@@ -13,7 +13,7 @@
 # Composer / PHP
 vendor/
 composer.phar
-# Als verteiltes Plugin (Library) wird die Lock-Datei nicht versioniert — die
+# Als verteiltes Plugin (Library) wird die Lock-Datei nicht versioniert. Die
 # konsumierende Shopware-Installation löst die Abhängigkeiten selbst auf.
 composer.lock
 

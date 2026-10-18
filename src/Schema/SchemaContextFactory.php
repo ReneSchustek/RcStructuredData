@@ -16,7 +16,7 @@ use Shopware\Storefront\Page\Navigation\NavigationPage;
  * Baut aus einer geladenen Storefront-Seite den SchemaContext.
  *
  * Hier passiert die gesamte Auflösung (übersetzte Texte, Custom-Field-Overrides, SEO-URL-
- * Platzhalter, Locale) — die Subscriber bleiben dadurch reine Delegation, die Provider reine
+ * Platzhalter, Locale). Die Subscriber bleiben dadurch reine Delegation, die Provider reine
  * Berechnung.
  */
 final class SchemaContextFactory
@@ -45,7 +45,7 @@ final class SchemaContextFactory
     }
 
     /**
-     * Baut den Kontext direkt aus einer Kategorie — genutzt vom Page-Subscriber und vom
+     * Baut den Kontext direkt aus einer Kategorie, genutzt vom Page-Subscriber und vom
      * Diagnose-Befehl (der keine Storefront-Seite lädt).
      */
     public function fromCategory(?CategoryEntity $category, ?CmsPageEntity $cmsPage, SalesChannelContext $context): ?SchemaContext
@@ -54,7 +54,7 @@ final class SchemaContextFactory
             return null;
         }
 
-        // Die Startseite ist technisch ebenfalls eine Navigation-Seite (Root-Kategorie) — sie
+        // Die Startseite ist technisch ebenfalls eine Navigation-Seite (Root-Kategorie); sie
         // bekommt keine CollectionPage/Breadcrumb, sondern den Home-Kontext (Organization + WebSite
         // + WebPage als Homepage-Signale).
         if ($category->getId() === $context->getSalesChannel()->getNavigationCategoryId()) {
@@ -80,13 +80,13 @@ final class SchemaContextFactory
     }
 
     /**
-     * Baut den Home-Kontext (Startseite): Homepage-Signale ohne Category — dadurch feuern
+     * Baut den Home-Kontext (Startseite): Homepage-Signale ohne Category. Dadurch feuern
      * Organization/WebSite (Singletons) und WebPage, aber keine CollectionPage/Breadcrumb/ItemList.
      *
      * Die Erlebniswelt reist mit. Fehlte sie hier, fehlte auch jeder Knoten aus einem Baustein:
      * Die Videos der Startseite stünden nur im handgeschriebenen JSON-LD, obwohl das Plugin sie
      * auszeichnen kann. Was als Baustein auf der Seite steht (Video, FAQ,
-     * Begriffssatz, Nachweise), ist sichtbarer Inhalt — auf der Startseite wie überall.
+     * Begriffssatz, Nachweise), ist sichtbarer Inhalt, auf der Startseite wie überall.
      */
     private function fromHome(CategoryEntity $category, ?CmsPageEntity $cmsPage, SalesChannelContext $context): SchemaContext
     {
@@ -119,7 +119,7 @@ final class SchemaContextFactory
     }
 
     /**
-     * Baut den Blog-Kontext aus bereits aufgelösten Primitivwerten — dadurch bleibt die Factory
+     * Baut den Blog-Kontext aus bereits aufgelösten Primitivwerten; dadurch bleibt die Factory
      * frei von WerklOpenBlogware-Typen (der Subscriber liefert die Werte).
      *
      * Die CmsPage wird durchgereicht, damit block-basierte Provider (FAQPage aus rc-faq, VideoObject)
@@ -163,7 +163,7 @@ final class SchemaContextFactory
     }
 
     /**
-     * Baut den Kontext direkt aus einer Landingpage-Entity — genutzt vom Page-Subscriber (über
+     * Baut den Kontext direkt aus einer Landingpage-Entity, genutzt vom Page-Subscriber (über
      * fromLandingPage) und vom Diagnose-Endpunkt (der keine Storefront-Seite lädt).
      */
     public function fromLandingPageEntity(LandingPageEntity $landingPage, SalesChannelContext $context): SchemaContext
@@ -234,7 +234,7 @@ final class SchemaContextFactory
     }
 
     /**
-     * Schema-Beschreibungen sind Klartext — HTML aus der CMS-Pflege wird entfernt.
+     * Schema-Beschreibungen sind Klartext. HTML aus der CMS-Pflege wird entfernt.
      */
     private function toPlainText(string $value): string
     {

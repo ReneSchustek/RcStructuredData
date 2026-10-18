@@ -13,7 +13,7 @@ use Shopware\Core\Framework\Plugin;
  *
  * Das Plugin ist reine Administrations-Erweiterung ohne PHP-Geschäftslogik, daher
  * prüfen die Tests nur den Kontrakt der Bundle-/Plugin-Basis: Die Klasse muss
- * instanziierbar sein und sich als Shopware-Plugin verhalten — sonst würde Shopware
+ * instanziierbar sein und sich als Shopware-Plugin verhalten, sonst würde Shopware
  * sie beim Laden des Plugin-Lifecycles gar nicht erst akzeptieren.
  */
 class RcStructuredDataTest extends TestCase

@@ -5,11 +5,11 @@
    Überschrieben wird nur der Skript-Block. Die Kernvorlage baut ihre Daten in einem
    einzigen großen Block auf; ihn zu kopieren hieße, 350 Zeilen Kernlogik (Varianten,
    ProductGroup, Verfügbarkeits-Kaskade, Bewertungen) mitzuschleppen und bei jedem Shopware-Update
-   nachzuziehen. Der Skript-Block ist der letzte vor der Ausgabe — dort steht `productData`
+   nachzuziehen. Der Skript-Block ist der letzte vor der Ausgabe. Dort steht `productData`
    fertig, und eine einzige Zusammenführung reicht.
 
    Ergänzt wird nur das einzelne Angebot. Bei Varianten gibt der Kern ein `AggregateOffer` aus. Dort
-   gehören Versanddetails nicht hin — sie beschreiben ein konkretes Angebot, nicht eine Spanne.
+   gehören Versanddetails nicht hin, denn sie beschreiben ein konkretes Angebot, nicht eine Spanne.
 
    Der Kern setzt nur `deliveryTime.handlingTime` und lässt `shippingDetails` ganz weg,
    wenn das Produkt keine Lieferzeit trägt. Deshalb wird das

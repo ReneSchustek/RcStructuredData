@@ -6,12 +6,12 @@ declare(strict_types=1);
  * Nachbildung der Berührungsfläche von RcProductFeedShippingExtension für den Testlauf.
  *
  * Das Plugin ist keine Abhängigkeit dieses Plugins (services.xml: `on-invalid="null"`) und liegt
- * beim Testlauf nicht im Ladepfad — ohne diese Nachbildung ließe sich der Adapter gar nicht
+ * beim Testlauf nicht im Ladepfad. Ohne diese Nachbildung ließe sich der Adapter gar nicht
  * prüfen. Nur die zwei Symbole, die er wirklich anfasst; alles weitere täuschte eine Kopplung
  * vor, die es nicht gibt.
  *
  * Die Abfrage auf `class_exists` ist kein Zierrat: Liegt das echte Plugin doch im Ladepfad,
- * gewinnt es — sonst stünden zwei Klassen desselben Namens im selben Prozess.
+ * gewinnt es, sonst stünden zwei Klassen desselben Namens im selben Prozess.
  */
 
 namespace Ruhrcoder\RcProductFeedShippingExtension\Struct;

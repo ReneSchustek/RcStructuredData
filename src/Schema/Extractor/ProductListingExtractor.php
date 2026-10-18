@@ -10,7 +10,7 @@ use Shopware\Core\Content\Cms\SalesChannel\Struct\ProductListingStruct;
 /**
  * Liest die Produkt-IDs der auf der Seite gelisteten Produkte aus einem product-listing-Slot.
  *
- * Quelle ist die aufgelöste Slot-Data (`ProductListingStruct::getListing()`) — also genau die
+ * Quelle ist die aufgelöste Slot-Data (`ProductListingStruct::getListing()`), also genau die
  * paginierte Scheibe, die der Besucher sieht. Damit bleibt der ItemList konsistent zum sichtbaren
  * Listing, analog zur „eine Parsing-Stelle"-Regel der übrigen Extraktoren.
  */

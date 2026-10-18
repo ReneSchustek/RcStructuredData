@@ -33,7 +33,7 @@ final class DocumentsCmsBlockExtractor implements CmsBlockSchemaExtractor
 
     /**
      * Die Redaktion pflegt Tage, nicht Zeitpunkte. Kommt ein Zeitpunkt an, wird er in dieser Zone
-     * gelesen — siehe `cleanDate()`.
+     * gelesen (siehe `cleanDate()`).
      */
     private const EDITORIAL_TIMEZONE = 'Europe/Berlin';
 
@@ -59,7 +59,7 @@ final class DocumentsCmsBlockExtractor implements CmsBlockSchemaExtractor
             }
 
             // Name und Datei sind Pflicht. Ein Nachweis ohne Namen ist ein nackter Verweis,
-            // einer ohne Datei ein Versprechen ohne Beleg — beides fällt weg.
+            // einer ohne Datei ein Versprechen ohne Beleg. Beides fällt weg.
             $name = $this->cleanText($rawDocument['name'] ?? null);
             // Kleinschreibung vor der Prüfung: `Uuid::isValid()` lehnt Großbuchstaben ab.
             $mediaId = strtolower($this->cleanText($rawDocument['mediaId'] ?? null));
@@ -97,7 +97,7 @@ final class DocumentsCmsBlockExtractor implements CmsBlockSchemaExtractor
      *
      * Der Zeitpunkt wird umgerechnet statt abgeschnitten, denn ein Datumsfeld im
      * Backoffice kann „4. Juli, 0 Uhr" als `2026-07-03T22:00:00.000Z` speichern. Die ersten zehn
-     * Zeichen wären dann der 3. Juli — ein Prüfzeugnis, das einen Tag früher abläuft, als darauf
+     * Zeichen wären dann der 3. Juli, ein Prüfzeugnis, das einen Tag früher abläuft, als darauf
      * steht. In der Zone der Redaktion gelesen, ist es wieder der 4.
      */
     private function cleanDate(mixed $value): string

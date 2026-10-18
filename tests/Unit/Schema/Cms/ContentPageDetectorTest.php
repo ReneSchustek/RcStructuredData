@@ -13,7 +13,7 @@ use Shopware\Core\Content\Cms\CmsPageEntity;
 
 /**
  * Prüft die eine Frage, an der `CollectionPage` und `WebPage` auseinandergehen: Führt die Seite
- * eine Liste von Einträgen — oder ist sie ein Text?
+ * eine Liste von Einträgen, oder ist sie ein Text?
  */
 class ContentPageDetectorTest extends TestCase
 {
@@ -22,7 +22,7 @@ class ContentPageDetectorTest extends TestCase
 
     /**
      * Was: Eine Erlebniswelt vom Typ `page` ohne Listen-Baustein ist eine Inhaltsseite.
-     * Warum: Impressum, AGB und Kontakt führen keine Liste — `CollectionPage` wäre dort falsch.
+     * Warum: Impressum, AGB und Kontakt führen keine Liste. `CollectionPage` wäre dort falsch.
      */
     public function testLayoutOfTypePageIsAContentPage(): void
     {
@@ -79,7 +79,7 @@ class ContentPageDetectorTest extends TestCase
     /**
      * Was: Ein `page`-Layout mit Beitragsliste bleibt eine Sammlung.
      * Warum: Die Blog-Übersicht läuft über ein `page`-Layout, führt aber eine Liste. Erkannt wird
-     *        sie am Baustein, nicht am Namen der Kategorie — ein Name lässt sich ändern.
+     *        sie am Baustein, nicht am Namen der Kategorie, denn ein Name lässt sich ändern.
      */
     public function testBlogListingStaysACollection(): void
     {

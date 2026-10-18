@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Nagelt die JSON-LD-Injektionsstellen gegen die Phantom-Block-Klasse fest: Ein `sw_extends`-Block,
- * den es im Ziel-Template des Cores nicht (mehr) gibt, wird von Twig stillschweigend ignoriert — der
+ * den es im Ziel-Template des Cores nicht (mehr) gibt, wird von Twig stillschweigend ignoriert. Der
  * gesamte strukturierte-Daten-`@graph` würde dann nie ausgegeben, ohne Fehler. Diese Tests pinnen
  * Ziel-Template und Blockname der drei Meta-Overrides gegen einen Core-Rename.
  */

@@ -77,7 +77,7 @@ final class SchemaGraphSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Vollständigkeits-Hinweise nur bei aktivem Debug-Schalter — der Produktiv-Output bleibt sauber.
+     * Vollständigkeits-Hinweise nur bei aktivem Debug-Schalter; der Produktiv-Output bleibt sauber.
      *
      * @param array<string, mixed> $graph
      *

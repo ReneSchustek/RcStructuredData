@@ -53,12 +53,12 @@ final class VideoObjectNodeProvider implements SchemaNodeProvider
                 // Ohne Datum wird der Knoten gar nicht erst ausgegeben.
                 //
                 // Google wertet ein VideoObject ohne
-                // `uploadDate` als kritischen Fehler — das Video erscheint dann nicht in der
+                // `uploadDate` als kritischen Fehler. Das Video erscheint dann nicht in der
                 // Suche, und die Meldung steht in der Search Console. Ein fehlendes VideoObject
                 // ist dagegen neutral: Die Seite wird bewertet wie jede ohne Video.
                 //
                 // Das Datum kommt aus der Kaskade (Block-Zusatzfeld, Seiten-Zusatzfeld,
-                // YouTube-Schnittstelle). Wer es pflegt, bekommt den Knoten zurück — die
+                // YouTube-Schnittstelle). Wer es pflegt, bekommt den Knoten zurück; die
                 // Auslassung ist kein Verzicht, sondern ein Hinweis mit Wirkung.
                 if (!isset($node['uploadDate'])) {
                     continue;

@@ -5,12 +5,12 @@ import './preview';
 const { Application } = Shopware;
 
 /**
- * Nachweise — eine sichtbare Liste von Dateien (Prüfzeugnisse, Bescheide), aus der zugleich je ein
+ * Nachweise: eine sichtbare Liste von Dateien (Prüfzeugnisse, Bescheide), aus der zugleich je ein
  * `DigitalDocument` entsteht.
  *
  * Steht ein Prüfzeugnis nur als Verweis in einem freien
  * Textblock, bleibt für den Nachweis allein handgeschriebenes JSON-LD. Was ein Verweis *ist*,
- * sagt ein Verweis nicht — hier wird es gepflegt.
+ * sagt ein Verweis nicht. Hier wird es gepflegt.
  */
 Application.getContainer('service').cmsService.registerCmsElement({
     name: 'rc-documents',

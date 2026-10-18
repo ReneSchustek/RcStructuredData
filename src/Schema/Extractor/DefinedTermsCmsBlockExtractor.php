@@ -61,7 +61,7 @@ final class DefinedTermsCmsBlockExtractor implements CmsBlockSchemaExtractor
 
             // Die Erklärung darf fehlen: Viele Begriffssätze tragen nur Namen, und ein
             // `DefinedTerm` ohne Erklärung ist gültig. Ein Begriff ohne *Namen*
-            // dagegen ist nichts — der fällt oben weg.
+            // dagegen ist nichts, der fällt oben weg.
             $terms[] = [
                 'term' => $term,
                 'definition' => $this->cleanDefinition($rawTerm['definition'] ?? null),
@@ -85,7 +85,7 @@ final class DefinedTermsCmsBlockExtractor implements CmsBlockSchemaExtractor
      * Die Erklärung kommt aus dem Textbearbeiter des Backoffice und wird in der Storefront mit
      * `|raw` ausgegeben, damit Absätze und Listen erhalten bleiben.
      *
-     * Deshalb muss sie durch den Sanitizer — dieselbe Begründung wie bei der FAQ-Antwort:
+     * Deshalb muss sie durch den Sanitizer (dieselbe Begründung wie bei der FAQ-Antwort):
      * Ohne ihn wird aus einem Redakteursrecht ein Vollzugriff. Der Begriff selbst geht bewusst
      * nicht diesen Weg; er wird escaped ausgegeben und stünde sonst mit sichtbaren Auszeichnungen
      * auf der Seite.

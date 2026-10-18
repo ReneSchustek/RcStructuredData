@@ -2,7 +2,7 @@
 
 Dieses Plugin sorgt dafür, dass Ihre **Kategorie- und Landingpages** von Google und anderen
 Suchmaschinen besser verstanden werden. Es fügt den Seiten unsichtbare, maschinenlesbare
-Zusatzinformationen im Format **Schema.org / JSON-LD** hinzu – die Grundlage für die
+Zusatzinformationen im Format **Schema.org / JSON-LD** hinzu, die Grundlage für die
 „aufgehübschten" Suchergebnisse (Rich Results) mit Aufklapp-FAQ, Video-Vorschau,
 Breadcrumb-Pfad und Shop-Informationen.
 
@@ -32,7 +32,7 @@ Shopware-Administrationsbereich gepflegt.
 
 Suchmaschinen lesen Ihre Website nicht wie ein Mensch. Damit Google zum Beispiel weiß, dass ein
 bestimmter Textblock eine **Frage-Antwort-Liste (FAQ)** ist oder dass auf der Seite ein **Video**
-liegt, braucht es strukturierte Daten – eine Art unsichtbares Etikett im Quelltext der Seite.
+liegt, braucht es strukturierte Daten: eine Art unsichtbares Etikett im Quelltext der Seite.
 
 Sind diese Etiketten sauber gesetzt, kann Google Ihre Seite in den Suchergebnissen ansprechender
 darstellen, etwa mit:
@@ -97,15 +97,15 @@ Optional (nur für die automatische Video-Anreicherung):
 
 ## Installation
 
-### Variante A – über den Administrationsbereich (empfohlen)
+### Variante A: über den Administrationsbereich (empfohlen)
 
 1. **Einstellungen → System → Plugins** öffnen.
 2. Oben rechts auf **Plugin hochladen** klicken und die ZIP-Datei des Plugins auswählen.
 3. Beim Plugin **RcStructuredData** auf **Installieren** und danach auf **Aktivieren** klicken.
-4. Wenn Ihr Theme neu gebaut werden muss, meldet Shopware das – folgen Sie dem Hinweis bzw.
+4. Wenn Ihr Theme neu gebaut werden muss, meldet Shopware das. Folgen Sie dem Hinweis bzw.
    informieren Sie Ihren Techniker (siehe [Updates und Deployment](#hinweise-für-updates-und-deployment)).
 
-### Variante B – über die Kommandozeile (für Techniker)
+### Variante B: über die Kommandozeile (für Techniker)
 
 ```bash
 bin/console plugin:refresh
@@ -126,16 +126,16 @@ dann auf **Konfiguration**. Sie finden dort mehrere Karten:
 
 Angaben zu Ihrem Unternehmen. Werden von Google für die Firmendarstellung genutzt.
 
-- **Name der Organisation** – Firmenname. Bleibt das Feld leer, wird automatisch der Shop-Name
+- **Name der Organisation:** Firmenname. Bleibt das Feld leer, wird automatisch der Shop-Name
   verwendet.
-- **Logo-URL** – vollständige Internetadresse zu Ihrem Logo (z. B.
+- **Logo-URL:** vollständige Internetadresse zu Ihrem Logo (z. B.
   `https://ihr-shop.de/media/logo.png`).
-- **Social-Profile** – eine Profil-Adresse pro Zeile (z. B. Facebook, Instagram, LinkedIn).
+- **Social-Profile:** eine Profil-Adresse pro Zeile (z. B. Facebook, Instagram, LinkedIn).
 
 ### 2. Website
 
-- **Name der Website** – meist identisch mit dem Shop-Namen. Leer = Shop-Name.
-- **Such-URL-Vorlage** – optional. Ermöglicht Google, ein Suchfeld für Ihren Shop anzuzeigen.
+- **Name der Website:** meist identisch mit dem Shop-Namen. Leer = Shop-Name.
+- **Such-URL-Vorlage:** optional. Ermöglicht Google, ein Suchfeld für Ihren Shop anzuzeigen.
   Die Adresse muss den Platzhalter `{search_term_string}` enthalten, z. B.
   `https://ihr-shop.de/search?search={search_term_string}`.
 
@@ -148,15 +148,15 @@ entsteht kein LocalBusiness, und die Lage erscheint nur mit Breiten- und Längen
 
 ### 3. YouTube-Data-API (optional)
 
-- **YouTube-Data-API-Schlüssel** – wenn Sie hier einen Schlüssel eintragen, holt das Plugin
+- **YouTube-Data-API-Schlüssel:** Wenn Sie hier einen Schlüssel eintragen, holt das Plugin
   fehlende Videoangaben (Titel, Beschreibung, Veröffentlichungsdatum, Laufzeit) automatisch von
-  YouTube. Ohne Schlüssel bleibt alles wie gewohnt – die Angaben pflegen Sie dann selbst.
+  YouTube. Ohne Schlüssel bleibt alles wie gewohnt; die Angaben pflegen Sie dann selbst.
   Der Schlüssel wird sicher gespeichert und niemals im Seitenquelltext oder in Protokollen
   angezeigt.
 
 ### 4. Diagnose
 
-- **Vollständigkeits-Diagnose als HTML-Kommentar ausgeben** – ein Hilfsschalter für die
+- **Vollständigkeits-Diagnose als HTML-Kommentar ausgeben** ist ein Hilfsschalter für die
   Fehlersuche. Ist er aktiv, listet das Plugin fehlende empfohlene Felder als (für Besucher
   unsichtbaren) Kommentar im Quelltext auf. **Bitte im Live-Betrieb ausgeschaltet lassen** und nur
   vorübergehend zum Prüfen aktivieren.
@@ -174,12 +174,12 @@ hinterlegen. Öffnen Sie dazu die Kategorie bzw. Landingpage im Admin.
 
 In den Kategorie-/Landingpage-Einstellungen finden Sie eine eigene Karte mit:
 
-- **Schema-Beschreibung (Override)** – eine optionale Klartext-Beschreibung der Seite. Bleibt sie
+- **Schema-Beschreibung (Override):** eine optionale Klartext-Beschreibung der Seite. Bleibt sie
   leer, wird die normale Kategoriebeschreibung verwendet.
-- **Zusätzliche Eigenschaften** – frei definierbare **Name/Wert-Paare** (z. B. „Material" /
+- **Zusätzliche Eigenschaften:** frei definierbare **Name/Wert-Paare** (z. B. „Material" /
   „Edelstahl"). Über **Eigenschaft hinzufügen** legen Sie beliebig viele Zeilen an; mit
   **Entfernen** löschen Sie eine Zeile wieder.
-- **Video-Fallback-Felder** (Titel, Beschreibung, Upload-Datum, Dauer) – dienen als Rückfallebene
+- **Video-Fallback-Felder** (Titel, Beschreibung, Upload-Datum, Dauer) dienen als Rückfallebene
   für Videos auf dieser Seite, falls direkt am Video-Block nichts gepflegt ist.
 
 ### FAQ auf einer Seite anzeigen (Block „FAQ (strukturierte Daten)")
@@ -189,7 +189,7 @@ In den Kategorie-/Landingpage-Einstellungen finden Sie eine eigene Karte mit:
 3. Tragen Sie beliebig viele **Frage/Antwort-Paare** ein.
 
 Das Element zeigt im Shop ein aufklappbares FAQ (barrierearm über `<details>`/`<summary>`) **und**
-liefert gleichzeitig die FAQ-Daten für Google – beides aus einer Quelle, sodass Anzeige und
+liefert gleichzeitig die FAQ-Daten für Google, beides aus einer Quelle, sodass Anzeige und
 Schema garantiert übereinstimmen.
 
 ### Video-Angaben pflegen (Standard-Element „YouTube-Video")
@@ -201,7 +201,7 @@ Das Plugin erweitert das normale YouTube-Video-Element um vier Schema-Felder:
 - **Upload-Datum** im Format `JJJJ-MM-TT` (z. B. `2024-05-01`)
 - **Dauer** im ISO-8601-Format (z. B. `PT5M30S` für 5 Minuten 30 Sekunden)
 
-Fehlende Felder werden – falls konfiguriert – automatisch ergänzt. Die Reihenfolge, in der die
+Fehlende Felder werden, falls konfiguriert, automatisch ergänzt. Die Reihenfolge, in der die
 Angaben gezogen werden (die erste ausgefüllte Stufe gewinnt):
 
 1. **direkt am Video-Block** (die vier Felder oben),
@@ -240,7 +240,7 @@ der Cache geleert wurde.
 
 **Google zeigt eine Warnung „fehlende Felder" beim Video.**
 Google verlangt für Videos u. a. Titel, Beschreibung, Upload-Datum und (empfohlen) die Laufzeit.
-Pflegen Sie diese am Video-Block oder in den Video-Fallback-Feldern der Seite – oder hinterlegen
+Pflegen Sie diese am Video-Block oder in den Video-Fallback-Feldern der Seite, oder hinterlegen
 Sie einen YouTube-API-Schlüssel, damit sie automatisch geholt werden. Der Diagnose-Befehl zeigt
 Ihnen genau, was fehlt.
 
@@ -324,7 +324,7 @@ gespeichert und niemals im Seitenquelltext oder in Protokollen ausgegeben.
 
 ## Support und Lizenz
 
-- **Hersteller:** Ruhrcoder (René Schustek) – <https://ruhrcoder.de>
+- **Hersteller:** Ruhrcoder (René Schustek), <https://ruhrcoder.de>
 - **Lizenz:** MIT (siehe [LICENSE](LICENSE))
 - **Änderungshistorie:** siehe [CHANGELOG](CHANGELOG.md)
 

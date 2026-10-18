@@ -52,7 +52,7 @@ class DefinedTermSetNodeProviderTest extends TestCase
     }
 
     /**
-     * Zwei Begriffssätze werden bewusst nicht verschmolzen — anders als die FAQ. Jeder Satz
+     * Zwei Begriffssätze werden bewusst nicht verschmolzen (anders als die FAQ). Jeder Satz
      * trägt einen eigenen Namen, und der ist bei einem Begriffssatz die halbe Aussage.
      */
     public function testTwoSetsKeepTheirOwnNames(): void
@@ -85,7 +85,7 @@ class DefinedTermSetNodeProviderTest extends TestCase
     }
 
     /**
-     * Ein ausgelassener Satz darf keine Lücke in der Nummerierung hinterlassen — sonst zeigt eine
+     * Ein ausgelassener Satz darf keine Lücke in der Nummerierung hinterlassen, sonst zeigt eine
      * spätere Verknüpfung auf ein `@id`, das es nicht gibt.
      */
     public function testSkippedSetLeavesNoGapInTheNumbering(): void
@@ -131,7 +131,7 @@ class DefinedTermSetNodeProviderTest extends TestCase
     }
 
     /**
-     * Google erlaubt Auszeichnung in `acceptedAnswer.text` — für `DefinedTerm.description` nicht.
+     * Google erlaubt Auszeichnung in `acceptedAnswer.text`, für `DefinedTerm.description` nicht.
      * Dort stünde ein `<p>` als sichtbarer Text im Suchergebnis. Die Seite behält ihre
      * Auszeichnung, das Schema bekommt reinen Text.
      */

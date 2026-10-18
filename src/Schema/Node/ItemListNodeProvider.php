@@ -14,7 +14,7 @@ use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 /**
  * Erzeugt aus der Produktliste einer Kategorieseite einen ItemList-Knoten.
  *
- * Es werden nur die auf der aktuellen (paginierten) Seite gelisteten Produkte abgebildet — der von
+ * Es werden nur die auf der aktuellen (paginierten) Seite gelisteten Produkte abgebildet, der von
  * Google empfohlene Weg für paginierte Sammlungen. Der Knoten steht eigenständig im @graph (keine
  * mainEntity-Verdrahtung, um mit einer evtl. vorhandenen FAQPage nicht zu kollidieren).
  */
