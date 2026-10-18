@@ -37,8 +37,8 @@ class SchemaContextFactoryTest extends TestCase
 
     /**
      * Was: Startseite mit gepflegtem Meta-Titel und Meta-Beschreibung im Verkaufskanal.
-     * Warum: Die Wurzelkategorie heißt im Shop „Hauptkategorien"; als Name der Startseite stand das im JSON-LD, ohne
-     *        Beschreibung.
+     * Warum: Die Wurzelkategorie heißt im Shop „Hauptkategorien"; als Name der Startseite stünde das sonst im JSON-LD,
+     *        ohne Beschreibung.
      * Erwartet: Name und Beschreibung aus dem Kanal, die Kategorie zählt nicht.
      */
     public function testHomeTakesNameAndDescriptionFromTheSalesChannel(): void

@@ -87,7 +87,7 @@ class VideoObjectNodeProviderTest extends TestCase
     /**
      * **Der Kern der Auszeichnung.** Google wertet ein VideoObject ohne `uploadDate` als kritischen
      * Fehler — das Video erscheint dann nicht in der Suche. Ein fehlendes VideoObject ist
-     * dagegen neutral. Am 2026-08-24 standen auf Live 13 solcher Knoten auf 7 Seiten.
+     * dagegen neutral.
      */
     public function testAVideoWithoutAnUploadDateIsNotRenderedAtAll(): void
     {

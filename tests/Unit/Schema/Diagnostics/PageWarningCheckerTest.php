@@ -113,7 +113,7 @@ class PageWarningCheckerTest extends TestCase
 
     /**
      * Was: Ein YouTube-Baustein, für den im Graphen kein Knoten steht.
-     * Warum: **Die dritte Anforderung an die Diagnose.** Seit 2.17.0 lässt das Plugin ein Video ohne
+     * Warum: Das Plugin lässt ein Video ohne
      *        Veröffentlichungsdatum aus — ohne diese Meldung wäre das ein stiller Verlust:
      *        Niemand im Backoffice sähe, **welches** Video ein Datum braucht.
      */

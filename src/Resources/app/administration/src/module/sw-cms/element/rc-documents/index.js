@@ -8,9 +8,9 @@ const { Application } = Shopware;
  * Nachweise — eine sichtbare Liste von Dateien (Prüfzeugnisse, Bescheide), aus der zugleich je ein
  * `DigitalDocument` entsteht.
  *
- * **Warum es dieses Element gibt:** Das bauaufsichtliche Prüfzeugnis auf `/bauteile/glashalter/`
- * stand bisher als Verweis in einem freien Textblock und nur im handgeschriebenen JSON-LD als
- * Nachweis. Was ein Verweis *ist*, sagt ein Verweis nicht — hier wird es gepflegt.
+ * **Warum es dieses Element gibt:** Steht ein Prüfzeugnis nur als Verweis in einem freien
+ * Textblock, bleibt für den Nachweis allein handgeschriebenes JSON-LD. Was ein Verweis *ist*,
+ * sagt ein Verweis nicht — hier wird es gepflegt.
  */
 Application.getContainer('service').cmsService.registerCmsElement({
     name: 'rc-documents',

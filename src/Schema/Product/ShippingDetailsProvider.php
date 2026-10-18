@@ -16,7 +16,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 /**
  * Baut `offers.shippingDetails` für die Produktseite.
  *
- * **Der Anlass:** Die Search Console meldete drei fehlende Felder — `shippingRate`,
+ * Ohne diesen Anbieter meldet die Search Console drei fehlende Felder — `shippingRate`,
  * `shippingDestination` und `transitTime`. Shopware selbst gibt nur die Bearbeitungszeit aus
  * (`handlingTime` aus der Lieferzeit des Produkts); alles andere kennt die Kernvorlage nicht.
  *

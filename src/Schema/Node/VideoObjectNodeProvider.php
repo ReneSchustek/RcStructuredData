@@ -55,8 +55,7 @@ final class VideoObjectNodeProvider implements SchemaNodeProvider
                 // **Warum lieber nichts als etwas:** Google wertet ein VideoObject ohne
                 // `uploadDate` als **kritischen Fehler** — das Video erscheint dann nicht in der
                 // Suche, und die Meldung steht in der Search Console. Ein fehlendes VideoObject
-                // ist dagegen neutral: Die Seite wird bewertet wie jede ohne Video. Am
-                // 2026-08-24 waren auf Live 13 Knoten auf 7 Seiten in diesem Zustand.
+                // ist dagegen neutral: Die Seite wird bewertet wie jede ohne Video.
                 //
                 // Das Datum kommt aus der Kaskade (Block-Zusatzfeld, Seiten-Zusatzfeld,
                 // YouTube-Schnittstelle). Wer es pflegt, bekommt den Knoten zurück — die

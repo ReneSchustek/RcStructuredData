@@ -23,8 +23,8 @@ final class StructuredDataExtensionTest extends TestCase
 
     /**
      * `Feature` hält seine Registrierung statisch, und `registerFeatures()` fügt hinzu statt zu
-     * ersetzen. Ohne Zurücksetzen sähe der Test „Flag ist weg" das Flag des vorigen Tests — er
-     * war beim ersten Lauf genau daran gescheitert. Der Ausgangszustand wird danach
+     * ersetzen. Ohne Zurücksetzen sähe der Test „Flag ist weg" das Flag des vorigen Tests und
+     * schlüge fehl. Der Ausgangszustand wird danach
      * wiederhergestellt, damit die übrigen Tests der Reihe nichts davon merken.
      */
     protected function setUp(): void

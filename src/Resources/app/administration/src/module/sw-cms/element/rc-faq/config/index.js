@@ -46,7 +46,7 @@ Component.register('sw-cms-el-config-rc-faq', {
                 this.element.config.faqItems.value = [];
             }
 
-            // Bestandselemente (vor v2.5.0) haben noch keinen displayMode — sicher nachziehen.
+            // Ältere Bestandselemente haben noch keinen displayMode — sicher nachziehen.
             if (!this.element.config.displayMode || typeof this.element.config.displayMode.value !== 'string') {
                 this.element.config.displayMode = { source: 'static', value: 'accordion' };
             }

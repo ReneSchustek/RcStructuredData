@@ -15,11 +15,11 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * Liest die Einträge eines rc-documents-CMS-Slots: Nachweise wie Prüfzeugnisse, die als Datei in
  * der Medienverwaltung liegen.
  *
- * **Warum es diesen Baustein gibt.** Auf `/bauteile/glashalter/` stehen das bauaufsichtliche
- * Prüfzeugnis und sein Verlängerungsbescheid als Verweise in einem freien Textblock, die Daten dazu
- * in einer Tabelle daneben. Daraus lässt sich kein `DigitalDocument` ableiten, ohne Fließtext zu
- * deuten — und was ein Verweis *ist*, sagt ein Verweis nicht. Deshalb stand die Auszeichnung bisher
- * nur im handgeschriebenen JSON-LD. Dieser Baustein macht die Nachweise zu Daten: Die Liste steht
+ * **Warum es diesen Baustein gibt.** Stehen ein bauaufsichtliches Prüfzeugnis und sein
+ * Verlängerungsbescheid als Verweise in einem freien Textblock, die Daten dazu in einer Tabelle
+ * daneben, lässt sich daraus kein `DigitalDocument` ableiten, ohne Fließtext zu deuten. Was ein
+ * Verweis *ist*, sagt ein Verweis nicht, und die Auszeichnung bliebe dem handgeschriebenen JSON-LD
+ * überlassen. Dieser Baustein macht die Nachweise zu Daten: Die Liste steht
  * sichtbar auf der Seite, das Schema ist ihr Abbild.
  *
  * Der Extraktor liefert nur die gepflegten Rohwerte. Die Adresse der Datei kennt erst der

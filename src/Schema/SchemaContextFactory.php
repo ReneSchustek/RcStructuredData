@@ -83,9 +83,9 @@ final class SchemaContextFactory
      * Baut den Home-Kontext (Startseite): Homepage-Signale **ohne Category** — dadurch feuern
      * Organization/WebSite (Singletons) und WebPage, aber keine CollectionPage/Breadcrumb/ItemList.
      *
-     * **Die Erlebniswelt reist mit.** Bis 2.19.0 fehlte sie hier, und damit jeder Knoten aus einem
-     * Baustein: Die beiden Videos der Startseite standen nur im handgeschriebenen JSON-LD, obwohl
-     * das Plugin sie hätte auszeichnen können. Was als Baustein auf der Seite steht (Video, FAQ,
+     * **Die Erlebniswelt reist mit.** Fehlte sie hier, fehlte auch jeder Knoten aus einem Baustein:
+     * Die Videos der Startseite stünden nur im handgeschriebenen JSON-LD, obwohl das Plugin sie
+     * auszeichnen kann. Was als Baustein auf der Seite steht (Video, FAQ,
      * Begriffssatz, Nachweise), ist sichtbarer Inhalt — auf der Startseite wie überall.
      */
     private function fromHome(CategoryEntity $category, ?CmsPageEntity $cmsPage, SalesChannelContext $context): SchemaContext
@@ -199,7 +199,7 @@ final class SchemaContextFactory
     }
 
     /**
-     * Namen ohne Leerzeichen am Rand: Kategorienamen wie „Glasgeländer " standen so in BreadcrumbList und CollectionPage.
+     * Namen ohne Leerzeichen am Rand: Ein Kategoriename wie „Glasgeländer " stünde sonst samt Leerzeichen in BreadcrumbList und CollectionPage.
      */
     private function resolveName(mixed $translated, ?string $fallback): string
     {

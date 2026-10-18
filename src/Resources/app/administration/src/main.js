@@ -1,7 +1,7 @@
 /**
  * Administrations-Einstiegspunkt des Plugins.
  *
- * Seit v2.0.0 erzeugt das Plugin die strukturierten Daten zentral im Storefront-Graph-Builder
+ * Das Plugin erzeugt die strukturierten Daten zentral im Storefront-Graph-Builder
  * (PHP). Hier werden die CMS-Elemente `rc-faq` (Anzeige + Datenquelle für den FAQPage-Knoten) und
  * `rc-defined-terms` (Begriffssatz + `DefinedTermSet`) und `rc-documents` (Nachweise +
  * `DigitalDocument`) samt ihren frei platzierbaren Blöcken
@@ -24,11 +24,10 @@ import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';
 
 /*
- * Übersetzungen werden über `Locale.extend` angemeldet. Den früheren Umweg über einen
- * Initializer-Dekorator für `locale` gibt es in Shopware 6.7 nicht mehr — der Aufruf warf bei
- * jedem Laden der Administration eine Ausnahme. Folgenlos war er trotzdem, weil die
- * Übersetzungen über die serverseitige Auslieferung ankommen; ein roter Eintrag in der Konsole
- * macht aber jede echte Meldung schwerer auffindbar.
+ * Übersetzungen werden über `Locale.extend` angemeldet. Einen Initializer-Dekorator für `locale`
+ * gibt es in Shopware 6.7 nicht; ein Aufruf darüber würfe bei jedem Laden der Administration eine
+ * Ausnahme. Die Übersetzungen kämen über die serverseitige Auslieferung zwar trotzdem an, aber ein
+ * roter Eintrag in der Konsole macht jede echte Meldung schwerer auffindbar.
  */
 const { Locale } = Shopware;
 

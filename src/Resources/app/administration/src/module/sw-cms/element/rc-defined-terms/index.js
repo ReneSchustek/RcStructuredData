@@ -8,9 +8,9 @@ const { Application } = Shopware;
  * Begriffssatz — eine sichtbare Liste von Fachbegriffen, aus der zugleich das `DefinedTermSet`
  * entsteht.
  *
- * **Warum es dieses Element gibt:** Sieben Kategorieseiten trugen dieses Wissen bisher nur als
- * handgeschriebenes JSON-LD. Damit stand die Auszeichnung neben der Seite statt in ihr — und war
- * beim ersten Umbau der Seite still veraltet. Hier stammt beides aus derselben Pflege.
+ * **Warum es dieses Element gibt:** Steht ein Begriffssatz nur als handgeschriebenes JSON-LD da,
+ * liegt die Auszeichnung neben der Seite statt in ihr und ist beim ersten Umbau der Seite still
+ * veraltet. Hier stammt beides aus derselben Pflege.
  */
 Application.getContainer('service').cmsService.registerCmsElement({
     name: 'rc-defined-terms',
