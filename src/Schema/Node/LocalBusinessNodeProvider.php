@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ruhrcoder\RcStructuredData\Schema\Node;
 
 use Ruhrcoder\RcStructuredData\Schema\IdFactory;
+use Ruhrcoder\RcStructuredData\Schema\PluginConfigReader;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 use Ruhrcoder\RcStructuredData\Schema\SchemaNodeProvider;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -22,7 +23,6 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  */
 final class LocalBusinessNodeProvider implements SchemaNodeProvider
 {
-    private const CONFIG_PREFIX = 'RcStructuredData.config.';
     private const TYPE = 'HomeAndConstructionBusiness';
     private const DAYS = [
         'Mo' => 'Monday',
@@ -33,7 +33,6 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
         'Sa' => 'Saturday',
         'Su' => 'Sunday',
     ];
-    private const SHOP_NAME_KEY = 'core.basicInformation.shopName';
 
     public function __construct(
         private readonly SystemConfigService $systemConfig,
@@ -43,30 +42,67 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
 
     public function supports(SchemaContext $context): bool
     {
-        return $this->getString($context, 'localBusinessStreet') !== ''
-            && $this->getString($context, 'localBusinessCity') !== '';
+        return $this->config()->string('localBusinessStreet', $context->getSalesChannelContext()->getSalesChannelId()) !== ''
+            && $this->config()->string('localBusinessCity', $context->getSalesChannelContext()->getSalesChannelId()) !== '';
     }
 
     public function provide(SchemaContext $context): array
     {
-        $address = ['@type' => 'PostalAddress'];
-        $this->addIfSet($address, 'streetAddress', $this->getString($context, 'localBusinessStreet'));
-        $this->addIfSet($address, 'postalCode', $this->getString($context, 'localBusinessZip'));
-        $this->addIfSet($address, 'addressLocality', $this->getString($context, 'localBusinessCity'));
-        $this->addIfSet($address, 'addressCountry', $this->getString($context, 'localBusinessCountry'));
+        $address = $this->buildAddress($context);
+        $node = $this->buildBaseNode($context, $address);
+        $this->addOptionalFields($node, $context);
+        $this->addGeoAndOpeningHours($node, $context);
 
-        $node = [
+        return [$node];
+    }
+
+    /**
+     * Die Anschrift aus den Einstellungen; ein leeres Feld fehlt.
+     *
+     * @return array<string, string>
+     */
+    private function buildAddress(SchemaContext $context): array
+    {
+        $address = ['@type' => 'PostalAddress'];
+        $this->addIfSet($address, 'streetAddress', $this->config()->string('localBusinessStreet', $context->getSalesChannelContext()->getSalesChannelId()));
+        $this->addIfSet($address, 'postalCode', $this->config()->string('localBusinessZip', $context->getSalesChannelContext()->getSalesChannelId()));
+        $this->addIfSet($address, 'addressLocality', $this->config()->string('localBusinessCity', $context->getSalesChannelContext()->getSalesChannelId()));
+        $this->addIfSet($address, 'addressCountry', $this->config()->string('localBusinessCountry', $context->getSalesChannelContext()->getSalesChannelId()));
+
+        return $address;
+    }
+
+    /**
+     * @param array<string, string> $address
+     *
+     * @return array<string, mixed>
+     */
+    private function buildBaseNode(SchemaContext $context, array $address): array
+    {
+        return [
             '@type' => self::TYPE,
             '@id' => $this->idFactory->localBusiness($context),
-            'name' => $this->resolveName($context),
+            'name' => $this->config()->organizationName($context->getSalesChannelContext()->getSalesChannelId()),
             'url' => $context->getBaseUrl(),
             'address' => $address,
         ];
+    }
 
+    /**
+     * @param array<string, mixed> $node
+     */
+    private function addOptionalFields(array &$node, SchemaContext $context): void
+    {
         $this->addIfSet($node, 'image', $this->resolveImage($context));
-        $this->addIfSet($node, 'telephone', $this->getString($context, 'localBusinessPhone'));
-        $this->addIfSet($node, 'priceRange', $this->getString($context, 'localBusinessPriceRange'));
+        $this->addIfSet($node, 'telephone', $this->config()->string('localBusinessPhone', $context->getSalesChannelContext()->getSalesChannelId()));
+        $this->addIfSet($node, 'priceRange', $this->config()->string('localBusinessPriceRange', $context->getSalesChannelContext()->getSalesChannelId()));
+    }
 
+    /**
+     * @param array<string, mixed> $node
+     */
+    private function addGeoAndOpeningHours(array &$node, SchemaContext $context): void
+    {
         $geo = $this->resolveGeo($context);
         if ($geo !== null) {
             $node['geo'] = $geo;
@@ -79,8 +115,6 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
         if ($unreadable !== []) {
             $node['openingHours'] = $unreadable;
         }
-
-        return [$node];
     }
 
     /**
@@ -88,8 +122,8 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
      */
     private function resolveGeo(SchemaContext $context): ?array
     {
-        $latitude = $this->getString($context, 'localBusinessLatitude');
-        $longitude = $this->getString($context, 'localBusinessLongitude');
+        $latitude = $this->config()->string('localBusinessLatitude', $context->getSalesChannelContext()->getSalesChannelId());
+        $longitude = $this->config()->string('localBusinessLongitude', $context->getSalesChannelContext()->getSalesChannelId());
         if ($latitude === '' || $longitude === '') {
             return null;
         }
@@ -106,7 +140,7 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
      */
     private function resolveOpeningHours(SchemaContext $context): array
     {
-        $raw = $this->getString($context, 'localBusinessOpeningHours');
+        $raw = $this->config()->string('localBusinessOpeningHours', $context->getSalesChannelContext()->getSalesChannelId());
         if ($raw === '') {
             return [];
         }
@@ -118,9 +152,9 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
 
     private function resolveImage(SchemaContext $context): string
     {
-        $image = $this->getString($context, 'localBusinessImage');
+        $image = $this->config()->string('localBusinessImage', $context->getSalesChannelContext()->getSalesChannelId());
 
-        return $image !== '' ? $image : $this->getString($context, 'organizationLogo');
+        return $image !== '' ? $image : $this->config()->string('organizationLogo', $context->getSalesChannelContext()->getSalesChannelId());
     }
 
     /**
@@ -134,28 +168,13 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
     {
         $specifications = [];
         $unreadable = [];
-        $dayKeys = array_keys(self::DAYS);
-
         foreach ($lines as $line) {
             if (preg_match('/^([A-Za-z]{2}(?:-[A-Za-z]{2})?(?:\s*,\s*[A-Za-z]{2}(?:-[A-Za-z]{2})?)*)\s+(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})$/', $line, $match) !== 1) {
                 $unreadable[] = $line;
                 continue;
             }
 
-            $days = [];
-            foreach (preg_split('/\s*,\s*/', $match[1]) ?: [] as $part) {
-                $range = explode('-', $part);
-                $from = array_search(ucfirst(strtolower($range[0])), $dayKeys, true);
-                $to = array_search(ucfirst(strtolower($range[1] ?? $range[0])), $dayKeys, true);
-                if ($from === false || $to === false || $to < $from) {
-                    $days = [];
-                    break;
-                }
-                for ($day = $from; $day <= $to; ++$day) {
-                    $days[] = 'https://schema.org/' . self::DAYS[$dayKeys[$day]];
-                }
-            }
-
+            $days = self::daysOf($match[1]);
             if ($days === []) {
                 $unreadable[] = $line;
                 continue;
@@ -172,16 +191,28 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
         return [$specifications, $unreadable];
     }
 
-    private function resolveName(SchemaContext $context): string
+    /**
+     * Die Wochentage zu „Mo-Th" oder „Mo,We" als schema.org-Adressen; leer, wenn ein Teil nicht lesbar ist.
+     *
+     * @return list<string>
+     */
+    private static function daysOf(string $dayPart): array
     {
-        $configured = $this->getString($context, 'organizationName');
-        if ($configured !== '') {
-            return $configured;
+        $dayKeys = array_keys(self::DAYS);
+        $days = [];
+        foreach (preg_split('/\s*,\s*/', $dayPart) ?: [] as $part) {
+            $range = explode('-', $part);
+            $from = array_search(ucfirst(strtolower($range[0])), $dayKeys, true);
+            $to = array_search(ucfirst(strtolower($range[1] ?? $range[0])), $dayKeys, true);
+            if ($from === false || $to === false || $to < $from) {
+                return [];
+            }
+            for ($day = $from; $day <= $to; ++$day) {
+                $days[] = 'https://schema.org/' . self::DAYS[$dayKeys[$day]];
+            }
         }
 
-        $salesChannelId = $context->getSalesChannelContext()->getSalesChannelId();
-
-        return trim($this->systemConfig->getString(self::SHOP_NAME_KEY, $salesChannelId));
+        return $days;
     }
 
     /**
@@ -194,10 +225,8 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
         }
     }
 
-    private function getString(SchemaContext $context, string $key): string
+    private function config(): PluginConfigReader
     {
-        $salesChannelId = $context->getSalesChannelContext()->getSalesChannelId();
-
-        return trim($this->systemConfig->getString(self::CONFIG_PREFIX . $key, $salesChannelId));
+        return new PluginConfigReader($this->systemConfig);
     }
 }

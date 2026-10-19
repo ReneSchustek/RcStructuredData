@@ -47,7 +47,10 @@ final class PageWarningChecker
     /**
      * @param array<string, mixed>|null $graph
      *
-     * @return list<array{code: string, message: string}>
+     * Die Verwaltung baut den Text aus `code` und `params` über ihre Textbausteine (`rc-schema.diagnose.warning.*`,
+     * de-DE und en-GB). `message` bleibt deutsch für die Konsole und den Kommentar im Seitenquelltext.
+     *
+     * @return list<array{code: string, params: array<string, int|string>, message: string}>
      */
     public function check(?array $graph, ?CmsPageEntity $page): array
     {
@@ -57,40 +60,71 @@ final class PageWarningChecker
 
         $slotTypes = $this->slotTypesWithHandwrittenJsonLd($slots);
         if ($slotTypes !== []) {
-            $warnings[] = [
-                'code' => self::WARNING_HANDWRITTEN_JSON_LD,
-                'message' => sprintf(
-                    'Auf dieser Seite steht handgeschriebenes JSON-LD (%s). Zusammen mit dem erzeugten '
-                    . 'Graphen trägt die Seite zwei Auszeichnungen, die auseinanderlaufen können.',
-                    implode(', ', $slotTypes)
-                ),
-            ];
+            $warnings[] = $this->createHandwrittenJsonLdWarning($slotTypes);
         }
 
         $omittedVideoIds = $this->videosWithoutNode($graph, $slots);
         if ($omittedVideoIds !== []) {
-            $warnings[] = [
-                'code' => self::WARNING_VIDEO_WITHOUT_UPLOAD_DATE,
-                'message' => sprintf(
-                    'Für %s ist kein VideoObject entstanden — es fehlt das Veröffentlichungsdatum. '
-                    . 'Ein unvollständiger Knoten wäre für Google ein kritischer Fehler; gepflegt wird '
-                    . 'das Datum am Baustein oder an der Seite.',
-                    \count($omittedVideoIds) === 1
-                        ? 'das Video ' . $omittedVideoIds[0]
-                        : 'die Videos ' . implode(', ', $omittedVideoIds)
-                ),
-            ];
+            $warnings[] = $this->createVideoWithoutUploadDateWarning($omittedVideoIds);
         }
 
         if ($this->graphHasFaqPage($graph) && !$this->hasFaqBlock($slots)) {
-            $warnings[] = [
-                'code' => self::WARNING_FAQ_WITHOUT_BLOCK,
-                'message' => 'Diese Seite meldet FAQPage, ohne einen rc-faq-Baustein zu haben. '
-                    . 'Die Fragen stammen dann nicht aus dem sichtbaren Seiteninhalt.',
-            ];
+            $warnings[] = $this->createFaqWithoutBlockWarning();
         }
 
         return $warnings;
+    }
+
+    /**
+     * @param list<string> $slotTypes
+     *
+     * @return array{code: string, params: array<string, int|string>, message: string}
+     */
+    private function createHandwrittenJsonLdWarning(array $slotTypes): array
+    {
+        return [
+            'code' => self::WARNING_HANDWRITTEN_JSON_LD,
+            'params' => ['types' => implode(', ', $slotTypes)],
+            'message' => sprintf(
+                'Auf dieser Seite steht handgeschriebenes JSON-LD (%s). Zusammen mit dem erzeugten '
+                . 'Graphen trägt die Seite zwei Auszeichnungen, die auseinanderlaufen können.',
+                implode(', ', $slotTypes)
+            ),
+        ];
+    }
+
+    /**
+     * @param list<string> $omittedVideoIds
+     *
+     * @return array{code: string, params: array<string, int|string>, message: string}
+     */
+    private function createVideoWithoutUploadDateWarning(array $omittedVideoIds): array
+    {
+        return [
+            'code' => self::WARNING_VIDEO_WITHOUT_UPLOAD_DATE,
+            'params' => ['videos' => implode(', ', $omittedVideoIds), 'count' => \count($omittedVideoIds)],
+            'message' => sprintf(
+                'Für %s ist kein VideoObject entstanden — es fehlt das Veröffentlichungsdatum. '
+                . 'Ein unvollständiger Knoten wäre für Google ein kritischer Fehler; gepflegt wird '
+                . 'das Datum am Baustein oder an der Seite.',
+                \count($omittedVideoIds) === 1
+                    ? 'das Video ' . $omittedVideoIds[0]
+                    : 'die Videos ' . implode(', ', $omittedVideoIds)
+            ),
+        ];
+    }
+
+    /**
+     * @return array{code: string, params: array<string, int|string>, message: string}
+     */
+    private function createFaqWithoutBlockWarning(): array
+    {
+        return [
+            'code' => self::WARNING_FAQ_WITHOUT_BLOCK,
+            'params' => [],
+            'message' => 'Diese Seite meldet FAQPage, ohne einen rc-faq-Baustein zu haben. '
+                . 'Die Fragen stammen dann nicht aus dem sichtbaren Seiteninhalt.',
+        ];
     }
 
     /**

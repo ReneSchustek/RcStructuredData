@@ -95,19 +95,19 @@ final class SchemaContextFactory
         // Die Wurzelkategorie heißt im Shop „Hauptkategorien"; das ist kein Name für die Startseite. Es gilt, was der
         // Verkaufskanal für die Startseite vorsieht (Meta-Titel, Startseitenname), sonst der Name des Kanals.
         $salesChannel = $context->getSalesChannel();
-        $name = $this->firstFilled(
+        $name = PlainText::firstFilled(
             $salesChannel->getTranslation('homeMetaTitle'),
             $salesChannel->getTranslation('homeName'),
             $salesChannel->getTranslation('name'),
             $salesChannel->getName(),
         );
-        $description = $this->firstFilled($salesChannel->getTranslation('homeMetaDescription'));
+        $description = PlainText::firstFilled($salesChannel->getTranslation('homeMetaDescription'));
 
         return new SchemaContext(
             SchemaContext::TYPE_HOME,
             $name !== '' ? $name : $this->resolveName($category->getTranslation('name'), $category->getName()),
             $description !== ''
-                ? $this->toPlainText($description)
+                ? PlainText::fromHtml($description)
                 : $this->resolveDescription($category->getCustomFields() ?? [], null, null, $category->getTranslation('metaDescription') ?? $category->getMetaDescription()),
             $homeUrl,
             $homeUrl,
@@ -139,7 +139,7 @@ final class SchemaContextFactory
         return new SchemaContext(
             SchemaContext::TYPE_BLOG,
             $name,
-            $this->toPlainText($description),
+            PlainText::fromHtml($description),
             $this->seoUrlReplacer->generate(self::BLOG_DETAIL_ROUTE, ['articleId' => $articleId]),
             $this->seoUrlReplacer->generate(self::HOME_ROUTE),
             $localeCode,
@@ -186,17 +186,6 @@ final class SchemaContextFactory
         );
     }
 
-    /** Der erste nicht leere Text, getrimmt; sonst ''. */
-    private function firstFilled(mixed ...$values): string
-    {
-        foreach ($values as $value) {
-            if (\is_string($value) && trim($value) !== '') {
-                return trim($value);
-            }
-        }
-
-        return '';
-    }
 
     /**
      * Namen ohne Leerzeichen am Rand: Ein Kategoriename wie „Glasgeländer " stünde sonst samt Leerzeichen in BreadcrumbList und CollectionPage.
@@ -218,31 +207,21 @@ final class SchemaContextFactory
         // Die Meta-Beschreibung zuerst: Sie ist die gepflegte Kurzbeschreibung der Seite. Eine zweite, eigene Fassung im
         // JSON-LD hieße zwei Beschreibungen für dieselbe Seite; die eigene gilt nur, wenn keine Meta-Beschreibung da ist.
         if (\is_string($meta) && trim($meta) !== '') {
-            return $this->toPlainText($meta);
+            return PlainText::fromHtml($meta);
         }
 
         $override = $customFields[self::FIELD_DESCRIPTION] ?? null;
         if (\is_string($override) && trim($override) !== '') {
-            return $this->toPlainText($override);
+            return PlainText::fromHtml($override);
         }
 
         if (\is_string($translated) && $translated !== '') {
-            return $this->toPlainText($translated);
+            return PlainText::fromHtml($translated);
         }
 
-        return $this->toPlainText((string) ($fallback ?? ''));
+        return PlainText::fromHtml((string) ($fallback ?? ''));
     }
 
-    /**
-     * Schema-Beschreibungen sind Klartext. HTML aus der CMS-Pflege wird entfernt.
-     */
-    private function toPlainText(string $value): string
-    {
-        $stripped = strip_tags($value);
-        $collapsed = preg_replace('/\s+/u', ' ', $stripped) ?? $stripped;
-
-        return trim($collapsed);
-    }
 
     /**
      * @param array<string, mixed> $customFields

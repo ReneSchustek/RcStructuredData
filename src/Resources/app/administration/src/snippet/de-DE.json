@@ -118,7 +118,12 @@
       "required": "Pflichtfelder",
       "recommended": "Empfehlungen",
       "noGraph": "Für diese Kategorie wird kein Schema-Graph erzeugt (z. B. Startseite/Ordner).",
-      "error": "Diagnose konnte nicht geladen werden."
+      "error": "Diagnose konnte nicht geladen werden.",
+      "warning": {
+        "handwritten_json_ld": "Auf dieser Seite steht handgeschriebenes JSON-LD ({types}). Zusammen mit dem erzeugten Graphen trägt die Seite zwei Auszeichnungen, die auseinanderlaufen können.",
+        "video_without_upload_date": "Für das Video {videos} ist kein VideoObject entstanden — es fehlt das Veröffentlichungsdatum. Ein unvollständiger Knoten wäre für Google ein kritischer Fehler; gepflegt wird das Datum am Baustein oder an der Seite. | Für die Videos {videos} ist kein VideoObject entstanden — es fehlt das Veröffentlichungsdatum. Ein unvollständiger Knoten wäre für Google ein kritischer Fehler; gepflegt wird das Datum am Baustein oder an der Seite.",
+        "faq_without_block": "Diese Seite meldet FAQPage, ohne einen rc-faq-Baustein zu haben. Die Fragen stammen dann nicht aus dem sichtbaren Seiteninhalt."
+      }
     },
     "additionalProperty": {
       "name": {

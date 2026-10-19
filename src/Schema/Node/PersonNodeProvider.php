@@ -6,6 +6,7 @@ namespace Ruhrcoder\RcStructuredData\Schema\Node;
 
 use Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator;
 use Ruhrcoder\RcStructuredData\Schema\IdFactory;
+use Ruhrcoder\RcStructuredData\Schema\PlainText;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 use Ruhrcoder\RcStructuredData\Schema\SchemaNodeProvider;
 use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
@@ -45,7 +46,7 @@ final class PersonNodeProvider implements SchemaNodeProvider
             }
 
             foreach ($this->items($slot) as $item) {
-                $name = self::plain($item['title'] ?? null);
+                $name = PlainText::fromHtml($item['title'] ?? null);
                 if ($name === '') {
                     continue;
                 }
@@ -73,7 +74,7 @@ final class PersonNodeProvider implements SchemaNodeProvider
     /** Die Funktion: Text der Karte ohne Auszeichnung, bis zum ersten „·". */
     public static function jobTitle(mixed $text): string
     {
-        $plain = self::plain($text);
+        $plain = PlainText::fromHtml($text);
         $cut = mb_strpos($plain, '·');
 
         return trim($cut === false ? $plain : mb_substr($plain, 0, $cut));
@@ -105,14 +106,4 @@ final class PersonNodeProvider implements SchemaNodeProvider
         return array_values(array_filter($items, '\is_array'));
     }
 
-    private static function plain(mixed $value): string
-    {
-        if (!\is_string($value)) {
-            return '';
-        }
-
-        $text = html_entity_decode(strip_tags($value), \ENT_QUOTES | \ENT_HTML5, 'UTF-8');
-
-        return trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
-    }
 }

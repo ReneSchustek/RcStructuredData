@@ -7,6 +7,7 @@ namespace Ruhrcoder\RcStructuredData\Tests\Unit\Schema\Cms;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Ruhrcoder\RcStructuredData\Schema\Cms\CmsImageCollector;
+use Ruhrcoder\RcStructuredData\Schema\Cms\ImageSource;
 use Ruhrcoder\RcStructuredData\Tests\Unit\StaticRepositoryTrait;
 use Shopware\Core\Content\Cms\Aggregate\CmsBlock\CmsBlockCollection;
 use Shopware\Core\Content\Cms\Aggregate\CmsBlock\CmsBlockEntity;
@@ -61,7 +62,7 @@ final class CmsImageCollectorTest extends TestCase
             ]),
         ]);
 
-        static::assertSame([self::A, self::B, self::C, self::D], CmsImageCollector::mediaIds($page));
+        static::assertSame([self::A, self::B, self::C, self::D], self::collector()->mediaIds($page));
     }
 
     /**
@@ -76,7 +77,7 @@ final class CmsImageCollectorTest extends TestCase
             $this->section(null, null, [$this->slot(['media' => self::E])], ['mobile' => true, 'tablet' => false, 'desktop' => false]),
         ]);
 
-        static::assertSame([self::E], CmsImageCollector::mediaIds($page));
+        static::assertSame([self::E], self::collector()->mediaIds($page));
     }
 
     /**
@@ -86,8 +87,8 @@ final class CmsImageCollectorTest extends TestCase
      */
     public function testNothingWithoutPageOrValidIds(): void
     {
-        static::assertSame([], CmsImageCollector::mediaIds(null));
-        static::assertSame([], CmsImageCollector::mediaIds($this->page([$this->section(null, null, [$this->slot(['media' => 'kein-bild'])])])));
+        static::assertSame([], self::collector()->mediaIds(null));
+        static::assertSame([], self::collector()->mediaIds($this->page([$this->section(null, null, [$this->slot(['media' => 'kein-bild'])])])));
     }
 
     /**
@@ -101,8 +102,8 @@ final class CmsImageCollectorTest extends TestCase
             $this->slot(['content' => '<p>Text</p><img class="a" src="/media/a.webp" alt=""><img src=\'https://cdn.example/b.jpg\'><img src="data:image/gif;base64,AA">']),
         ])]);
 
-        static::assertSame(['url:/media/a.webp', 'url:https://cdn.example/b.jpg'], CmsImageCollector::sources($page));
-        static::assertSame([], CmsImageCollector::htmlImageUrls('<p>ohne Bild</p>'));
+        static::assertEquals([ImageSource::fromUrl('/media/a.webp'), ImageSource::fromUrl('https://cdn.example/b.jpg')], self::collector()->sources($page));
+        static::assertSame([], self::collector()->htmlImageUrls('<p>ohne Bild</p>'));
     }
 
     /**
@@ -114,11 +115,11 @@ final class CmsImageCollectorTest extends TestCase
     {
         static::assertSame(
             'https://shop.example/media/ab/T0720%20ohne%20WZ.jpg?ts=1',
-            CmsImageCollector::encodePath('https://shop.example/media/ab/T0720 ohne WZ.jpg?ts=1'),
+            self::collector()->encodePath('https://shop.example/media/ab/T0720 ohne WZ.jpg?ts=1'),
         );
         static::assertSame(
             'https://shop.example/media/Gel%C3%A4nder.png',
-            CmsImageCollector::encodePath('https://shop.example/media/Gel%C3%A4nder.png'),
+            self::collector()->encodePath('https://shop.example/media/Gel%C3%A4nder.png'),
         );
     }
 
@@ -144,8 +145,8 @@ final class CmsImageCollectorTest extends TestCase
         $section->setBlocks(new CmsBlockCollection([$block]));
         $page = $this->page([$section]);
 
-        static::assertSame([self::A], CmsImageCollector::mediaIds($page));
-        static::assertSame(['id:' . self::B], CmsImageCollector::sources($page, ['slot-x' => ['media' => ['source' => 'static', 'value' => self::B]]]));
+        static::assertSame([self::A], self::collector()->mediaIds($page));
+        static::assertEquals([ImageSource::fromMediaId(self::B)], self::collector()->sources($page, ['slot-x' => ['media' => ['source' => 'static', 'value' => self::B]]]));
     }
 
     /**
@@ -243,7 +244,7 @@ final class CmsImageCollectorTest extends TestCase
             $this->slotWithData($listing),
         ])]);
 
-        static::assertSame([self::A, self::B, self::C], CmsImageCollector::mediaIds($page));
+        static::assertSame([self::A, self::B, self::C], self::collector()->mediaIds($page));
     }
 
     /**
@@ -268,14 +269,14 @@ final class CmsImageCollectorTest extends TestCase
 
         $page = $this->page([$hidden, $this->section(self::C, null, [$broken, $unset])]);
 
-        static::assertSame(['id:' . self::C], CmsImageCollector::sources($page, ['slot-kaputt' => ['media' => ['value' => self::E]]]));
-        static::assertSame([self::C], CmsImageCollector::mediaIds($page));
+        static::assertEquals([ImageSource::fromMediaId(self::C)], self::collector()->sources($page, ['slot-kaputt' => ['media' => ['value' => self::E]]]));
+        static::assertSame([self::C], self::collector()->mediaIds($page));
     }
 
     public function testAnAddressWithoutPathStaysAsItIs(): void
     {
-        static::assertSame('https://shop.example', CmsImageCollector::encodePath('https://shop.example'));
-        static::assertSame('//cdn.example/a%20b.png', CmsImageCollector::encodePath('//cdn.example/a b.png'));
+        static::assertSame('https://shop.example', self::collector()->encodePath('https://shop.example'));
+        static::assertSame('//cdn.example/a%20b.png', self::collector()->encodePath('//cdn.example/a b.png'));
     }
 
     private function media(string $id, string $url, string $mimeType, ?string $alt = null): MediaEntity
@@ -364,5 +365,10 @@ final class CmsImageCollectorTest extends TestCase
         $slot->setFieldConfig($fields);
 
         return $slot;
+    }
+
+    private static function collector(): CmsImageCollector
+    {
+        return new CmsImageCollector(self::repository(MediaCollection::class));
     }
 }

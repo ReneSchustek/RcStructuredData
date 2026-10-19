@@ -176,13 +176,7 @@ final class GraphBuilder
                 }
 
                 if (\is_array($value) && array_is_list($value) && $value !== []) {
-                    $kept = [];
-                    foreach ($value as $item) {
-                        if ($this->isReference($item) && !isset($known[$item['@id']])) {
-                            continue;
-                        }
-                        $kept[] = $item;
-                    }
+                    $kept = $this->knownReferencesOnly($value, $known);
 
                     if ($kept === []) {
                         unset($nodes[$id][$property]);
@@ -194,6 +188,27 @@ final class GraphBuilder
         }
 
         return $nodes;
+    }
+
+    /**
+     * Eine Liste ohne die Referenzen, deren Ziel nicht im Graphen steht; alles andere bleibt in seiner Reihenfolge.
+     *
+     * @param list<mixed>         $items
+     * @param array<string, true> $known
+     *
+     * @return list<mixed>
+     */
+    private function knownReferencesOnly(array $items, array $known): array
+    {
+        $kept = [];
+        foreach ($items as $item) {
+            if ($this->isReference($item) && !isset($known[$item['@id']])) {
+                continue;
+            }
+            $kept[] = $item;
+        }
+
+        return $kept;
     }
 
     /**

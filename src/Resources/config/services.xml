@@ -240,6 +240,7 @@
             <argument type="service" id="category.repository"/>
             <argument type="service" id="landing_page.repository"/>
             <argument type="service" id="media.repository"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Cms\CmsImageCollector"/>
         </service>
         <service id="Ruhrcoder\RcStructuredData\Sitemap\ImageUrlProvider.product" class="Ruhrcoder\RcStructuredData\Sitemap\ImageUrlProvider" decorates="Shopware\Core\Content\Sitemap\Provider\ProductUrlProvider">
             <argument type="service" id=".inner"/>

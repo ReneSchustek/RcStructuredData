@@ -13,7 +13,7 @@ final class DiagnoseResult
     /**
      * @param array<string, mixed>|null $graph
      * @param list<array{type: string, id: string, missingRequired: list<string>, missingRecommended: list<string>}> $findings
-     * @param list<array{code: string, message: string}> $warnings
+     * @param list<array{code: string, params: array<string, int|string>, message: string}> $warnings
      */
     private function __construct(
         public readonly bool $pageFound,
@@ -32,7 +32,7 @@ final class DiagnoseResult
     /**
      * @param array<string, mixed>|null $graph
      * @param list<array{type: string, id: string, missingRequired: list<string>, missingRecommended: list<string>}> $findings
-     * @param list<array{code: string, message: string}> $warnings
+     * @param list<array{code: string, params: array<string, int|string>, message: string}> $warnings
      */
     public static function analysed(string $pageName, ?array $graph, array $findings, array $warnings = []): self
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ruhrcoder\RcStructuredData\Blog;
 
 use DateTimeInterface;
+use Ruhrcoder\RcStructuredData\Schema\PlainText;
 use Werkl\OpenBlogware\Content\Blog\BlogEntryEntity;
 
 /**
@@ -18,13 +19,13 @@ final class BlogArticleResolver
     /** Titel, sonst Meta-Titel; leer, wenn der Beitrag keinen von beiden hat. */
     public function headline(BlogEntryEntity $entry): string
     {
-        return $this->firstNonEmpty($entry->getTitle(), $entry->getMetaTitle());
+        return PlainText::firstFilled($entry->getTitle(), $entry->getMetaTitle());
     }
 
     /** Anrisstext, sonst Meta-Beschreibung. */
     public function summary(BlogEntryEntity $entry): string
     {
-        return $this->firstNonEmpty($entry->getTeaser(), $entry->getMetaDescription());
+        return PlainText::firstFilled($entry->getTeaser(), $entry->getMetaDescription());
     }
 
     /**
@@ -37,7 +38,7 @@ final class BlogArticleResolver
             'dateModified' => $this->dateModified($entry),
             'author' => $this->author($entry),
             'image' => $entry->getMedia()?->getUrl() ?? '',
-            'articleBody' => $this->toPlainText($entry->getContent()),
+            'articleBody' => PlainText::fromHtml($entry->getContent()),
         ];
     }
 
@@ -65,26 +66,5 @@ final class BlogArticleResolver
         return trim($author->getFullName());
     }
 
-    private function firstNonEmpty(?string ...$values): string
-    {
-        foreach ($values as $value) {
-            if (\is_string($value) && trim($value) !== '') {
-                return trim($value);
-            }
-        }
 
-        return '';
-    }
-
-    private function toPlainText(?string $value): string
-    {
-        if (!\is_string($value) || $value === '') {
-            return '';
-        }
-
-        $stripped = strip_tags($value);
-        $collapsed = preg_replace('/\s+/u', ' ', $stripped) ?? $stripped;
-
-        return trim($collapsed);
-    }
 }

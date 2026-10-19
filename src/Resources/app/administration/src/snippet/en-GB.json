@@ -118,7 +118,12 @@
       "required": "Required",
       "recommended": "Recommended",
       "noGraph": "No schema graph is generated for this category (e.g. home page/folder).",
-      "error": "Could not load diagnostics."
+      "error": "Could not load diagnostics.",
+      "warning": {
+        "handwritten_json_ld": "This page contains handwritten JSON-LD ({types}). Together with the generated graph, the page carries two sets of structured data that can drift apart.",
+        "video_without_upload_date": "No VideoObject was created for the video {videos}: the upload date is missing. An incomplete node would be a critical error for Google; set the date on the block or on the page. | No VideoObject was created for the videos {videos}: the upload date is missing. An incomplete node would be a critical error for Google; set the date on the block or on the page.",
+        "faq_without_block": "This page reports an FAQPage without an rc-faq block. The questions then do not come from the visible page content."
+      }
     },
     "additionalProperty": {
       "name": {

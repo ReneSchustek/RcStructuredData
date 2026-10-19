@@ -44,6 +44,18 @@ Component.register('sw-rc-schema-diagnose-card', {
     },
 
     methods: {
+        /**
+         * Der Hinweis in der Sprache der Verwaltung. Die Diagnose liefert Code und Werte; der deutsche Text aus der
+         * Antwort bleibt nur der Rückfall für einen Code, den diese Fassung der Verwaltung noch nicht kennt.
+         */
+        warningText(warning) {
+            const key = `rc-schema.diagnose.warning.${warning.code}`;
+            const params = warning.params || {};
+            const text = this.$tc(key, params.count || 1, params);
+
+            return text === key ? warning.message : text;
+        },
+
         loadDiagnosis() {
             if (!this.entityId) {
                 return;

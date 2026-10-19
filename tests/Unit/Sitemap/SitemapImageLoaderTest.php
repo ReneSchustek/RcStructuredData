@@ -7,6 +7,7 @@ namespace Ruhrcoder\RcStructuredData\Tests\Unit\Sitemap;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Ruhrcoder\RcStructuredData\Schema\Cms\CmsImageCollector;
 use Ruhrcoder\RcStructuredData\Sitemap\ImageUrl;
 use Ruhrcoder\RcStructuredData\Sitemap\SitemapImageLoader;
 use Ruhrcoder\RcStructuredData\Tests\Unit\StaticRepositoryTrait;
@@ -167,6 +168,7 @@ final class SitemapImageLoaderTest extends TestCase
             self::repository(CategoryCollection::class, $categories),
             self::repository(LandingPageCollection::class, $landingPages),
             self::repository(MediaCollection::class, $media),
+            new CmsImageCollector(self::repository(MediaCollection::class)),
         );
     }
 

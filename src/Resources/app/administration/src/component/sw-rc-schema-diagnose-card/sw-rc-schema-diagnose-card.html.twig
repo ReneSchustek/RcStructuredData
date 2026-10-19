@@ -19,7 +19,7 @@
                     :key="warning.code"
                     class="sw-rc-schema-diagnose-card__warning"
                     variant="warning">
-                    {{ warning.message }}
+                    {{ warningText(warning) }}
                 </sw-alert>
             </template>
         {% endblock %}

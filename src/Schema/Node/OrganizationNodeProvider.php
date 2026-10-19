@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ruhrcoder\RcStructuredData\Schema\Node;
 
 use Ruhrcoder\RcStructuredData\Schema\IdFactory;
+use Ruhrcoder\RcStructuredData\Schema\PluginConfigReader;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 use Ruhrcoder\RcStructuredData\Schema\SchemaNodeProvider;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -18,8 +19,6 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  */
 final class OrganizationNodeProvider implements SchemaNodeProvider
 {
-    private const CONFIG_PREFIX = 'RcStructuredData.config.';
-    private const SHOP_NAME_KEY = 'core.basicInformation.shopName';
     private const SHOP_EMAIL_KEY = 'core.basicInformation.email';
 
     /**
@@ -36,7 +35,7 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
 
     public function supports(SchemaContext $context): bool
     {
-        return $this->resolveName($context) !== '';
+        return $this->config()->organizationName($context->getSalesChannelContext()->getSalesChannelId()) !== '';
     }
 
     public function provide(SchemaContext $context): array
@@ -44,11 +43,11 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
         $node = [
             '@type' => 'Organization',
             '@id' => $this->idFactory->organization($context),
-            'name' => $this->resolveName($context),
+            'name' => $this->config()->organizationName($context->getSalesChannelContext()->getSalesChannelId()),
             'url' => $context->getBaseUrl(),
         ];
 
-        $logo = $this->getString($context, 'organizationLogo');
+        $logo = $this->config()->string('organizationLogo', $context->getSalesChannelContext()->getSalesChannelId());
         if ($logo !== '') {
             $node['logo'] = $logo;
         }
@@ -58,7 +57,7 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
             $node['contactPoint'] = $contactPoint;
         }
 
-        $sameAs = $this->resolveSameAs($context);
+        $sameAs = $this->config()->lines('organizationSameAs', $context->getSalesChannelContext()->getSalesChannelId());
         if ($sameAs !== []) {
             $node['sameAs'] = $sameAs;
         }
@@ -75,7 +74,7 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
     private function resolveContactPoint(SchemaContext $context): ?array
     {
         $salesChannelId = $context->getSalesChannelContext()->getSalesChannelId();
-        $telephone = $this->getString($context, 'localBusinessPhone');
+        $telephone = $this->config()->string('localBusinessPhone', $context->getSalesChannelContext()->getSalesChannelId());
         $email = trim($this->systemConfig->getString(self::SHOP_EMAIL_KEY, $salesChannelId));
         if ($telephone === '' && $email === '') {
             return null;
@@ -94,38 +93,8 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
         return $contactPoint;
     }
 
-    private function resolveName(SchemaContext $context): string
+    private function config(): PluginConfigReader
     {
-        $configured = $this->getString($context, 'organizationName');
-        if ($configured !== '') {
-            return $configured;
-        }
-
-        $salesChannelId = $context->getSalesChannelContext()->getSalesChannelId();
-        $shopName = $this->systemConfig->getString(self::SHOP_NAME_KEY, $salesChannelId);
-
-        return trim($shopName);
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function resolveSameAs(SchemaContext $context): array
-    {
-        $raw = $this->getString($context, 'organizationSameAs');
-        if ($raw === '') {
-            return [];
-        }
-
-        $lines = preg_split('/\r\n|\r|\n/', $raw) ?: [];
-
-        return array_values(array_filter(array_map('trim', $lines), static fn (string $line): bool => $line !== ''));
-    }
-
-    private function getString(SchemaContext $context, string $key): string
-    {
-        $salesChannelId = $context->getSalesChannelContext()->getSalesChannelId();
-
-        return trim($this->systemConfig->getString(self::CONFIG_PREFIX . $key, $salesChannelId));
+        return new PluginConfigReader($this->systemConfig);
     }
 }

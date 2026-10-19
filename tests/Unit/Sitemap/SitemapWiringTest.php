@@ -7,6 +7,7 @@ namespace Ruhrcoder\RcStructuredData\Tests\Unit\Sitemap;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Ruhrcoder\RcStructuredData\Schema\Cms\CmsImageCollector;
 use Ruhrcoder\RcStructuredData\Sitemap\ImageUrlProvider;
 use Ruhrcoder\RcStructuredData\Sitemap\SitemapImageLoader;
 use Ruhrcoder\RcStructuredData\Sitemap\SitemapImageNamespaceSubscriber;
@@ -73,6 +74,7 @@ final class SitemapWiringTest extends TestCase
             self::repository(CategoryCollection::class),
             self::repository(LandingPageCollection::class),
             self::repository(MediaCollection::class),
+            new CmsImageCollector(self::repository(MediaCollection::class)),
         );
 
         $provider = new ImageUrlProvider($inner, $loader);

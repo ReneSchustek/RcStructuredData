@@ -122,6 +122,19 @@ final class YoutubeApiMetadataEnricher implements VideoMetadataEnricher
 
         /** @var array<string, mixed> $payload */
         $payload = $response->toArray(false);
+
+        return $this->metadataFrom($payload);
+    }
+
+    /**
+     * Titel, Beschreibung, Datum und Dauer aus der Antwort der API; `null`, wenn das Video dort nicht steht.
+     *
+     * @param array<string, mixed> $payload
+     *
+     * @return array{name: string, description: string, uploadDate: string, duration: string}|null
+     */
+    private function metadataFrom(array $payload): ?array
+    {
         $items = $payload['items'] ?? null;
         if (!\is_array($items) || $items === []) {
             return null;

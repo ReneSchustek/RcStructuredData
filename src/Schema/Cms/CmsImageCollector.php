@@ -41,7 +41,7 @@ final class CmsImageCollector
      * Obergrenze gegen ausufernde Graphen. Die bildreichste Seite, die Startseite, zeigt rund 45 Bilder; 30 reichen
      * dort nicht, 60 lässt Luft.
      */
-    private const LIMIT = 60;
+    public const LIMIT = 60;
 
     /**
      * @param EntityRepository<MediaCollection> $mediaRepository
@@ -58,16 +58,16 @@ final class CmsImageCollector
     {
         // Gekürzt wird vor dem Laden, damit die Medienabfrage begrenzt bleibt. Was danach als Nicht-Bild herausfällt,
         // füllt nichts nach.
-        $sources = \array_slice(self::sources($page), 0, self::LIMIT);
-        $ids = array_values(array_map(static fn (string $source): string => substr($source, 3), array_filter($sources, static fn (string $source): bool => str_starts_with($source, 'id:'))));
+        $sources = \array_slice($this->sources($page), 0, self::LIMIT);
+        $ids = array_values(array_filter(array_map(static fn (ImageSource $source): ?string => $source->mediaId, $sources)));
         $media = $ids === [] ? new MediaCollection() : $this->mediaRepository->search(new Criteria($ids), $context)->getEntities();
 
         $images = [];
         $seen = [];
         foreach ($sources as $source) {
-            $image = str_starts_with($source, 'id:')
-                ? self::fromMedia($media->get(substr($source, 3)))
-                : self::fromUrl(substr($source, 4), $baseUrl);
+            $image = $source->mediaId !== null
+                ? $this->fromMedia($media->get($source->mediaId))
+                : $this->fromUrl((string) $source->url, $baseUrl);
             // Ein Medium und ein `<img>` im HTML können auf dieselbe Datei zeigen; die Adresse zählt einmal.
             if ($image === null || isset($seen[$image['url']])) {
                 continue;
@@ -80,8 +80,7 @@ final class CmsImageCollector
     }
 
     /**
-     * Die Bildquellen der sichtbaren Teile einer Erlebniswelt, in Seitenreihenfolge, ohne Dopplung:
-     * `id:<Medienkennung>` oder `url:<Bildadresse aus HTML>`.
+     * Die Bildquellen der sichtbaren Teile einer Erlebniswelt, in Seitenreihenfolge, ohne Dopplung.
      *
      * `$slotOverrides` sind die Einstellungen, die eine Kategorie oder Landingpage je Baustein überschreibt
      * (`slotConfig`). Auf der Seite setzt sie der Kern beim Auflösen ein; die Sitemap liest die Erlebniswelt
@@ -89,36 +88,41 @@ final class CmsImageCollector
      *
      * @param array<string, mixed> $slotOverrides
      *
-     * @return list<string>
+     * @return list<ImageSource>
      */
-    public static function sources(?CmsPageEntity $page, array $slotOverrides = []): array
+    public function sources(?CmsPageEntity $page, array $slotOverrides = []): array
     {
         $sources = [];
         foreach ($page?->getSections() ?? [] as $section) {
-            if (!self::isVisible($section->getVisibility())) {
+            if (!$this->isVisible($section->getVisibility())) {
                 continue;
             }
-            self::addId($sources, $section->getBackgroundMediaId());
+            $this->addId($sources, $section->getBackgroundMediaId());
 
             foreach ($section->getBlocks() ?? [] as $block) {
-                if (!self::isVisible($block->getVisibility())) {
+                if (!$this->isVisible($block->getVisibility())) {
                     continue;
                 }
-                self::addId($sources, $block->getBackgroundMediaId());
+                $this->addId($sources, $block->getBackgroundMediaId());
 
                 foreach ($block->getSlots() ?? [] as $slot) {
                     $override = $slotOverrides[$slot->getUniqueIdentifier()] ?? null;
-                    foreach (self::fieldConfig($slot, \is_array($override) ? $override : null) as $field) {
-                        self::walk($sources, $field->getName(), $field->getValue());
+                    foreach ($this->fieldConfig($slot, \is_array($override) ? $override : null) as $field) {
+                        $this->walk($sources, $field->getName(), $field->getValue());
                     }
-                    foreach (self::products($slot->getData()) as $product) {
-                        self::addId($sources, $product->getCover()?->getMediaId());
+                    foreach ($this->products($slot->getData()) as $product) {
+                        $this->addId($sources, $product->getCover()?->getMediaId());
                     }
                 }
             }
         }
 
-        return array_values(array_unique($sources));
+        $unique = [];
+        foreach ($sources as $source) {
+            $unique[$source->key()] ??= $source;
+        }
+
+        return array_values($unique);
     }
 
     /**
@@ -126,12 +130,12 @@ final class CmsImageCollector
      *
      * @return list<string>
      */
-    public static function mediaIds(?CmsPageEntity $page): array
+    public function mediaIds(?CmsPageEntity $page): array
     {
         $ids = [];
-        foreach (self::sources($page) as $source) {
-            if (str_starts_with($source, 'id:')) {
-                $ids[] = substr($source, 3);
+        foreach ($this->sources($page) as $source) {
+            if ($source->mediaId !== null) {
+                $ids[] = $source->mediaId;
             }
         }
 
@@ -143,7 +147,7 @@ final class CmsImageCollector
      *
      * @return list<string>
      */
-    public static function htmlImageUrls(string $html): array
+    public function htmlImageUrls(string $html): array
     {
         if (!str_contains($html, '<img')) {
             return [];
@@ -163,7 +167,7 @@ final class CmsImageCollector
      *
      * @param array<string, mixed>|null $override
      */
-    private static function fieldConfig(CmsSlotEntity $slot, ?array $override): FieldConfigCollection
+    private function fieldConfig(CmsSlotEntity $slot, ?array $override): FieldConfigCollection
     {
         try {
             if ($override === null) {
@@ -190,7 +194,7 @@ final class CmsImageCollector
      *
      * @param array<string, bool>|null $visibility
      */
-    private static function isVisible(?array $visibility): bool
+    private function isVisible(?array $visibility): bool
     {
         if ($visibility === null || $visibility === []) {
             return true;
@@ -204,7 +208,7 @@ final class CmsImageCollector
      *
      * @return list<ProductEntity>
      */
-    private static function products(mixed $data): array
+    private function products(mixed $data): array
     {
         if (!\is_object($data)) {
             return [];
@@ -241,20 +245,20 @@ final class CmsImageCollector
     }
 
     /**
-     * @param list<string> $sources
+     * @param list<ImageSource> $sources
      */
-    private static function walk(array &$sources, string|int $key, mixed $value): void
+    private function walk(array &$sources, string|int $key, mixed $value): void
     {
         if (\in_array($key, self::MEDIA_KEYS, true) && \is_string($value)) {
-            self::addId($sources, $value);
+            $this->addId($sources, $value);
 
             return;
         }
 
         // Jeder andere Text kann HTML eines Text- oder Twig-Bausteins sein.
         if (\is_string($value)) {
-            foreach (self::htmlImageUrls($value) as $url) {
-                $sources[] = 'url:' . $url;
+            foreach ($this->htmlImageUrls($value) as $url) {
+                $sources[] = ImageSource::fromUrl($url);
             }
 
             return;
@@ -262,31 +266,31 @@ final class CmsImageCollector
 
         if (\is_array($value)) {
             foreach ($value as $childKey => $child) {
-                self::walk($sources, $childKey, $child);
+                $this->walk($sources, $childKey, $child);
             }
         }
     }
 
     /**
-     * @param list<string> $sources
+     * @param list<ImageSource> $sources
      */
-    private static function addId(array &$sources, ?string $id): void
+    private function addId(array &$sources, ?string $id): void
     {
         if ($id !== null && Uuid::isValid($id)) {
-            $sources[] = 'id:' . strtolower($id);
+            $sources[] = ImageSource::fromMediaId($id);
         }
     }
 
     /**
      * @return array<string, string>|null
      */
-    private static function fromMedia(?MediaEntity $media): ?array
+    private function fromMedia(?MediaEntity $media): ?array
     {
         if ($media === null || !str_starts_with((string) $media->getMimeType(), 'image/') || $media->getUrl() === '') {
             return null;
         }
 
-        $image = ['@type' => 'ImageObject', 'url' => self::encodePath($media->getUrl())];
+        $image = ['@type' => 'ImageObject', 'url' => $this->encodePath($media->getUrl())];
         $alt = trim((string) ($media->getTranslation('alt') ?? $media->getAlt()));
         if ($alt !== '') {
             $image['caption'] = $alt;
@@ -301,7 +305,7 @@ final class CmsImageCollector
      *
      * @return array<string, string>|null
      */
-    private static function fromUrl(string $url, string $baseUrl): ?array
+    private function fromUrl(string $url, string $baseUrl): ?array
     {
         if (str_starts_with($url, '//')) {
             $url = 'https:' . $url;
@@ -314,14 +318,14 @@ final class CmsImageCollector
             return null;
         }
 
-        return ['@type' => 'ImageObject', 'url' => self::encodePath($url)];
+        return ['@type' => 'ImageObject', 'url' => $this->encodePath($url)];
     }
 
     /**
      * Der Pfad einer Bildadresse sauber kodiert: Dateinamen wie „T0720 ohne WZ.jpg" enthalten Leerzeichen und Umlaute,
      * die in einer URL nicht stehen dürfen. Bereits kodierte Teile bleiben, wie sie sind.
      */
-    public static function encodePath(string $url): string
+    public function encodePath(string $url): string
     {
         $parts = parse_url($url);
         if ($parts === false || !isset($parts['path'])) {

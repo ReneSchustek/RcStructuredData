@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ruhrcoder\RcStructuredData\Sitemap;
 
 use Ruhrcoder\RcStructuredData\Schema\Cms\CmsImageCollector;
+use Ruhrcoder\RcStructuredData\Schema\Cms\ImageSource;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\CmsPageEntity;
@@ -36,7 +37,6 @@ final class SitemapImageLoader
     /**
      * Dieselbe Obergrenze wie {@see CmsImageCollector}, damit ein Eintrag nicht mehr Bilder nennt als der Graph.
      */
-    private const LIMIT = 60;
 
     /**
      * @param EntityRepository<ProductCollection>     $productRepository
@@ -49,6 +49,7 @@ final class SitemapImageLoader
         private readonly EntityRepository $categoryRepository,
         private readonly EntityRepository $landingPageRepository,
         private readonly EntityRepository $mediaRepository,
+        private readonly CmsImageCollector $imageCollector,
     ) {
     }
 
@@ -138,12 +139,12 @@ final class SitemapImageLoader
 
             $urls = [];
             foreach ($media as $productMedia) {
-                $url = self::imageUrl($productMedia->getMedia());
+                $url = $this->imageUrl($productMedia->getMedia());
                 if ($url !== null) {
                     $urls[$url] = true;
                 }
             }
-            $images[$product->getId()] = \array_slice(array_keys($urls), 0, self::LIMIT);
+            $images[$product->getId()] = \array_slice(array_keys($urls), 0, CmsImageCollector::LIMIT);
         }
 
         return $images;
@@ -170,64 +171,103 @@ final class SitemapImageLoader
             ? $this->categoryRepository->search($criteria, $context->getContext())->getEntities()
             : $this->landingPageRepository->search($criteria, $context->getContext())->getEntities();
 
-        // Das Kategoriebild steht vor der Erlebniswelt. `slotConfig` geht mit, weil die Erlebniswelt hier unaufgelöst
-        // vorliegt und niemand sonst die Überschreibungen je Baustein einsetzt.
-        $sources = [];
-        foreach ($entities as $entity) {
-            $own = $entity instanceof CategoryEntity && $entity->getMediaId() !== null ? ['id:' . strtolower($entity->getMediaId())] : [];
-            $page = $entity->getCmsPage();
-            $sources[$entity->getId()] = array_values(array_unique([
-                ...$own,
-                ...CmsImageCollector::sources($page instanceof CmsPageEntity ? $page : null, $entity->getSlotConfig() ?? []),
-            ]));
-        }
-
-        $mediaIds = [];
-        foreach ($sources as $list) {
-            foreach ($list as $source) {
-                if (str_starts_with($source, 'id:')) {
-                    $mediaIds[substr($source, 3)] = true;
-                }
-            }
-        }
-        $media = $mediaIds === [] ? new MediaCollection() : $this->mediaRepository->search(new Criteria(array_keys($mediaIds)), $context->getContext())->getEntities();
+        $sources = $this->sourcesByEntity($entities);
+        $media = $this->mediaFor($sources, $context);
 
         $images = [];
         foreach ($sources as $id => $list) {
-            $urls = [];
-            foreach ($list as $source) {
-                $url = str_starts_with($source, 'id:')
-                    ? self::imageUrl($media->get(substr($source, 3)))
-                    : self::htmlUrl(substr($source, 4));
-                if ($url !== null) {
-                    $urls[$url] = true;
-                }
-            }
-            $images[(string) $id] = \array_slice(array_keys($urls), 0, self::LIMIT);
+            $images[(string) $id] = $this->urlsOf($list, $media);
         }
 
         return $images;
     }
 
-    private static function imageUrl(?MediaEntity $media): ?string
+    /**
+     * Die Bildquellen je Kategorie oder Landingpage, ohne Dopplung.
+     *
+     * Das Kategoriebild steht vor der Erlebniswelt. `slotConfig` geht mit, weil die Erlebniswelt hier unaufgelöst
+     * vorliegt und niemand sonst die Überschreibungen je Baustein einsetzt.
+     *
+     * @param iterable<CategoryEntity|LandingPageEntity> $entities
+     *
+     * @return array<string, list<ImageSource>>
+     */
+    private function sourcesByEntity(iterable $entities): array
+    {
+        $sources = [];
+        foreach ($entities as $entity) {
+            $own = $entity instanceof CategoryEntity && $entity->getMediaId() !== null ? [ImageSource::fromMediaId($entity->getMediaId())] : [];
+            $page = $entity->getCmsPage();
+            $unique = [];
+            foreach ([...$own, ...$this->imageCollector->sources($page instanceof CmsPageEntity ? $page : null, $entity->getSlotConfig() ?? [])] as $source) {
+                $unique[$source->key()] ??= $source;
+            }
+            $sources[$entity->getId()] = array_values($unique);
+        }
+
+        return $sources;
+    }
+
+    /**
+     * Alle Medien der Quellen in einer Abfrage.
+     *
+     * @param array<string, list<ImageSource>> $sources
+     */
+    private function mediaFor(array $sources, SalesChannelContext $context): MediaCollection
+    {
+        $mediaIds = [];
+        foreach ($sources as $list) {
+            foreach ($list as $source) {
+                if ($source->mediaId !== null) {
+                    $mediaIds[$source->mediaId] = true;
+                }
+            }
+        }
+
+        return $mediaIds === [] ? new MediaCollection() : $this->mediaRepository->search(new Criteria(array_keys($mediaIds)), $context->getContext())->getEntities();
+    }
+
+    /**
+     * Die Bildadressen einer Seite in Seitenreihenfolge, jede einmal, höchstens so viele wie im Graphen.
+     *
+     * @param list<ImageSource> $sources
+     *
+     * @return list<string>
+     */
+    private function urlsOf(array $sources, MediaCollection $media): array
+    {
+        $urls = [];
+        foreach ($sources as $source) {
+            $url = $source->mediaId !== null
+                ? $this->imageUrl($media->get($source->mediaId))
+                : $this->htmlUrl((string) $source->url);
+            if ($url !== null) {
+                $urls[$url] = true;
+            }
+        }
+
+        return \array_slice(array_keys($urls), 0, CmsImageCollector::LIMIT);
+    }
+
+    private function imageUrl(?MediaEntity $media): ?string
     {
         if ($media === null || !str_starts_with((string) $media->getMimeType(), 'image/') || $media->getUrl() === '') {
             return null;
         }
 
-        return CmsImageCollector::encodePath($media->getUrl());
+        return $this->imageCollector->encodePath($media->getUrl());
     }
 
     /**
      * Bildadressen aus HTML: absolute bleiben, wurzelrelative ergänzt der Eintrag beim Schreiben, andere zählen nicht.
      */
-    private static function htmlUrl(string $url): ?string
+    private function htmlUrl(string $url): ?string
     {
         if (str_starts_with($url, '//')) {
-            return CmsImageCollector::encodePath('https:' . $url);
+            return $this->imageCollector->encodePath('https:' . $url);
         }
         if (str_starts_with($url, '/') || preg_match('#^https?://#i', $url) === 1) {
-            return CmsImageCollector::encodePath($url);
+            return $this->imageCollector->encodePath($url);
         }
 
         return null;

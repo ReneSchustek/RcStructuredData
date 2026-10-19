@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ruhrcoder\RcStructuredData\Schema\Node;
 
 use Ruhrcoder\RcStructuredData\Schema\IdFactory;
+use Ruhrcoder\RcStructuredData\Schema\PluginConfigReader;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 use Ruhrcoder\RcStructuredData\Schema\SchemaNodeProvider;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -17,8 +18,6 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  */
 final class WebSiteNodeProvider implements SchemaNodeProvider
 {
-    private const CONFIG_PREFIX = 'RcStructuredData.config.';
-    private const SHOP_NAME_KEY = 'core.basicInformation.shopName';
     private const SEARCH_TERM_PLACEHOLDER = '{search_term_string}';
 
     public function __construct(
@@ -53,14 +52,14 @@ final class WebSiteNodeProvider implements SchemaNodeProvider
 
     private function resolveName(SchemaContext $context): string
     {
-        $configured = $this->getString($context, 'websiteName');
+        $configured = $this->config()->string('websiteName', $context->getSalesChannelContext()->getSalesChannelId());
         if ($configured !== '') {
             return $configured;
         }
 
         $salesChannelId = $context->getSalesChannelContext()->getSalesChannelId();
 
-        return trim($this->systemConfig->getString(self::SHOP_NAME_KEY, $salesChannelId));
+        return trim($this->config()->shopName($salesChannelId));
     }
 
     /**
@@ -68,7 +67,7 @@ final class WebSiteNodeProvider implements SchemaNodeProvider
      */
     private function resolveSearchAction(SchemaContext $context): ?array
     {
-        $template = $this->getString($context, 'websiteSearchUrl');
+        $template = $this->config()->string('websiteSearchUrl', $context->getSalesChannelContext()->getSalesChannelId());
         if ($template === '' || !str_contains($template, self::SEARCH_TERM_PLACEHOLDER)) {
             return null;
         }
@@ -83,10 +82,8 @@ final class WebSiteNodeProvider implements SchemaNodeProvider
         ];
     }
 
-    private function getString(SchemaContext $context, string $key): string
+    private function config(): PluginConfigReader
     {
-        $salesChannelId = $context->getSalesChannelContext()->getSalesChannelId();
-
-        return trim($this->systemConfig->getString(self::CONFIG_PREFIX . $key, $salesChannelId));
+        return new PluginConfigReader($this->systemConfig);
     }
 }

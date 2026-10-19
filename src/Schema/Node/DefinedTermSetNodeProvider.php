@@ -7,6 +7,7 @@ namespace Ruhrcoder\RcStructuredData\Schema\Node;
 use Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator;
 use Ruhrcoder\RcStructuredData\Schema\Extractor\DefinedTermsCmsBlockExtractor;
 use Ruhrcoder\RcStructuredData\Schema\IdFactory;
+use Ruhrcoder\RcStructuredData\Schema\PlainText;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 use Ruhrcoder\RcStructuredData\Schema\SchemaNodeProvider;
 
@@ -85,7 +86,7 @@ final class DefinedTermSetNodeProvider implements SchemaNodeProvider
             $node = ['@type' => 'DefinedTerm', 'name' => $term['term']];
 
             // Die Erklärung ist freiwillig; viele Begriffssätze tragen nur Namen.
-            $description = $this->plainText($term['definition']);
+            $description = PlainText::fromHtml($term['definition']);
             if ($description !== '') {
                 $node['description'] = $description;
             }
@@ -96,23 +97,4 @@ final class DefinedTermSetNodeProvider implements SchemaNodeProvider
         return $built;
     }
 
-    /**
-     * Entfernt die Auszeichnung aus der Erklärung, die bei der FAQ-Antwort erhalten bleibt.
-     *
-     * Google erlaubt in `acceptedAnswer.text` ausdrücklich einfache Auszeichnung: Absätze und
-     * Listen bleiben dort erhalten. Für `DefinedTerm.description` gibt es diese Zusage nicht;
-     * dort stünde ein `<p>` als sichtbarer Text im Suchergebnis. Die Anzeige auf der Seite behält
-     * ihre Auszeichnung, das Schema bekommt denselben Satz als reinen Text.
-     */
-    private function plainText(string $html): string
-    {
-        if ($html === '') {
-            return '';
-        }
-
-        // Blockenden zuerst in Leerzeichen wandeln, sonst klebt „Satz eins.Satz zwei." zusammen.
-        $withBreaks = (string) preg_replace('#</(p|div|li|br|h[1-6])\s*>|<br\s*/?>#i', ' ', $html);
-
-        return trim((string) preg_replace('/\s+/u', ' ', strip_tags($withBreaks)));
-    }
 }

@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.26.1] - 2026-10-19 — Diagnose-Hinweise zweisprachig, Aufräumen nach der Regelprüfung
+
+> **Deployment:** `php bin/console cache:clear`. Der Verwaltungsteil ist neu gebaut.
+
+### Geändert
+
+- Diagnose-Karte in der Verwaltung: Die Hinweise (handgeschriebenes JSON-LD, Video ohne Datum, FAQ ohne Baustein)
+  erscheinen in der Sprache der Verwaltung, Deutsch oder Englisch. Die Diagnose liefert dafür Code und Werte.
+- Bildquellen als Wertobjekt `ImageSource` statt des Zeichenketten-Protokolls `id:`/`url:`; der Sitemap-Lader bekommt
+  den Bildsammler per Abhängigkeit, die Obergrenze von 60 Bildern steht an einer Stelle.
+- Einstellungen über einen gemeinsamen `PluginConfigReader` (Rückfall auf den Shop-Namen, Zeilenlisten), Klartext aus
+  HTML über `PlainText` statt vier eigener Fassungen; Schema-Texte lösen dabei auch HTML-Entitäten auf.
+- Lange Methoden geteilt (Sitemap-Bilder, Diagnose-Hinweise, Unternehmensknoten, Öffnungszeiten, Graph, YouTube-Antwort).
+
+
 ## [2.26.0] - 2026-10-19 — Versandpreis je Lieferland
 
 > **Deployment:** `php bin/console cache:clear`.

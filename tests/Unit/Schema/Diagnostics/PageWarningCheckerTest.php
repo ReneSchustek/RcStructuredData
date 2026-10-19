@@ -29,6 +29,8 @@ class PageWarningCheckerTest extends TestCase
         static::assertCount(1, $warnings);
         static::assertSame(PageWarningChecker::WARNING_HANDWRITTEN_JSON_LD, $warnings[0]['code']);
         static::assertStringContainsString('moorl-twig', $warnings[0]['message']);
+        // Die Verwaltung baut den Text selbst, in ihrer Sprache; dafür kommen die Werte einzeln mit.
+        static::assertStringContainsString('moorl-twig', (string) $warnings[0]['params']['types']);
     }
 
     /**
