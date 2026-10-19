@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.27.1] - 2026-10-19 — Bildadressen im Markup kodiert
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
+
+### Behoben
+
+- **Bildadressen mit Leerzeichen im JSON-LD:** Produkt (`image`), WebPage (`image`, `primaryImageOfPage`) und der Graph
+  der Kategorie- und Blogseiten übernahmen `media.url` roh. Jetzt sind Medienadressen dort kodiert wie im HTML; schon
+  kodierte bleiben, wie sie sind.
+
+
 ## [2.27.0] - 2026-10-19 — Rückgaberichtlinie, FAQ auf Produktseiten, Preisangabe
 
 > **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`. Danach in der

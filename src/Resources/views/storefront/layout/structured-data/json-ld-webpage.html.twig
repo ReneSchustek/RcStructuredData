@@ -1,0 +1,8 @@
+{% sw_extends '@Storefront/storefront/layout/structured-data/json-ld-webpage.html.twig' %}
+
+{# Bildadressen (Logo, Titelbild der Produktseite) kodiert, siehe `rc_schema_encode_media_urls()`. #}
+{% block layout_structured_data_webpage_script %}
+    {% set webPageData = rc_schema_encode_media_urls(webPageData) %}
+
+    {{ parent() }}
+{% endblock %}

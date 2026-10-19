@@ -3,7 +3,7 @@
     "description": "Shopware 6 Plugin — Schema Graph Builder: erzeugt auf Kategorie- und Landingpages einen zusammenhängenden JSON-LD-@graph (CollectionPage, BreadcrumbList, Organization, WebSite, FAQPage, VideoObject)",
     "type": "shopware-platform-plugin",
     "license": "MIT",
-    "version": "2.27.0",
+    "version": "2.27.1",
     "authors": [
         {
             "name": "Ruhrcoder (René Schustek)",

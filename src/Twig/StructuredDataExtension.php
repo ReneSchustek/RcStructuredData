@@ -11,6 +11,7 @@ use Ruhrcoder\RcStructuredData\Schema\Product\ProductOfferDetails;
 use Ruhrcoder\RcStructuredData\Schema\Product\ShippingDetailsProvider;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Feature;
+use Shopware\Core\Framework\Util\UrlEncoder;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -46,6 +47,7 @@ final class StructuredDataExtension extends AbstractExtension
             new TwigFunction('rc_schema_core_renders_global_json_ld', $this->coreRendersGlobalJsonLd(...)),
             new TwigFunction('rc_schema_shipping_details', $this->shippingDetailsFor(...)),
             new TwigFunction('rc_schema_faq_page', $this->faqPage(...)),
+            new TwigFunction('rc_schema_encode_media_urls', $this->encodeMediaUrls(...)),
             new TwigFunction('rc_schema_organization_details', $this->organizationDetails->forSalesChannel(...)),
             new TwigFunction('rc_schema_price_specification', $this->offerDetails->priceSpecification(...)),
             new TwigFunction('rc_schema_varies_by', $this->offerDetails->variesBy(...)),
@@ -66,6 +68,29 @@ final class StructuredDataExtension extends AbstractExtension
     public function shippingDetailsFor(SalesChannelProductEntity $product, SalesChannelContext $context): ?array
     {
         return $this->shippingDetails->forProduct($product, $context);
+    }
+
+    /**
+     * Kodiert jede Medienadresse in einem JSON-LD-Block (`/media/…`, `/thumbnail/…`).
+     *
+     * Die Kernvorlagen übernehmen `media.url` roh; ein Dateiname mit Leerzeichen stünde sonst unkodiert im Markup, wie
+     * vor dem Kodieren im HTML. Eine schon kodierte Adresse bleibt, wie sie ist.
+     *
+     * @param array<array-key, mixed> $data
+     *
+     * @return array<array-key, mixed>
+     */
+    public function encodeMediaUrls(array $data): array
+    {
+        array_walk_recursive($data, static function (mixed &$value): void {
+            // Eine Adresse mit kodierten Zeichen ist schon kodiert; ein zweites Mal machte aus %20 ein %2520.
+            if (\is_string($value) && preg_match('~^https?://[^\s"]*/(?:media|thumbnail)/~', $value) === 1
+                && preg_match('~%[0-9A-Fa-f]{2}~', $value) !== 1) {
+                $value = UrlEncoder::encodeUrl($value) ?? $value;
+            }
+        });
+
+        return $data;
     }
 
     /**

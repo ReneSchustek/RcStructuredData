@@ -49,5 +49,7 @@
         {% endif %}
     {% endif %}
 
+    {% set productData = rc_schema_encode_media_urls(productData) %}
+
     {{ parent() }}
 {% endblock %}

@@ -134,4 +134,26 @@ final class StructuredDataExtensionTest extends TestCase
         self::assertNull($this->extension->faqPage(null, 'https://shop.example/a'));
         self::assertNull($this->extension->faqPage('kein Feld', 'https://shop.example/a'));
     }
+
+    /**
+     * Was: Ein JSON-LD-Block mit Bildadressen mit Leerzeichen, einer schon kodierten und einer fremden Adresse.
+     * Warum: Die Kernvorlagen übernehmen `media.url` roh; im Markup stünde ein Leerzeichen sonst unkodiert.
+     * Erwartet: Medienadressen kodiert, die kodierte unverändert, andere Werte unberührt.
+     */
+    public function testMediaUrlsAreEncodedEverywhereInTheBlock(): void
+    {
+        $data = $this->extension->encodeMediaUrls([
+            'image' => ['https://shop.example/media/bd/ab/CN1 - CN2.jpg?ts=1', 'https://shop.example/thumbnail/bd/CN1%20-%20CN2_200x175.jpg'],
+            'primaryImageOfPage' => 'https://shop.example/media/a/b c.jpg',
+            'name' => 'Abstandhalter / media / Edelstahl',
+            'url' => 'https://shop.example/abstandhalter/cn1',
+            'offers' => ['price' => 9.66],
+        ]);
+
+        self::assertSame(['https://shop.example/media/bd/ab/CN1%20-%20CN2.jpg?ts=1', 'https://shop.example/thumbnail/bd/CN1%20-%20CN2_200x175.jpg'], $data['image']);
+        self::assertSame('https://shop.example/media/a/b%20c.jpg', $data['primaryImageOfPage']);
+        self::assertSame('Abstandhalter / media / Edelstahl', $data['name']);
+        self::assertSame('https://shop.example/abstandhalter/cn1', $data['url']);
+        self::assertSame(['price' => 9.66], $data['offers']);
+    }
 }
