@@ -19,6 +19,7 @@
         <service id="Ruhrcoder\RcStructuredData\Schema\Node\OrganizationNodeProvider">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\IdFactory"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\OrganizationDetails"/>
             <tag name="rc_schema.node_provider"/>
         </service>
 
@@ -228,7 +229,18 @@
 
         <service id="Ruhrcoder\RcStructuredData\Twig\StructuredDataExtension">
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Product\ShippingDetailsProvider"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\FaqCmsBlockExtractor"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\OrganizationDetails"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Product\ProductOfferDetails"/>
             <tag name="twig.extension"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Product\ProductOfferDetails">
+        </service>
+
+        <!-- Telefon und Rückgaberichtlinie der Organisation, für Graph und Kernvorlage gleich. -->
+        <service id="Ruhrcoder\RcStructuredData\Schema\OrganizationDetails">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 
         <!-- Bilder in der Sitemap: Namensraum im Wurzelelement, Bilder je Eintrag an den vier Lieferanten des Kerns. -->

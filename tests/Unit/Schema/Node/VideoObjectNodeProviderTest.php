@@ -39,6 +39,8 @@ class VideoObjectNodeProviderTest extends TestCase
         static::assertSame('VideoObject', $nodes[0]['@type']);
         static::assertSame('https://shop.example/fittings#video-1', $nodes[0]['@id']);
         static::assertSame('https://shop.example/fittings#video-2', $nodes[1]['@id']);
+        static::assertSame('de-DE', $nodes[0]['inLanguage']);
+        static::assertSame(['@type' => 'ImageObject', 'url' => $nodes[0]['thumbnailUrl']], $nodes[0]['thumbnail']);
     }
 
     public function testPublisherReferencesOrganization(): void
@@ -49,7 +51,7 @@ class VideoObjectNodeProviderTest extends TestCase
         $node = $this->provider()->provide($context)[0];
 
         static::assertSame(
-            ['@id' => 'https://shop.example/#/schema/organization/1'],
+            ['@id' => 'https://shop.example/#organization'],
             $node['publisher'],
         );
     }

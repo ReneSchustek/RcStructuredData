@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.27.0] - 2026-10-19 — Rückgaberichtlinie, FAQ auf Produktseiten, Preisangabe
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`. Danach in der
+> Konfiguration die neue Karte **Rückgaberichtlinie** prüfen (Vorgabe: 14 Tage, DE/AT/CH, Rücksendekosten ohne Angabe).
+
+### Neu
+
+- **Rückgaberichtlinie** an der Organisation (`hasMerchantReturnPolicy`): Frist, Länder und Rücksendekosten aus der
+  neuen Karte, auf allen Seiten, auch am Organization-Knoten des Kerns auf Produktseiten. Frist 0 schaltet sie ab.
+- **`telephone`** direkt an der Organisation (aus der Einstellung „Telefon" der Karte LocalBusiness), nicht nur im
+  Kontaktpunkt.
+- **FAQPage auf Produktseiten** mit den Fragen, die das Theme dort zeigt (aus dem FAQ-Baustein der Kategorie),
+  gereinigt wie die des Bausteins.
+- **Preisangabe** am Angebot (`priceSpecification` als `UnitPriceSpecification`, mit Mehrwertsteuer-Angabe und bei
+  Staffeln mit Mengen) und **`itemCondition`** auch am Produkt.
+- **Produktgruppen:** `variesBy` (Größe, Material, Farbe, Muster, soweit eine Eigenschaftsgruppe dem entspricht); das
+  Angebot der Variante trägt jetzt auch Versanddetails und Preisangabe.
+- **Videos:** `inLanguage` und das Vorschaubild zusätzlich als `ImageObject` unter `thumbnail`.
+
+### Geändert
+
+- **`@id` der Organisation, Website und LocalBusiness** heißen `/#organization`, `/#website`, `/#localbusiness` (vorher
+  `/#/schema/organization/1` usw.). So heißen sie auch im Kern; Seiten mit beiden Fassungen haben einen Knoten.
+- **Blog:** `meta author` nennt den sichtbaren Anzeigenamen wie das Markup, nicht Vor- und Nachnamen.
+
 ## [2.26.1] - 2026-10-19 — Diagnose-Hinweise zweisprachig, Aufräumen nach der Regelprüfung
 
 > **Deployment:** `php bin/console cache:clear`. Der Verwaltungsteil ist neu gebaut.

@@ -25,6 +25,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\Context\LanguageInfo;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Page\MetaInformation;
 use Symfony\Component\HttpFoundation\Request;
 use Werkl\OpenBlogware\Content\Blog\BlogEntryEntity;
 use Werkl\OpenBlogware\Content\BlogAuthor\BlogAuthorEntity;
@@ -65,9 +66,13 @@ final class BlogSchemaSubscriberTest extends TestCase
         $cmsPage = new CmsPageEntity();
         $cmsPage->setId(self::CMS_PAGE_ID);
         $page = $this->page($entry);
+        $meta = new MetaInformation();
+        $meta->setAuthor('Anna-Maria Muster');
+        $page->setMetaInformation($meta);
 
         $this->subscriber($cmsPage)->onBlogPageLoaded($this->event($page));
 
+        self::assertSame('Anna Muster', $meta->getAuthor(), '`meta author` nennt den sichtbaren Namen wie das Markup.');
         self::assertInstanceOf(SchemaGraphStruct::class, $page->getExtension(SchemaGraphStruct::EXTENSION_NAME));
         self::assertNotNull($this->captured);
         self::assertSame('Geländer planen', $this->captured->getName());

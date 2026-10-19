@@ -55,16 +55,7 @@ final class FaqPageNodeProvider implements SchemaNodeProvider
                 continue;
             }
 
-            foreach ($this->extractor->extract($slot) as $item) {
-                $questions[] = [
-                    '@type' => 'Question',
-                    'name' => $item['question'],
-                    'acceptedAnswer' => [
-                        '@type' => 'Answer',
-                        'text' => $item['answer'],
-                    ],
-                ];
-            }
+            $questions = [...$questions, ...FaqQuestions::fromItems($this->extractor->extract($slot))];
         }
 
         return $questions;

@@ -7,6 +7,7 @@ namespace Ruhrcoder\RcStructuredData\Tests\Unit\Schema\Node;
 use PHPUnit\Framework\TestCase;
 use Ruhrcoder\RcStructuredData\Schema\IdFactory;
 use Ruhrcoder\RcStructuredData\Schema\Node\OrganizationNodeProvider;
+use Ruhrcoder\RcStructuredData\Schema\OrganizationDetails;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\SchemaContextTrait;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
@@ -16,21 +17,18 @@ class OrganizationNodeProviderTest extends TestCase
 
     public function testUsesConfiguredNameAndOptionalFields(): void
     {
-        $provider = new OrganizationNodeProvider(
-            $this->systemConfig([
+        $provider = $this->provider($this->systemConfig([
                 'RcStructuredData.config.organizationName' => 'Ruhrcoder GmbH',
                 'RcStructuredData.config.organizationLogo' => 'https://shop.example/logo.png',
                 'RcStructuredData.config.organizationSameAs' => "https://facebook.com/x\nhttps://instagram.com/x",
-            ]),
-            new IdFactory(),
-        );
+            ]));
         $context = $this->makeContext(baseUrl: 'https://shop.example/');
 
         static::assertTrue($provider->supports($context));
 
         $node = $provider->provide($context)[0];
         static::assertSame('Organization', $node['@type']);
-        static::assertSame('https://shop.example/#/schema/organization/1', $node['@id']);
+        static::assertSame('https://shop.example/#organization', $node['@id']);
         static::assertSame('Ruhrcoder GmbH', $node['name']);
         static::assertSame('https://shop.example/logo.png', $node['logo']);
         static::assertSame(['https://facebook.com/x', 'https://instagram.com/x'], $node['sameAs']);
@@ -38,10 +36,7 @@ class OrganizationNodeProviderTest extends TestCase
 
     public function testFallsBackToShopName(): void
     {
-        $provider = new OrganizationNodeProvider(
-            $this->systemConfig(['core.basicInformation.shopName' => 'Demo Shop']),
-            new IdFactory(),
-        );
+        $provider = $this->provider($this->systemConfig(['core.basicInformation.shopName' => 'Demo Shop']));
         $context = $this->makeContext();
 
         static::assertTrue($provider->supports($context));
@@ -50,17 +45,14 @@ class OrganizationNodeProviderTest extends TestCase
 
     public function testNotSupportedWithoutAnyName(): void
     {
-        $provider = new OrganizationNodeProvider($this->systemConfig([]), new IdFactory());
+        $provider = $this->provider($this->systemConfig([]));
 
         static::assertFalse($provider->supports($this->makeContext()));
     }
 
     public function testOmitsEmptyOptionalFields(): void
     {
-        $provider = new OrganizationNodeProvider(
-            $this->systemConfig(['RcStructuredData.config.organizationName' => 'Ruhrcoder']),
-            new IdFactory(),
-        );
+        $provider = $this->provider($this->systemConfig(['RcStructuredData.config.organizationName' => 'Ruhrcoder']));
 
         $node = $provider->provide($this->makeContext())[0];
         static::assertArrayNotHasKey('logo', $node);
@@ -75,14 +67,11 @@ class OrganizationNodeProviderTest extends TestCase
      */
     public function testAddsContactPointFromPhoneAndShopEmail(): void
     {
-        $provider = new OrganizationNodeProvider(
-            $this->systemConfig([
+        $provider = $this->provider($this->systemConfig([
                 'RcStructuredData.config.organizationName' => 'Ruhrcoder',
                 'RcStructuredData.config.localBusinessPhone' => '+49 234 123456',
                 'core.basicInformation.email' => 'info@shop.example',
-            ]),
-            new IdFactory(),
-        );
+            ]));
 
         $node = $provider->provide($this->makeContext())[0];
         static::assertSame([
@@ -96,6 +85,62 @@ class OrganizationNodeProviderTest extends TestCase
     }
 
     /**
+     * Was: Telefon und Rückgaberichtlinie eingestellt.
+     * Warum: Google verlangt an der Rückgaberichtlinie Land, Art und Frist; das Telefon gehört direkt an die Organisation,
+     *        nicht nur in den Kontaktpunkt.
+     * Erwartet: `telephone` und eine vollständige `MerchantReturnPolicy` mit Rücksendekosten.
+     */
+    public function testAddsTelephoneAndReturnPolicy(): void
+    {
+        $node = $this->provider($this->systemConfig([
+            'RcStructuredData.config.organizationName' => 'Ruhrcoder',
+            'RcStructuredData.config.localBusinessPhone' => '+49 234 123456',
+            'RcStructuredData.config.returnPolicyDays' => '14',
+            'RcStructuredData.config.returnPolicyCountries' => 'de, at;CH xyz',
+            'RcStructuredData.config.returnPolicyFees' => 'customer',
+        ]))->provide($this->makeContext())[0];
+
+        static::assertSame('+49 234 123456', $node['telephone']);
+        static::assertSame([
+            '@type' => 'MerchantReturnPolicy',
+            'applicableCountry' => ['DE', 'AT', 'CH'],
+            'returnPolicyCategory' => 'https://schema.org/MerchantReturnFiniteReturnWindow',
+            'merchantReturnDays' => 14,
+            'returnMethod' => 'https://schema.org/ReturnByMail',
+            'returnFees' => 'https://schema.org/ReturnFeesCustomerResponsibility',
+        ], $node['hasMerchantReturnPolicy']);
+    }
+
+    /**
+     * Was: Frist 0, keine Länder, unbekannte Kostenangabe.
+     * Erwartet: keine Richtlinie ohne Frist oder Land; ohne bekannte Kostenangabe fehlt nur `returnFees`.
+     */
+    public function testReturnPolicyNeedsDaysAndCountries(): void
+    {
+        $details = new OrganizationDetails($this->systemConfig(['RcStructuredData.config.returnPolicyCountries' => 'DE']));
+        static::assertNull($details->returnPolicy(null));
+
+        $details = new OrganizationDetails($this->systemConfig(['RcStructuredData.config.returnPolicyDays' => '14']));
+        static::assertNull($details->returnPolicy(null));
+
+        $details = new OrganizationDetails($this->systemConfig([
+            'RcStructuredData.config.returnPolicyDays' => '30',
+            'RcStructuredData.config.returnPolicyCountries' => 'DE',
+            'RcStructuredData.config.returnPolicyFees' => 'unset',
+        ]));
+        $policy = $details->returnPolicy(null);
+        static::assertNotNull($policy);
+        static::assertSame('DE', $policy['applicableCountry']);
+        static::assertSame(30, $policy['merchantReturnDays']);
+        static::assertArrayNotHasKey('returnFees', $policy);
+    }
+
+    private function provider(SystemConfigService $systemConfig): OrganizationNodeProvider
+    {
+        return new OrganizationNodeProvider($systemConfig, new IdFactory(), new OrganizationDetails($systemConfig));
+    }
+
+    /**
      * @param array<string, string> $values
      */
     private function systemConfig(array $values): SystemConfigService
@@ -103,6 +148,9 @@ class OrganizationNodeProviderTest extends TestCase
         $service = $this->createMock(SystemConfigService::class);
         $service->method('getString')->willReturnCallback(
             static fn (string $key): string => $values[$key] ?? '',
+        );
+        $service->method('getInt')->willReturnCallback(
+            static fn (string $key): int => (int) ($values[$key] ?? 0),
         );
 
         return $service;

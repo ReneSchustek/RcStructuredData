@@ -19,9 +19,9 @@ class IdFactoryTest extends TestCase
         $factory = new IdFactory();
         $context = $this->makeContext(baseUrl: 'https://shop.example/');
 
-        static::assertSame('https://shop.example/#/schema/organization/1', $factory->organization($context));
-        static::assertSame('https://shop.example/#/schema/website/1', $factory->website($context));
-        static::assertSame('https://shop.example/#/schema/localbusiness/1', $factory->localBusiness($context));
+        static::assertSame('https://shop.example/#organization', $factory->organization($context));
+        static::assertSame('https://shop.example/#website', $factory->website($context));
+        static::assertSame('https://shop.example/#localbusiness', $factory->localBusiness($context));
     }
 
     public function testPageBoundIdsHangAtPageUrl(): void

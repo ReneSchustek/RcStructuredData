@@ -1,6 +1,6 @@
 {% sw_extends '@Storefront/storefront/layout/structured-data/json-ld-product.html.twig' %}
 
-{# Ergänzt `offers.shippingDetails` um die drei Felder, die Google vermisst.
+{# Ergänzt das Angebot um `shippingDetails` und `priceSpecification` und die Produktgruppe um `variesBy`.
 
    Überschrieben wird nur der Skript-Block. Die Kernvorlage baut ihre Daten in einem
    einzigen großen Block auf; ihn zu kopieren hieße, 350 Zeilen Kernlogik (Varianten,
@@ -8,19 +8,45 @@
    nachzuziehen. Der Skript-Block ist der letzte vor der Ausgabe. Dort steht `productData`
    fertig, und eine einzige Zusammenführung reicht.
 
-   Ergänzt wird nur das einzelne Angebot. Bei Varianten gibt der Kern ein `AggregateOffer` aus. Dort
-   gehören Versanddetails nicht hin, denn sie beschreiben ein konkretes Angebot, nicht eine Spanne.
+   Versanddetails stehen nur an einem einzelnen Angebot (`Offer`), auch an dem der Variante einer Produktgruppe. Bei
+   Staffelpreisen gibt der Kern ein `AggregateOffer` aus; dort gehören sie nicht hin, denn sie beschreiben ein konkretes
+   Angebot, nicht eine Spanne. Die Preisangabe trägt dort je Staffel eine `UnitPriceSpecification` mit Menge.
 
    Der Kern setzt nur `deliveryTime.handlingTime` und lässt `shippingDetails` ganz weg,
    wenn das Produkt keine Lieferzeit trägt. Deshalb wird das
    ganze Objekt ersetzt und nicht ergänzt: Unser Bau enthält die Bearbeitungszeit ebenfalls. #}
 {% block page_product_detail_json_ld_script %}
     {% set rcShippingDetails = rc_schema_shipping_details(page.product, context) %}
+    {% set rcPriceSpecification = rc_schema_price_specification(page.product, context) %}
 
-    {% if rcShippingDetails and productData.offers is defined and productData.offers['@type'] == 'Offer' %}
+    {% if productData['@type'] == 'Product' and productData.offers is defined %}
+        {# `itemCondition` auch am Produkt: Schema.org erlaubt es dort, und manche Auswerter suchen es nur dort. #}
+        {% set rcOffers = productData.offers|merge({ priceSpecification: rcPriceSpecification }) %}
+        {% if rcShippingDetails and rcOffers['@type'] == 'Offer' %}
+            {% set rcOffers = rcOffers|merge({ shippingDetails: rcShippingDetails }) %}
+        {% endif %}
         {% set productData = productData|merge({
-            offers: productData.offers|merge({ shippingDetails: rcShippingDetails }),
+            offers: rcOffers,
+            itemCondition: productData.offers.itemCondition ?? 'https://schema.org/NewCondition',
         }) %}
+    {% elseif productData['@type'] == 'ProductGroup' and productData.hasVariant is defined %}
+        {# Die Variante dieser Seite ist ein konkretes Angebot: dort Preisangabe, Zustand und Versand. Die Gruppe nennt,
+           worin sich die Varianten unterscheiden, soweit Google den Wert kennt. #}
+        {% set rcVariant = productData.hasVariant|first %}
+        {% set rcOffers = rcVariant.offers|merge({ priceSpecification: rcPriceSpecification }) %}
+        {% if rcShippingDetails and rcOffers['@type'] == 'Offer' %}
+            {% set rcOffers = rcOffers|merge({ shippingDetails: rcShippingDetails }) %}
+        {% endif %}
+        {% set rcVariant = rcVariant|merge({
+            offers: rcOffers,
+            itemCondition: rcVariant.offers.itemCondition ?? 'https://schema.org/NewCondition',
+        }) %}
+        {% set productData = productData|merge({ hasVariant: [rcVariant] }) %}
+
+        {% set rcVariesBy = rc_schema_varies_by(page.product) %}
+        {% if rcVariesBy is not empty %}
+            {% set productData = productData|merge({ variesBy: rcVariesBy }) %}
+        {% endif %}
     {% endif %}
 
     {{ parent() }}

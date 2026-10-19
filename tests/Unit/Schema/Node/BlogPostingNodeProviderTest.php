@@ -52,7 +52,7 @@ class BlogPostingNodeProviderTest extends TestCase
         static::assertSame('https://shop.example/media/blog.png', $node['image']);
         static::assertSame('Der volle Text.', $node['articleBody']);
         static::assertSame(['@id' => 'https://shop.example/blog/montage'], $node['mainEntityOfPage']);
-        static::assertSame(['@id' => 'https://shop.example/#/schema/organization/1'], $node['publisher']);
+        static::assertSame(['@id' => 'https://shop.example/#organization'], $node['publisher']);
     }
 
     public function testOmitsMissingArticleFields(): void

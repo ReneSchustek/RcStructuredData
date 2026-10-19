@@ -6,9 +6,14 @@ namespace Ruhrcoder\RcStructuredData\Tests\Unit\Twig;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Ruhrcoder\RcStructuredData\Schema\Extractor\FaqCmsBlockExtractor;
+use Ruhrcoder\RcStructuredData\Schema\OrganizationDetails;
+use Ruhrcoder\RcStructuredData\Schema\Product\ProductOfferDetails;
 use Ruhrcoder\RcStructuredData\Schema\Product\ShippingDetailsProvider;
 use Ruhrcoder\RcStructuredData\Twig\StructuredDataExtension;
 use Shopware\Core\Framework\Feature;
+use Shopware\Core\Framework\Util\HtmlSanitizer;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 /**
  * Die drei Zustände, die es geben kann, und der dritte ist der Grund für diese Klasse.
@@ -29,7 +34,14 @@ final class StructuredDataExtensionTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->extension = new StructuredDataExtension($this->createMock(ShippingDetailsProvider::class));
+        $sanitizer = $this->createStub(HtmlSanitizer::class);
+        $sanitizer->method('sanitize')->willReturnCallback(static fn (string $text): string => strip_tags($text, '<p><strong>'));
+        $this->extension = new StructuredDataExtension(
+            $this->createMock(ShippingDetailsProvider::class),
+            new FaqCmsBlockExtractor($sanitizer),
+            new OrganizationDetails($this->createStub(SystemConfigService::class)),
+            new ProductOfferDetails(),
+        );
         $this->registeredBefore = Feature::getRegisteredFeatures();
         Feature::resetRegisteredFeatures();
     }
@@ -48,6 +60,7 @@ final class StructuredDataExtensionTest extends TestCase
         );
 
         self::assertContains('rc_schema_core_renders_global_json_ld', $namen);
+        self::assertContains('rc_schema_faq_page', $namen);
     }
 
     public function testCoreDoesNotRenderWhileTheFlagExistsAndIsOff(): void
@@ -86,5 +99,39 @@ final class StructuredDataExtensionTest extends TestCase
             $this->extension->coreRendersGlobalJsonLd(),
             'Ohne Flag gibt der Kern die strukturierten Daten fest aus.',
         );
+    }
+
+    /**
+     * Was: Die Fragen der Produktseite, eine davon ohne Antwort, eine Antwort mit Skript.
+     * Warum: Markup und sichtbarer Text müssen übereinstimmen; ein unvollständiges Paar zeigt das Theme nicht, und eine
+     *        Antwort darf nie Skript ins JSON-LD tragen.
+     * Erwartet: eine FAQPage mit dem einen vollständigen Paar, gereinigt, `@id` mit `#faq`.
+     */
+    public function testTheFaqPageCarriesOnlyCompleteCleanedPairs(): void
+    {
+        $page = $this->extension->faqPage([
+            ['question' => ' Wie wird geklebt? ', 'answer' => '<p>Mit <strong>Druck</strong>.</p><script>x()</script>'],
+            ['question' => 'Ohne Antwort?', 'answer' => ''],
+        ], 'https://shop.example/kleber/2k-362');
+
+        self::assertNotNull($page);
+        self::assertSame('FAQPage', $page['@type']);
+        self::assertSame('https://shop.example/kleber/2k-362#faq', $page['@id']);
+        self::assertSame([[
+            '@type' => 'Question',
+            'name' => 'Wie wird geklebt?',
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => '<p>Mit <strong>Druck</strong>.</p>x()'],
+        ]], $page['mainEntity']);
+    }
+
+    /**
+     * Was: Keine Fragen, keine Erweiterung, Unsinn.
+     * Erwartet: keine FAQPage.
+     */
+    public function testWithoutQuestionsThereIsNoFaqPage(): void
+    {
+        self::assertNull($this->extension->faqPage([], 'https://shop.example/a'));
+        self::assertNull($this->extension->faqPage(null, 'https://shop.example/a'));
+        self::assertNull($this->extension->faqPage('kein Feld', 'https://shop.example/a'));
     }
 }

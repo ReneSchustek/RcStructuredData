@@ -48,7 +48,7 @@ final class PersonNodeProviderTest extends TestCase
         static::assertSame('Person', $nodes[0]['@type']);
         static::assertSame('Anna Muster', $nodes[0]['name']);
         static::assertSame('Vertrieb', $nodes[0]['jobTitle']);
-        static::assertSame(['@id' => 'https://shop.example/#/schema/organization/1'], $nodes[0]['worksFor']);
+        static::assertSame(['@id' => 'https://shop.example/#organization'], $nodes[0]['worksFor']);
         static::assertSame('Werkstattleitung', $nodes[1]['jobTitle']);
         static::assertNotSame($nodes[0]['@id'], $nodes[1]['@id']);
         foreach (['email', 'telephone', 'image'] as $private) {

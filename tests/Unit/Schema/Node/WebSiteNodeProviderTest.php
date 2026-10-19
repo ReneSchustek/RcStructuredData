@@ -24,10 +24,10 @@ class WebSiteNodeProviderTest extends TestCase
 
         $node = $provider->provide($context)[0];
         static::assertSame('WebSite', $node['@type']);
-        static::assertSame('https://shop.example/#/schema/website/1', $node['@id']);
+        static::assertSame('https://shop.example/#website', $node['@id']);
         static::assertSame('Demo Shop', $node['name']);
         static::assertSame('de-DE', $node['inLanguage']);
-        static::assertSame(['@id' => 'https://shop.example/#/schema/organization/1'], $node['publisher']);
+        static::assertSame(['@id' => 'https://shop.example/#organization'], $node['publisher']);
         static::assertArrayNotHasKey('potentialAction', $node);
     }
 

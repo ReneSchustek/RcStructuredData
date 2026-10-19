@@ -132,6 +132,15 @@ Angaben zu Ihrem Unternehmen. Werden von Google für die Firmendarstellung genut
   `https://ihr-shop.de/media/logo.png`).
 - **Social-Profile:** eine Profil-Adresse pro Zeile (z. B. Facebook, Instagram, LinkedIn).
 
+### Rückgaberichtlinie
+
+- **Rückgabefrist in Tagen:** Vorgabe 14 (gesetzliches Widerrufsrecht). 0 = keine Rückgaberichtlinie im Datenblock.
+- **Länder:** ISO-Codes mit Komma, Vorgabe `DE, AT, CH`.
+- **Rücksendekosten:** „Trägt der Kunde", „Kostenlose Rücksendung" oder „Keine Angabe". Bitte so einstellen, wie es
+  in Ihren AGB steht.
+
+Google zeigt die Richtlinie in Händlerangaben; sie steht an der Organisation und gilt damit für alle Produkte.
+
 ### 2. Website
 
 - **Name der Website:** meist identisch mit dem Shop-Namen. Leer = Shop-Name.

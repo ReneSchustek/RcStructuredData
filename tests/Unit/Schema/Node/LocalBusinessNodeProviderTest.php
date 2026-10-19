@@ -56,7 +56,7 @@ class LocalBusinessNodeProviderTest extends TestCase
 
         $node = $provider->provide($context)[0];
         static::assertSame('HomeAndConstructionBusiness', $node['@type']);
-        static::assertSame('https://shop.example/#/schema/localbusiness/1', $node['@id']);
+        static::assertSame('https://shop.example/#localbusiness', $node['@id']);
         static::assertSame('Muster Edelstahl GmbH', $node['name']);
         static::assertSame([
             '@type' => 'PostalAddress',

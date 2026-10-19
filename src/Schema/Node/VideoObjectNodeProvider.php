@@ -92,6 +92,15 @@ final class VideoObjectNodeProvider implements SchemaNodeProvider
             'publisher' => ['@id' => $this->idFactory->organization($context)],
         ];
 
+        // `thumbnailUrl` bleibt eine Adresse, wie Schema.org und Google sie vorsehen; das Bild als Objekt steht unter
+        // `thumbnail`. Die Sprache ist die der Seite, auf der das Video steht.
+        if ($video['thumbnailUrl'] !== '') {
+            $node['thumbnail'] = ['@type' => 'ImageObject', 'url' => $video['thumbnailUrl']];
+        }
+        if ($context->getLocaleCode() !== '') {
+            $node['inLanguage'] = $context->getLocaleCode();
+        }
+
         $description = $this->cascade($video['description'], $fallback['description'], $api['description'] ?? '', $context->getDescription());
         if ($description !== '') {
             $node['description'] = $description;

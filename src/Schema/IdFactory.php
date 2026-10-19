@@ -10,12 +10,15 @@ namespace Ruhrcoder\RcStructuredData\Schema;
  * Singletons (Organization, WebSite) hängen an der Basis-URL und sind so seitenübergreifend
  * identisch. Dadurch können alle Seiten denselben Knoten per "@id" referenzieren. Seiten-
  * gebundene Knoten (Breadcrumb, FAQ, Video) hängen an der jeweiligen Seiten-URL.
+ *
+ * Die Fragmente nennen den Typ (`#organization`, `#website`): So heißen die Knoten auch im Kern
+ * (`json-ld-organization.html.twig`), und auf Seiten, die beide Fassungen tragen, ist es ein Knoten.
  */
 final class IdFactory
 {
-    private const ORGANIZATION_FRAGMENT = '#/schema/organization/1';
-    private const WEBSITE_FRAGMENT = '#/schema/website/1';
-    private const LOCALBUSINESS_FRAGMENT = '#/schema/localbusiness/1';
+    private const ORGANIZATION_FRAGMENT = '#organization';
+    private const WEBSITE_FRAGMENT = '#website';
+    private const LOCALBUSINESS_FRAGMENT = '#localbusiness';
     private const BREADCRUMB_FRAGMENT = '#breadcrumb';
     private const DEFINED_TERM_SET_FRAGMENT = '#begriffe';
     private const DOCUMENT_FRAGMENT = '#dokument';

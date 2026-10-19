@@ -39,4 +39,14 @@
     {% endif %}
 
     {% sw_include '@Storefront/storefront/layout/structured-data/json-ld-product.html.twig' %}
+
+    {# Die Fragen, die das Theme auf der Produktseite zeigt („Wissen", aus dem FAQ-Baustein der Kategorie). Ohne sie
+       meldet Google ein FAQ im Inhalt ohne FAQPage. Fehlt die Erweiterung (anderes Theme), bleibt es beim Produkt. #}
+    {% set rcFaqPage = rc_schema_faq_page(page.extensions.trKnowledge.faqs ?? null, seoUrl('frontend.detail.page', { productId: page.product.id })) %}
+    {% if rcFaqPage %}
+        <script type="application/ld+json">
+        {# ludtwig-ignore twig-json-encode-escape-js #}
+        {{ rcFaqPage|json_encode(jsonLdFlags)|raw }}
+        </script>
+    {% endif %}
 {% endblock %}

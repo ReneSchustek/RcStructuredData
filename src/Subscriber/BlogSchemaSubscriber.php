@@ -49,13 +49,21 @@ final class BlogSchemaSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $article = $this->articleResolver->article($entry);
+
+        // Werkl setzt `meta author` aus Vor- und Nachnamen, die Seite zeigt den Anzeigenamen. Prüfwerkzeuge vergleichen
+        // das Markup mit `meta author`; beide nennen deshalb den Namen, der sichtbar ist.
+        if ($article['author'] !== '') {
+            $event->getPage()->getMetaInformation()?->setAuthor($article['author']);
+        }
+
         $context = $this->contextFactory->forBlog(
             $entry->getId(),
             $name,
             $this->articleResolver->summary($entry),
             $event->getSalesChannelContext()->getLanguageInfo()->localeCode,
             $event->getSalesChannelContext(),
-            $this->articleResolver->article($entry),
+            $article,
             $this->loadArticleCmsPage($event),
         );
 

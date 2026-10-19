@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Ruhrcoder\RcStructuredData\Twig;
 
+use Ruhrcoder\RcStructuredData\Schema\Extractor\FaqCmsBlockExtractor;
+use Ruhrcoder\RcStructuredData\Schema\Node\FaqQuestions;
+use Ruhrcoder\RcStructuredData\Schema\OrganizationDetails;
+use Ruhrcoder\RcStructuredData\Schema\Product\ProductOfferDetails;
 use Ruhrcoder\RcStructuredData\Schema\Product\ShippingDetailsProvider;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Feature;
@@ -30,6 +34,9 @@ final class StructuredDataExtension extends AbstractExtension
 
     public function __construct(
         private readonly ShippingDetailsProvider $shippingDetails,
+        private readonly FaqCmsBlockExtractor $faqExtractor,
+        private readonly OrganizationDetails $organizationDetails,
+        private readonly ProductOfferDetails $offerDetails,
     ) {
     }
 
@@ -38,6 +45,10 @@ final class StructuredDataExtension extends AbstractExtension
         return [
             new TwigFunction('rc_schema_core_renders_global_json_ld', $this->coreRendersGlobalJsonLd(...)),
             new TwigFunction('rc_schema_shipping_details', $this->shippingDetailsFor(...)),
+            new TwigFunction('rc_schema_faq_page', $this->faqPage(...)),
+            new TwigFunction('rc_schema_organization_details', $this->organizationDetails->forSalesChannel(...)),
+            new TwigFunction('rc_schema_price_specification', $this->offerDetails->priceSpecification(...)),
+            new TwigFunction('rc_schema_varies_by', $this->offerDetails->variesBy(...)),
         ];
     }
 
@@ -55,6 +66,29 @@ final class StructuredDataExtension extends AbstractExtension
     public function shippingDetailsFor(SalesChannelProductEntity $product, SalesChannelContext $context): ?array
     {
         return $this->shippingDetails->forProduct($product, $context);
+    }
+
+    /**
+     * Eine FAQPage aus Fragen, die die Seite sichtbar zeigt, `null` ohne vollständiges Paar.
+     *
+     * Für die Produktseite: Das Theme zeigt dort Fragen aus dem FAQ-Baustein der Kategorie (`trKnowledge.faqs`). Sie
+     * werden wie die des Bausteins gereinigt, damit Markup und sichtbarer Text übereinstimmen.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function faqPage(mixed $items, string $pageUrl): ?array
+    {
+        $questions = FaqQuestions::fromItems($this->faqExtractor->items($items));
+        if ($questions === []) {
+            return null;
+        }
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            '@id' => $pageUrl . '#faq',
+            'mainEntity' => $questions,
+        ];
     }
 
     /**

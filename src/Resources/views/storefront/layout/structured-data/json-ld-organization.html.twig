@@ -1,0 +1,9 @@
+{% sw_extends '@Storefront/storefront/layout/structured-data/json-ld-organization.html.twig' %}
+
+{# Der Kern gibt die Organisation auf Seiten ohne eigenen Graphen aus (Produktseiten). Sie bekommt Telefon und
+   Rückgaberichtlinie aus derselben Quelle wie die Organisation im Graphen; `@id` ist in beiden `/#organization`. #}
+{% block layout_structured_data_organization_script %}
+    {% set orgData = orgData|merge(rc_schema_organization_details(context.salesChannelId)) %}
+
+    {{ parent() }}
+{% endblock %}

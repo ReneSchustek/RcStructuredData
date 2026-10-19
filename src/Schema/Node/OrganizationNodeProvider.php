@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ruhrcoder\RcStructuredData\Schema\Node;
 
 use Ruhrcoder\RcStructuredData\Schema\IdFactory;
+use Ruhrcoder\RcStructuredData\Schema\OrganizationDetails;
 use Ruhrcoder\RcStructuredData\Schema\PluginConfigReader;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 use Ruhrcoder\RcStructuredData\Schema\SchemaNodeProvider;
@@ -30,6 +31,7 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
     public function __construct(
         private readonly SystemConfigService $systemConfig,
         private readonly IdFactory $idFactory,
+        private readonly OrganizationDetails $details,
     ) {
     }
 
@@ -62,7 +64,7 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
             $node['sameAs'] = $sameAs;
         }
 
-        return [$node];
+        return [[...$node, ...$this->details->forSalesChannel($context->getSalesChannelContext()->getSalesChannelId())]];
     }
 
     /**
@@ -74,7 +76,7 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
     private function resolveContactPoint(SchemaContext $context): ?array
     {
         $salesChannelId = $context->getSalesChannelContext()->getSalesChannelId();
-        $telephone = $this->config()->string('localBusinessPhone', $context->getSalesChannelContext()->getSalesChannelId());
+        $telephone = $this->details->telephone($salesChannelId);
         $email = trim($this->systemConfig->getString(self::SHOP_EMAIL_KEY, $salesChannelId));
         if ($telephone === '' && $email === '') {
             return null;

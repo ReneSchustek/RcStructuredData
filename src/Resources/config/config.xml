@@ -32,6 +32,51 @@
     </card>
 
     <card>
+        <title>Return policy</title>
+        <title lang="de-DE">Rückgaberichtlinie</title>
+
+        <input-field type="int">
+            <name>returnPolicyDays</name>
+            <label>Return window in days</label>
+            <label lang="de-DE">Rückgabefrist in Tagen</label>
+            <defaultValue>14</defaultValue>
+            <helpText>0 = no return policy in the markup. 14 days is the statutory right of withdrawal in the EU.</helpText>
+            <helpText lang="de-DE">0 = keine Rückgaberichtlinie im Markup. 14 Tage entsprechen dem gesetzlichen Widerrufsrecht in der EU.</helpText>
+        </input-field>
+
+        <input-field>
+            <name>returnPolicyCountries</name>
+            <label>Countries (ISO codes, comma separated)</label>
+            <label lang="de-DE">Länder (ISO-Codes, mit Komma getrennt)</label>
+            <defaultValue>DE, AT, CH</defaultValue>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>returnPolicyFees</name>
+            <label>Return shipping costs</label>
+            <label lang="de-DE">Rücksendekosten</label>
+            <options>
+                <option>
+                    <id>unset</id>
+                    <name>Not specified</name>
+                    <name lang="de-DE">Keine Angabe</name>
+                </option>
+                <option>
+                    <id>customer</id>
+                    <name>Paid by the customer</name>
+                    <name lang="de-DE">Trägt der Kunde</name>
+                </option>
+                <option>
+                    <id>free</id>
+                    <name>Free return</name>
+                    <name lang="de-DE">Kostenlose Rücksendung</name>
+                </option>
+            </options>
+            <defaultValue>unset</defaultValue>
+        </input-field>
+    </card>
+
+    <card>
         <title>WebSite</title>
         <title lang="de-DE">Website</title>
 

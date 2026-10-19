@@ -34,8 +34,16 @@ final class FaqCmsBlockExtractor implements CmsBlockSchemaExtractor
      */
     public function extract(CmsSlotEntity $slot): array
     {
-        $config = $slot->getFieldConfig()->get(self::CONFIG_KEY);
-        $rawItems = $config?->getValue();
+        return $this->items($slot->getFieldConfig()->get(self::CONFIG_KEY)?->getValue());
+    }
+
+    /**
+     * Frage-Antwort-Paare aus beliebiger Quelle, gereinigt wie die des Bausteins; unvollständige Paare fallen weg.
+     *
+     * @return list<array{question: string, answer: string}>
+     */
+    public function items(mixed $rawItems): array
+    {
         if (!\is_array($rawItems)) {
             return [];
         }
