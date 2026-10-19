@@ -35,10 +35,11 @@ final class ShippingDetailsProviderTest extends TestCase
         $details = $this->provider(['DE', 'AT'])->forProduct($this->product(), $this->context());
 
         self::assertNotNull($details);
+        self::assertCount(1, $details);
         self::assertSame([
             ['@type' => 'DefinedRegion', 'addressCountry' => 'AT'],
             ['@type' => 'DefinedRegion', 'addressCountry' => 'DE'],
-        ], $details['shippingDestination']);
+        ], $details[0]['shippingDestination']);
     }
 
     /**
@@ -54,10 +55,10 @@ final class ShippingDetailsProviderTest extends TestCase
         );
 
         self::assertNotNull($details);
-        self::assertSame(13, $details['deliveryTime']['handlingTime']['minValue']);
-        self::assertSame(15, $details['deliveryTime']['handlingTime']['maxValue']);
-        self::assertSame(2, $details['deliveryTime']['transitTime']['minValue']);
-        self::assertSame(4, $details['deliveryTime']['transitTime']['maxValue']);
+        self::assertSame(13, $details[0]['deliveryTime']['handlingTime']['minValue']);
+        self::assertSame(15, $details[0]['deliveryTime']['handlingTime']['maxValue']);
+        self::assertSame(2, $details[0]['deliveryTime']['transitTime']['minValue']);
+        self::assertSame(4, $details[0]['deliveryTime']['transitTime']['maxValue']);
     }
 
     /**
@@ -70,8 +71,8 @@ final class ShippingDetailsProviderTest extends TestCase
         $details = $this->provider(['DE'])->forProduct($this->product(), $this->context($this->deliveryTime(2, 4)));
 
         self::assertNotNull($details);
-        self::assertArrayNotHasKey('handlingTime', $details['deliveryTime']);
-        self::assertSame(2, $details['deliveryTime']['transitTime']['minValue']);
+        self::assertArrayNotHasKey('handlingTime', $details[0]['deliveryTime']);
+        self::assertSame(2, $details[0]['deliveryTime']['transitTime']['minValue']);
     }
 
     public function testItCarriesThePrecalculatedRate(): void
@@ -84,7 +85,7 @@ final class ShippingDetailsProviderTest extends TestCase
             '@type' => 'MonetaryAmount',
             'value' => 8.93,
             'currency' => 'EUR',
-        ], $details['shippingRate']);
+        ], $details[0]['shippingRate']);
     }
 
     /**
@@ -97,7 +98,28 @@ final class ShippingDetailsProviderTest extends TestCase
         $details = $this->provider(['DE'])->forProduct($this->product(), $this->context());
 
         self::assertNotNull($details);
-        self::assertArrayNotHasKey('shippingRate', $details);
+        self::assertArrayNotHasKey('shippingRate', $details[0]);
+    }
+
+    /**
+     * Was: Drei Lieferländer, Preise für Deutschland und Österreich, keiner für die Schweiz.
+     * Warum: Google liest einen Preis als Preis für alle Ziele desselben Eintrags. Ein deutscher Paketpreis für
+     *        alle drei Länder wäre für die Schweiz falsch.
+     * Erwartet: je Land mit Preis ein eigener Eintrag, die Schweiz in einem Eintrag ohne Preis.
+     */
+    public function testEachCountryWithARateGetsItsOwnEntry(): void
+    {
+        $rates = ['DE' => ['amount' => 8.93, 'currency' => 'EUR'], 'AT' => ['amount' => 19.9, 'currency' => 'EUR']];
+        $details = $this->provider(['DE', 'AT', 'CH'], null, $rates)->forProduct($this->product(), $this->context());
+
+        self::assertNotNull($details);
+        self::assertCount(3, $details);
+        self::assertSame([['@type' => 'DefinedRegion', 'addressCountry' => 'AT']], $details[0]['shippingDestination']);
+        self::assertSame(19.9, $details[0]['shippingRate']['value']);
+        self::assertSame([['@type' => 'DefinedRegion', 'addressCountry' => 'DE']], $details[1]['shippingDestination']);
+        self::assertSame(8.93, $details[1]['shippingRate']['value']);
+        self::assertSame([['@type' => 'DefinedRegion', 'addressCountry' => 'CH']], $details[2]['shippingDestination']);
+        self::assertArrayNotHasKey('shippingRate', $details[2]);
     }
 
     /**
@@ -113,8 +135,9 @@ final class ShippingDetailsProviderTest extends TestCase
     /**
      * @param list<string>                          $countryIsoCodes
      * @param array{amount: float, currency: string}|null $rate
+     * @param array<string, array{amount: float, currency: string}> $ratesByCountry
      */
-    private function provider(array $countryIsoCodes, ?array $rate = null): ShippingDetailsProvider
+    private function provider(array $countryIsoCodes, ?array $rate = null, array $ratesByCountry = []): ShippingDetailsProvider
     {
         $countries = [];
         foreach ($countryIsoCodes as $iso) {
@@ -147,17 +170,18 @@ final class ShippingDetailsProviderTest extends TestCase
             Context::createDefaultContext(),
         ));
 
-        $shippingRate = new class ($rate) implements PrecalculatedShippingRate {
+        $shippingRate = new class ($rate, $ratesByCountry) implements PrecalculatedShippingRate {
             /**
-             * @param array{amount: float, currency: string}|null $rate
+             * @param array{amount: float, currency: string}|null           $rate
+             * @param array<string, array{amount: float, currency: string}> $ratesByCountry
              */
-            public function __construct(private readonly ?array $rate)
+            public function __construct(private readonly ?array $rate, private readonly array $ratesByCountry)
             {
             }
 
             public function rateFor(string $productId, string $countryIso, string $salesChannelId): ?array
             {
-                return $this->rate;
+                return $this->ratesByCountry[$countryIso] ?? $this->rate;
             }
         };
 

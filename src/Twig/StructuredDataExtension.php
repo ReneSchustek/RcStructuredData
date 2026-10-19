@@ -50,7 +50,7 @@ final class StructuredDataExtension extends AbstractExtension
      * bauen, und der Preis wäre dort ohnehin nicht erreichbar (Shopware sperrt beim Rendern
      * die Felder, die die Berechnung braucht).
      *
-     * @return array<string, mixed>|null
+     * @return list<array<string, mixed>>|null je Land mit eigenem Preis ein Eintrag
      */
     public function shippingDetailsFor(SalesChannelProductEntity $product, SalesChannelContext $context): ?array
     {

@@ -24,6 +24,13 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  * das Lager verlässt (sie steht am Produkt). `transitTime` ist die Zeit auf der Straße; sie
  * steht an der Versandart. Beide in dasselbe Feld zu schreiben, wäre für den Kunden eine
  * doppelt gezählte Woche.
+ *
+ * **Ein Eintrag je Land mit eigenem Preis.** Google liest `shippingRate` als Preis für genau die Ziele desselben
+ * `OfferShippingDetails` („Information about the cost of shipping to the specified destination", höchstens ein Preis je
+ * Eintrag, für mehrere Preise mehrere Einträge; Merchant-Listing-Dokumentation, gelesen 2026-10-19). Stünden alle
+ * Lieferländer mit dem Preis des Besucherlands in einem Eintrag, gälte der deutsche Paketpreis auch für die Schweiz.
+ * Länder ohne vorberechneten Preis stehen gesammelt in einem Eintrag ohne `shippingRate`: Google erfährt, dass dorthin
+ * geliefert wird, ohne dass ein Preis behauptet wird.
  */
 // Bewusst nicht `final`: Die Twig-Erweiterung wird in ihren Tests gegen ein Test-Double dieses
 // Anbieters geprüft. Dort geht es um die Flag-Frage, nicht um die Versanddetails.
@@ -47,47 +54,64 @@ class ShippingDetailsProvider
     }
 
     /**
-     * @return array<string, mixed>|null `null`, wenn nicht eine einzige Angabe zustande kommt
+     * Die Einträge für `offers.shippingDetails`: einer je Land mit Preis, dazu einer für die Länder ohne Preis.
+     *
+     * Die Länder sind die des Verkaufskanals, nicht das Land des Besuchers: Die strukturierten Daten beschreiben das
+     * Angebot, nicht den einen Aufruf.
+     *
+     * @return list<array<string, mixed>>|null `null`, wenn nicht eine einzige Angabe zustande kommt
      */
     public function forProduct(SalesChannelProductEntity $product, SalesChannelContext $context): ?array
     {
-        $details = ['@type' => 'OfferShippingDetails'];
-
-        $destinations = $this->destinations($context);
-        if ($destinations !== []) {
-            $details['shippingDestination'] = $destinations;
-        }
-
-        $rate = $this->rate($product, $context);
-        if ($rate !== null) {
-            $details['shippingRate'] = $rate;
-        }
-
         $deliveryTime = $this->deliveryTime($product, $context);
-        if ($deliveryTime !== null) {
-            $details['deliveryTime'] = $deliveryTime;
+        $entries = [];
+        $withoutRate = [];
+
+        foreach ($this->countryIsoCodes($context) as $iso) {
+            $rate = $this->rate($product, $iso, $context);
+            if ($rate === null) {
+                $withoutRate[] = $iso;
+
+                continue;
+            }
+
+            $entries[] = $this->entry([$iso], $rate, $deliveryTime);
         }
 
-        return \count($details) > 1 ? $details : null;
+        if ($withoutRate !== [] || ($entries === [] && $deliveryTime !== null)) {
+            $entries[] = $this->entry($withoutRate, null, $deliveryTime);
+        }
+
+        return $entries === [] ? null : $entries;
     }
 
     /**
-     * Die Länder des Verkaufskanals als `DefinedRegion`.
+     * @param list<string>              $isoCodes
+     * @param array<string, mixed>|null $rate
+     * @param array<string, mixed>|null $deliveryTime
      *
-     * Nicht das Land des Besuchers: Die strukturierten Daten beschreiben das Angebot, nicht den
-     * einen Aufruf. Google liest daraus, wohin überhaupt geliefert wird.
-     *
-     * @return list<array<string, string>>
+     * @return array<string, mixed>
      */
-    private function destinations(SalesChannelContext $context): array
+    private function entry(array $isoCodes, ?array $rate, ?array $deliveryTime): array
     {
-        $regions = [];
+        $entry = ['@type' => 'OfferShippingDetails'];
 
-        foreach ($this->countryIsoCodes($context) as $iso) {
-            $regions[] = ['@type' => 'DefinedRegion', 'addressCountry' => $iso];
+        if ($isoCodes !== []) {
+            $entry['shippingDestination'] = array_map(
+                static fn (string $iso): array => ['@type' => 'DefinedRegion', 'addressCountry' => $iso],
+                $isoCodes,
+            );
         }
 
-        return $regions;
+        if ($rate !== null) {
+            $entry['shippingRate'] = $rate;
+        }
+
+        if ($deliveryTime !== null) {
+            $entry['deliveryTime'] = $deliveryTime;
+        }
+
+        return $entry;
     }
 
     /**
@@ -186,13 +210,8 @@ class ShippingDetailsProvider
     /**
      * @return array<string, mixed>|null
      */
-    private function rate(SalesChannelProductEntity $product, SalesChannelContext $context): ?array
+    private function rate(SalesChannelProductEntity $product, string $iso, SalesChannelContext $context): ?array
     {
-        $iso = $context->getShippingLocation()->getCountry()->getIso();
-        if (!\is_string($iso) || $iso === '') {
-            return null;
-        }
-
         $rate = $this->shippingRate->rateFor($product->getId(), $iso, $context->getSalesChannelId());
         if ($rate === null) {
             return null;

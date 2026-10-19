@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.26.0] - 2026-10-19 — Versandpreis je Lieferland
+
+> **Deployment:** `php bin/console cache:clear`.
+
+### Geändert
+
+- `offers.shippingDetails` nennt je Lieferland mit vorberechnetem Preis ein eigenes `OfferShippingDetails`. Bisher stand
+  der Preis des Besucherlands in einem Eintrag mit allen Lieferländern, und Google las ihn als Preis für jedes davon
+  (laut Merchant-Listing-Dokumentation gilt `shippingRate` für die Ziele desselben Eintrags, ein Preis je Eintrag).
+  Länder ohne Preis stehen gesammelt in einem Eintrag ohne `shippingRate`.
+
+
 ## [2.25.0] - 2026-10-15: Diagnose prüft mehr Typen
 
 > **Ausrollen:** `plugin:update RcStructuredData`, `cache:clear`.
