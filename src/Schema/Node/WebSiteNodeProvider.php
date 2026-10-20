@@ -13,8 +13,8 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 /**
  * Liefert den WebSite-Singleton und verknüpft ihn per "@id" mit der Organization (publisher).
  *
- * Optional wird eine SearchAction ergänzt, sobald eine Such-URL-Vorlage konfiguriert ist
- * (Sitelinks-Searchbox).
+ * Optional wird eine SearchAction ergänzt, sobald eine Such-URL-Vorlage konfiguriert ist. Ein Suchfeld zeigt Google
+ * dafür seit November 2024 nicht mehr an; die Angabe beschreibt nur noch die Suche des Shops.
  */
 final class WebSiteNodeProvider implements SchemaNodeProvider
 {
@@ -67,8 +67,11 @@ final class WebSiteNodeProvider implements SchemaNodeProvider
      */
     private function resolveSearchAction(SchemaContext $context): ?array
     {
-        $template = $this->config()->string('websiteSearchUrl', $context->getSalesChannelContext()->getSalesChannelId());
-        if ($template === '' || !str_contains($template, self::SEARCH_TERM_PLACEHOLDER)) {
+        $template = $this->config()->string(
+            'websiteSearchUrl',
+            $context->getSalesChannelContext()->getSalesChannelId()
+        );
+        if (!str_starts_with($template, 'https://') || !str_contains($template, self::SEARCH_TERM_PLACEHOLDER)) {
             return null;
         }
 

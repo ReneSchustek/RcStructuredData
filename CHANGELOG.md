@@ -1,5 +1,35 @@
 # Changelog
 
+## [2.28.0] - 2026-10-20: Restbefunde der Regelprüfung
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`. Der Verwaltungsteil
+> ist neu gebaut. Das Update stellt die Eingabefelder der Zusatzfelder auf `sw-text-field` um.
+
+### Behoben
+
+- **Die Zusatzfelder für Beschreibung und Video sind in der Verwaltung wieder sichtbar.** Sie nutzten die Komponente
+  `sw-field`, die es seit Shopware 6.7 nicht mehr gibt; das Feld blieb leer, ohne Fehlermeldung.
+- **Listen in den Bausteinen FAQ, Nachweise und Begriffe sowie bei den Zusatzeigenschaften behalten ihre Eingaben**,
+  wenn ein Eintrag in der Mitte entfernt wird. Bisher konnten danach die Felder des nächsten Eintrags erscheinen.
+- **Keine ungültigen Werte mehr im Graphen:** Eine YouTube-Kennung muss elf Zeichen haben, Koordinaten müssen Zahlen in
+  den Grenzen der Erde mit Punkt sein, die Such-URL muss über https laufen. Sonst bleibt die Angabe weg.
+- **Der Kontaktpunkt nennt die Sprache des Kanals** statt immer „de".
+- **Die `sku` im Produkt-JSON-LD trägt keine Leerzeichen mehr.** Google meldete 150 Produkte mit „Ungültiger Wert in
+  Feld sku", weil die Produktnummern ein Leerzeichen enthalten („E 48120"). Die Nummer im Shop bleibt unverändert.
+
+### Neu
+
+- `rc-schema:diagnose --sales-channel=<ID>` und der Abfrageparameter `salesChannelId` am Diagnose-Endpunkt prüfen eine
+  Seite in der Sicht eines bestimmten Verkaufskanals.
+
+### Intern
+
+- Die Diagnose lädt Kanal und Seiten über eigene Bausteine; feste Werte sind benannt, der Bildersammler ist feste
+  Abhängigkeit der Seitenknoten, eine nur noch im Test genutzte Methode ist dorthin gewandert.
+- Kommentare und README an den Code angeglichen (darunter die Suche: Google zeigt seit November 2024 kein eigenes
+  Suchfeld mehr an), Kopplung an das Theme „Design 2027" dokumentiert, Testklassen mit Kopf, lange Zeilen
+  umgebrochen, Ausroll-Hinweise in älteren Einträgen nachgetragen.
+
 ## [2.27.1] - 2026-10-19 — Bildadressen im Markup kodiert
 
 > **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
@@ -202,10 +232,9 @@
 ### Intern
 
 - **Messprojekt `benchmarks/`** mit PHPBench und einer Seitenmessung über HTTP, Ablage je Lauf in
-  `benchmarks/results.csv`; kommt in kein Ausrollpaket. Ausgangswerte vom 05.10. auf einer Kopie des Shops: Der
-  Graph kostet auf Start-, Kategorie- und Landingpage weniger als die Streuung der Messung (rund
-  10 bis 20 ms); ein Abgleich mit YouTube bei leerem Speicher 25 ms je Video, aus dem Speicher
-  praktisch nichts.
+  `benchmarks/results.csv`; kommt in kein Ausrollpaket. Der Graph kostet auf Start-, Kategorie- und Landingpage
+  weniger als die Streuung der Messung; ein Abgleich mit YouTube bei leerem Speicher rund 25 ms je Video, aus dem
+  Speicher praktisch nichts.
 - Wächter im Testlauf: Jeder Aufruf der YouTube-Schnittstelle trägt eine Wartegrenze von höchstens
   drei Sekunden.
 
@@ -244,8 +273,7 @@
   Mitgenommen hat das auch Videos, FAQ und alles Weitere, was als Baustein auf der Seite steht: Die
   beiden Videos der Startseite standen deshalb nur im handgeschriebenen JSON-LD. Die Erlebniswelt
   reist jetzt mit; Breadcrumb und CollectionPage bleiben aus, weil sie an der Kategorie hängen, die
-  weiterhin fehlt. Auf einer Kopie des Shops gegen 2.19.0 verglichen: Startseite und Glashalter gewinnen die
-  erwarteten Knoten, die Seiten für Handläufe und Treppengeländer bleiben unverändert.
+  weiterhin fehlt. Seiten, deren Erlebniswelt schon vorher mitkam, bleiben unverändert.
 
 - **Voraussetzung bleibt das Datum.** Ein Video ohne `uploadDate` wird weiterhin ausgelassen; die
   beiden Startseiten-Videos brauchen die Angaben am Baustein.
@@ -254,7 +282,7 @@
 
 - **Ein Datum bleibt der Tag, der gepflegt wurde.** Ein Datumsfeld kann „4. Juli, 0 Uhr" als
   `2026-07-03T22:00:00.000Z` speichern; abgeschnitten wäre das der 3. Juli. Zeitpunkte werden in
-  der Zone der Redaktion (Europe/Berlin) gelesen. Am Prüfblock auf einer Kopie des Shops nachgewiesen.
+  der Zone der Redaktion (Europe/Berlin) gelesen.
 
 - **Die Diagnose-Karte sieht die Nachweise auch.** Sie lädt die Seite ohne Storefront und hätte
   die Dateien sonst nicht aufgelöst. Die Karte hätte eine Lücke gemeldet, die es auf der Seite
@@ -264,6 +292,8 @@
   Umwandlung wäre ein solcher Eintrag still verschwunden. Aufgefallen im Test.
 
 ## [2.19.0] - 2026-09-08: Inhaltsseiten sind keine Sammlungen
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
 
 ### Behoben
 
@@ -343,7 +373,7 @@ beantwortet, **bevor** die Handblöcke entfernt werden, denn danach ist die Vorl
 
 ### Behoben
 
-- **Ein Video ohne Veröffentlichungsdatum wird gar nicht mehr ausgezeichnet.** Google wertet ein `VideoObject` ohne `uploadDate` als **kritischen Fehler**. Das Video erscheint dann nicht in der Suche, und die Meldung steht in der Search Console. Ein fehlendes `VideoObject` ist dagegen neutral. Am 24.08.2026 waren 13 solcher Knoten auf 7 Seiten betroffen. Wer Datum und Beschreibung am Video pflegt (Zusatzfeld am Block oder an der Seite, wahlweise über die YouTube-Schnittstelle), bekommt die Auszeichnung zurück. Die Auslassung ist also kein Verzicht, sondern ein Hinweis mit Wirkung.
+- **Ein Video ohne Veröffentlichungsdatum wird gar nicht mehr ausgezeichnet.** Google wertet ein `VideoObject` ohne `uploadDate` als **kritischen Fehler**. Das Video erscheint dann nicht in der Suche, und die Meldung steht in der Search Console. Ein fehlendes `VideoObject` ist dagegen neutral. Wer Datum und Beschreibung am Video pflegt (Zusatzfeld am Block oder an der Seite, wahlweise über die YouTube-Schnittstelle), bekommt die Auszeichnung zurück. Die Auslassung ist also kein Verzicht, sondern ein Hinweis mit Wirkung.
 
 ### Neu
 
@@ -353,6 +383,8 @@ beantwortet, **bevor** die Handblöcke entfernt werden, denn danach ist die Vorl
 
 
 ## [2.16.0] - 2026-08-19: Blogbeiträge tragen ihr Änderungsdatum
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
 
 ### Neu
 
@@ -364,6 +396,8 @@ beantwortet, **bevor** die Handblöcke entfernt werden, denn danach ist die Vorl
   Fehler steckt im Block des Fremdplugins, wo jeder Beitrag seit Monaten „heute bearbeitet" meldet.
 
 ## [2.15.0] - 2026-08-19: Die Diagnose meldet jetzt zwei stille Fehler
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
 
 ### Neu
 
@@ -387,6 +421,8 @@ den Bausteinen, die für die Diagnose ohnehin geladen werden.
 
 ## [2.14.1] - 2026-08-17: Baustein, Eigenschaft und Diagnose-Karte sind wieder da
 
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console assets:install && php bin/console cache:clear`. Der Verwaltungsteil ist neu gebaut.
+
 ### Behoben
 
 - **Im Backoffice fehlte alles, was die Erweiterung dort beisteuert**: der Baustein für die
@@ -397,6 +433,8 @@ den Bausteinen, die für die Diagnose ohnehin geladen werden.
   Ausfall von außen nicht zu sehen war.
 
 ## [2.14.0] - 2026-08-12: Zwei Lücken aus dem Sicherheits-Durchgang geschlossen
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
 
 ### Geändert
 
@@ -420,11 +458,15 @@ den Bausteinen, die für die Diagnose ohnehin geladen werden.
 
 ## [2.13.2] - 2026-08-10: Strukturierte Daten bleiben auch nach dem Versionswechsel eindeutig
 
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
+
 ### Geändert
 
 - **WebSite und Organization erscheinen weiterhin genau einmal.** Ob das Plugin sie ergänzen muss, hing bisher an einem Schalter, den Shopware mit der nächsten Hauptversion entfernt. Danach hätte die Abfrage das Gegenteil bedeutet und beide Angaben wären doppelt im Kopfbereich gelandet. Die Entscheidung trifft jetzt das Plugin selbst und bleibt über den Versionswechsel hinweg richtig. Sichtbar ändert sich nichts.
 
 ## [2.13.1] - 2026-08-10: Vorbereitet auf die nächste Shopware-Hauptversion
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
 
 ### Geändert
 

@@ -48,8 +48,11 @@ final class SchemaContextFactory
      * Baut den Kontext direkt aus einer Kategorie, genutzt vom Page-Subscriber und vom
      * Diagnose-Befehl (der keine Storefront-Seite lädt).
      */
-    public function fromCategory(?CategoryEntity $category, ?CmsPageEntity $cmsPage, SalesChannelContext $context): ?SchemaContext
-    {
+    public function fromCategory(
+        ?CategoryEntity $category,
+        ?CmsPageEntity $cmsPage,
+        SalesChannelContext $context,
+    ): ?SchemaContext {
         if ($category === null) {
             return null;
         }
@@ -67,7 +70,12 @@ final class SchemaContextFactory
         return new SchemaContext(
             SchemaContext::TYPE_CATEGORY,
             $this->resolveName($category->getTranslation('name'), $category->getName()),
-            $this->resolveDescription($customFields, $category->getTranslation('description'), $category->getDescription(), $category->getTranslation('metaDescription') ?? $category->getMetaDescription()),
+            $this->resolveDescription(
+                $customFields,
+                $category->getTranslation('description'),
+                $category->getDescription(),
+                $category->getTranslation('metaDescription') ?? $category->getMetaDescription()
+            ),
             $pageUrl,
             $this->seoUrlReplacer->generate(self::HOME_ROUTE),
             $context->getLanguageInfo()->localeCode,
@@ -88,8 +96,11 @@ final class SchemaContextFactory
      * auszeichnen kann. Was als Baustein auf der Seite steht (Video, FAQ,
      * Begriffssatz, Nachweise), ist sichtbarer Inhalt, auf der Startseite wie überall.
      */
-    private function fromHome(CategoryEntity $category, ?CmsPageEntity $cmsPage, SalesChannelContext $context): SchemaContext
-    {
+    private function fromHome(
+        CategoryEntity $category,
+        ?CmsPageEntity $cmsPage,
+        SalesChannelContext $context,
+    ): SchemaContext {
         $homeUrl = $this->seoUrlReplacer->generate(self::HOME_ROUTE);
 
         // Die Wurzelkategorie heißt im Shop „Hauptkategorien"; das ist kein Name für die Startseite. Es gilt, was der
@@ -108,7 +119,12 @@ final class SchemaContextFactory
             $name !== '' ? $name : $this->resolveName($category->getTranslation('name'), $category->getName()),
             $description !== ''
                 ? PlainText::fromHtml($description)
-                : $this->resolveDescription($category->getCustomFields() ?? [], null, null, $category->getTranslation('metaDescription') ?? $category->getMetaDescription()),
+: $this->resolveDescription(
+    $category->getCustomFields() ?? [],
+    null,
+    null,
+    $category->getTranslation('metaDescription') ?? $category->getMetaDescription()
+),
             $homeUrl,
             $homeUrl,
             $context->getLanguageInfo()->localeCode,
@@ -174,7 +190,12 @@ final class SchemaContextFactory
         return new SchemaContext(
             SchemaContext::TYPE_LANDINGPAGE,
             $this->resolveName($landingPage->getTranslation('name'), $landingPage->getName()),
-            $this->resolveDescription($customFields, null, null, $landingPage->getTranslation('metaDescription') ?? $landingPage->getMetaDescription()),
+            $this->resolveDescription(
+                $customFields,
+                null,
+                null,
+                $landingPage->getTranslation('metaDescription') ?? $landingPage->getMetaDescription()
+            ),
             $pageUrl,
             $this->seoUrlReplacer->generate(self::HOME_ROUTE),
             $context->getLanguageInfo()->localeCode,
@@ -188,7 +209,8 @@ final class SchemaContextFactory
 
 
     /**
-     * Namen ohne Leerzeichen am Rand: Ein Kategoriename wie „Glasgeländer " stünde sonst samt Leerzeichen in BreadcrumbList und CollectionPage.
+     * Namen ohne Leerzeichen am Rand: Ein Kategoriename wie „Glasgeländer " stünde sonst samt Leerzeichen in
+     * BreadcrumbList und CollectionPage.
      */
     private function resolveName(mixed $translated, ?string $fallback): string
     {
@@ -202,10 +224,15 @@ final class SchemaContextFactory
     /**
      * @param array<string, mixed> $customFields
      */
-    private function resolveDescription(array $customFields, mixed $translated, ?string $fallback, mixed $meta = null): string
-    {
-        // Die Meta-Beschreibung zuerst: Sie ist die gepflegte Kurzbeschreibung der Seite. Eine zweite, eigene Fassung im
-        // JSON-LD hieße zwei Beschreibungen für dieselbe Seite; die eigene gilt nur, wenn keine Meta-Beschreibung da ist.
+    private function resolveDescription(
+        array $customFields,
+        mixed $translated,
+        ?string $fallback,
+        mixed $meta = null,
+    ): string {
+        // Die Meta-Beschreibung zuerst: Sie ist die gepflegte Kurzbeschreibung der Seite. Eine zweite, eigene Fassung
+        // im JSON-LD hieße zwei Beschreibungen für dieselbe Seite; die eigene gilt nur, wenn keine Meta-Beschreibung da
+        // ist.
         if (\is_string($meta) && trim($meta) !== '') {
             return PlainText::fromHtml($meta);
         }

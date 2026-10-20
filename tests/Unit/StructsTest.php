@@ -23,12 +23,28 @@ final class StructsTest extends TestCase
 {
     public function testDefinedTermsCarryNameDescriptionAndTerms(): void
     {
-        $struct = new DefinedTermsStruct('Glossar', 'Begriffe rund ums Geländer', [['term' => 'Handlauf', 'definition' => 'Woran man sich festhält.']]);
+        $struct = new DefinedTermsStruct(
+            'Glossar',
+            'Begriffe rund ums Geländer',
+            [
+                [
+                    'term' => 'Handlauf',
+                    'definition' => 'Woran man sich festhält.',
+                ],
+            ]
+        );
 
         self::assertSame('Glossar', $struct->getName());
         self::assertSame('Begriffe rund ums Geländer', $struct->getDescription());
         self::assertSame([['term' => 'Handlauf', 'definition' => 'Woran man sich festhält.']], $struct->getTerms());
-        self::assertSame(['', '', []], [(new DefinedTermsStruct())->getName(), (new DefinedTermsStruct())->getDescription(), (new DefinedTermsStruct())->getTerms()]);
+        self::assertSame(
+            ['', '', []],
+            [
+                (new DefinedTermsStruct())->getName(),
+                (new DefinedTermsStruct())->getDescription(),
+                (new DefinedTermsStruct())->getTerms(),
+            ]
+        );
     }
 
     public function testTheGraphCarriesItsHints(): void

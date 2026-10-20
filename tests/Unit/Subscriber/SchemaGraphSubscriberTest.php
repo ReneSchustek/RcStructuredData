@@ -47,7 +47,14 @@ final class SchemaGraphSubscriberTest extends TestCase
         $page = new NavigationPage();
         $page->setCategory($this->category());
 
-        $this->subscriber(debug: false)->onNavigationPageLoaded(new NavigationPageLoadedEvent($page, $this->context(), new Request()));
+        $this->subscriber(debug: false)
+            ->onNavigationPageLoaded(
+                new NavigationPageLoadedEvent(
+                    $page,
+                    $this->context(),
+                    new Request()
+                )
+            );
 
         $struct = $page->getExtension(SchemaGraphStruct::EXTENSION_NAME);
         self::assertInstanceOf(SchemaGraphStruct::class, $struct);
@@ -68,7 +75,14 @@ final class SchemaGraphSubscriberTest extends TestCase
         $page = new LandingPage();
         $page->setLandingPage($landingPage);
 
-        $this->subscriber(debug: true)->onLandingPageLoaded(new LandingPageLoadedEvent($page, $this->context(), new Request()));
+        $this->subscriber(debug: true)
+            ->onLandingPageLoaded(
+                new LandingPageLoadedEvent(
+                    $page,
+                    $this->context(),
+                    new Request()
+                )
+            );
 
         $struct = $page->getExtension(SchemaGraphStruct::EXTENSION_NAME);
         self::assertInstanceOf(SchemaGraphStruct::class, $struct);
@@ -84,11 +98,27 @@ final class SchemaGraphSubscriberTest extends TestCase
     public function testNoExtensionWithoutContextOrNodes(): void
     {
         $withoutCategory = new NavigationPage();
-        $this->subscriber(debug: false)->onNavigationPageLoaded(new NavigationPageLoadedEvent($withoutCategory, $this->context(), new Request()));
+        $this->subscriber(debug: false)
+            ->onNavigationPageLoaded(
+                new NavigationPageLoadedEvent(
+                    $withoutCategory,
+                    $this->context(),
+                    new Request()
+                )
+            );
 
         $withoutNodes = new NavigationPage();
         $withoutNodes->setCategory($this->category());
-        $this->subscriber(debug: false, nodes: [])->onNavigationPageLoaded(new NavigationPageLoadedEvent($withoutNodes, $this->context(), new Request()));
+        $this->subscriber(
+            debug: false,
+            nodes: []
+        )->onNavigationPageLoaded(
+            new NavigationPageLoadedEvent(
+                $withoutNodes,
+                $this->context(),
+                new Request()
+            )
+        );
 
         self::assertFalse($withoutCategory->hasExtension(SchemaGraphStruct::EXTENSION_NAME));
         self::assertFalse($withoutNodes->hasExtension(SchemaGraphStruct::EXTENSION_NAME));

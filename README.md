@@ -40,7 +40,7 @@ darstellen, etwa mit:
 - **Aufklappbaren FAQ** direkt im Suchergebnis,
 - einer **Video-Vorschau** mit Laufzeit,
 - dem **Navigationspfad** (z. B. „Startseite › Bauteile › Fittings"),
-- **Firmen- und Website-Angaben** (Name, Logo, Social-Media-Profile, Suchfeld).
+- **Firmen- und Website-Angaben** (Name, Logo, Social-Media-Profile, Suche des Shops).
 
 Das kann die Sichtbarkeit erhöhen und mehr Besucher auf Ihre Seiten bringen. Das Plugin nimmt
 Ihnen die technische Arbeit ab und erzeugt diese Etiketten automatisch aus den Inhalten, die Sie
@@ -65,7 +65,7 @@ zusammenhängenden Datenblock** (`@graph`) mit folgenden Bausteinen, je nachdem,
 | **BreadcrumbList** | Der Navigationspfad der Seite, automatisch aus der Shop-Navigation. |
 | **Organization** | Ihre Firmenangaben (Name, Logo, Social-Media-Profile, Kontaktpunkt). |
 | **LocalBusiness** | Ihr Geschäft vor Ort: Anschrift, Telefon, Preisspanne, Bild, Lage und Öffnungszeiten. |
-| **WebSite** | Angaben zur Website inkl. optionalem Suchfeld für Google. |
+| **WebSite** | Angaben zur Website, optional mit der Suchadresse des Shops. |
 | **FAQPage** | Frage-Antwort-Listen aus dem FAQ-Block (siehe unten). |
 | **VideoObject** | Videoangaben aus einem YouTube-Video-Block der Seite. |
 | **DefinedTermSet** | Begriffserklärungen aus dem Baustein „Begriffe". |
@@ -144,7 +144,8 @@ Google zeigt die Richtlinie in Händlerangaben; sie steht an der Organisation un
 ### 2. Website
 
 - **Name der Website:** meist identisch mit dem Shop-Namen. Leer = Shop-Name.
-- **Such-URL-Vorlage:** optional. Ermöglicht Google, ein Suchfeld für Ihren Shop anzuzeigen.
+- **Such-URL-Vorlage:** optional. Beschreibt die Suche des Shops; ein eigenes Suchfeld in den Suchergebnissen zeigt
+  Google seit November 2024 nicht mehr an.
   Die Adresse muss den Platzhalter `{search_term_string}` enthalten, z. B.
   `https://ihr-shop.de/search?search={search_term_string}`.
 
@@ -297,13 +298,19 @@ NavigationPageLoadedEvent / LandingPageLoadedEvent
     → Twig-Override page/content/meta.html.twig (ein <script type="application/ld+json">)
 ```
 
-**Erweiterbarkeit (Open-Closed):** Ein neuer Schema-Typ (Article, Product, LocalBusiness, HowTo …)
+**Erweiterbarkeit (Open-Closed):** Ein neuer Schema-Typ (etwa HowTo oder Event)
 ist ein zusätzlicher, mit `rc_schema.node_provider` getaggter Service. `GraphBuilder`, `IdFactory`,
 die Twig-Ausgabe und die bestehenden Provider bleiben unverändert.
 
 **Datenquellen je CMS-Block** liegen in `src/Schema/Extractor/` (ein Extractor je Block-Typ).
 Die Video-Anreicherung über die YouTube-Data-API ist eine optionale, gecachte und fehlertolerante
 Stufe der Feld-Kaskade (`src/Schema/Enrichment/`); ohne API-Schlüssel bleibt sie wirkungslos.
+
+**Kopplung an das Theme „Design 2027" (RcTrummerEdelstahlTheme2027):** Zwei seiner Erlebniswelt-Elemente liest das
+Plugin über ihren Typnamen, ohne eine Klasse von dort zu laden. `rc-tr-showcase` macht eine Seite zur Sammlung
+(`ContentPageDetector`), und `rc-tr-service` in der Kartendarstellung mit Porträts ergibt je Karte einen
+`Person`-Knoten (`PersonNodeProvider`, gelesen werden `display`, `portraits` und `items`). Fehlt das Theme, kommen die
+Typen nie vor, und beides bleibt still aus. Benennt das Theme die Elemente oder Felder um, müssen beide Stellen mit.
 
 **Diagnose:** `CompletenessChecker` kennt je Schema-Typ die von Google geforderten/empfohlenen
 Felder; die Ausgabe erfolgt als optionaler HTML-Kommentar (Diagnose-Schalter) und über den

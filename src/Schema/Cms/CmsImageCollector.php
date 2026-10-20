@@ -59,8 +59,20 @@ final class CmsImageCollector
         // Gekürzt wird vor dem Laden, damit die Medienabfrage begrenzt bleibt. Was danach als Nicht-Bild herausfällt,
         // füllt nichts nach.
         $sources = \array_slice($this->sources($page), 0, self::LIMIT);
-        $ids = array_values(array_filter(array_map(static fn (ImageSource $source): ?string => $source->mediaId, $sources)));
-        $media = $ids === [] ? new MediaCollection() : $this->mediaRepository->search(new Criteria($ids), $context)->getEntities();
+        $ids = array_values(
+            array_filter(
+                array_map(
+                    static fn (ImageSource $source): ?string => $source->mediaId,
+                    $sources
+                )
+            )
+        );
+        $media = $ids === []
+            ? new MediaCollection()
+            : $this->mediaRepository->search(
+                new Criteria($ids),
+                $context
+            )->getEntities();
 
         $images = [];
         $seen = [];
@@ -126,23 +138,6 @@ final class CmsImageCollector
     }
 
     /**
-     * Die Medienkennungen unter den Quellen (für Prüfungen und Aufrufer, die nur Medien brauchen).
-     *
-     * @return list<string>
-     */
-    public function mediaIds(?CmsPageEntity $page): array
-    {
-        $ids = [];
-        foreach ($this->sources($page) as $source) {
-            if ($source->mediaId !== null) {
-                $ids[] = $source->mediaId;
-            }
-        }
-
-        return $ids;
-    }
-
-    /**
      * Die Bildadressen aus HTML-Text.
      *
      * @return list<string>
@@ -156,7 +151,16 @@ final class CmsImageCollector
         preg_match_all('/<img\b[^>]*?\bsrc\s*=\s*["\']([^"\']+)["\']/i', $html, $matches);
 
         return array_values(array_filter(
-            array_map(static fn (string $src): string => trim(html_entity_decode($src, \ENT_QUOTES | \ENT_HTML5, 'UTF-8')), $matches[1]),
+            array_map(
+                static fn (string $src): string => trim(
+                    html_entity_decode(
+                        $src,
+                        \ENT_QUOTES | \ENT_HTML5,
+                        'UTF-8'
+                    )
+                ),
+                $matches[1]
+            ),
             static fn (string $src): bool => $src !== '' && !str_starts_with($src, 'data:'),
         ));
     }

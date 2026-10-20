@@ -12,7 +12,7 @@
         {% block sw_cms_element_rc_faq_config_items %}
             <div
                 v-for="(item, index) in faqItems"
-                :key="index"
+                :key="itemKey(item)"
                 class="sw-cms-el-config-rc-faq__item">
 
                 <sw-text-field

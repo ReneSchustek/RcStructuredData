@@ -3,7 +3,7 @@
         {% block rc_schema_additional_property_items %}
             <div
                 v-for="(item, index) in items"
-                :key="index"
+                :key="itemKey(item)"
                 class="rc-schema-additional-property__item">
 
                 <sw-text-field

@@ -76,8 +76,11 @@ final class RcProductFeedShippingRateTest extends TestCase
     public function testAFailingLookupDoesNotBreakThePage(): void
     {
         $calculator = new class () extends ShippingCostCalculatorService {
-            public function lookupCached(string $productId, string $countryIso, string $salesChannelId): ?ShippingCalculationResult
-            {
+            public function lookupCached(
+                string $productId,
+                string $countryIso,
+                string $salesChannelId,
+            ): ?ShippingCalculationResult {
                 throw new RuntimeException('Warenstrom kaputt');
             }
         };
@@ -85,7 +88,9 @@ final class RcProductFeedShippingRateTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects(self::once())->method('warning')->with(
             self::anything(),
-            self::callback(static fn (array $context): bool => $context['productId'] === 'produkt-1' && $context['exception'] === RuntimeException::class),
+            self::callback(static fn (array $context): bool =>
+    $context['productId'] === 'produkt-1' &&
+    $context['exception'] === RuntimeException::class),
         );
 
         // Kein Serverfehler, aber protokolliert, damit ein dauerhafter Ausfall auffällt.
@@ -99,8 +104,11 @@ final class RcProductFeedShippingRateTest extends TestCase
             {
             }
 
-            public function lookupCached(string $productId, string $countryIso, string $salesChannelId): ?ShippingCalculationResult
-            {
+            public function lookupCached(
+                string $productId,
+                string $countryIso,
+                string $salesChannelId,
+            ): ?ShippingCalculationResult {
                 return $this->result;
             }
         };

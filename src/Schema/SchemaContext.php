@@ -38,7 +38,12 @@ final class SchemaContext
         private readonly array $additionalProperties = [],
         private readonly ?CategoryEntity $category = null,
         private readonly ?CmsPageEntity $cmsPage = null,
-        private readonly array $videoFallback = ['name' => '', 'description' => '', 'uploadDate' => '', 'duration' => ''],
+        private readonly array $videoFallback = [
+    'name' => '',
+    'description' => '',
+    'uploadDate' => '',
+    'duration' => '',
+],
         private readonly array $article = [],
     ) {
     }

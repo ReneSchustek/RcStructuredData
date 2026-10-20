@@ -117,6 +117,7 @@ final class DocumentsCmsBlockExtractor implements CmsBlockSchemaExtractor
             // Ein Zeitpunkt ohne Zone gilt in der Zeit der Redaktion, nicht in der des Servers.
             $moment = new DateTimeImmutable($text, new DateTimeZone(self::EDITORIAL_TIMEZONE));
         } catch (Exception) {
+            // Ein unlesbares Datum gilt als nicht gepflegt; das Dokument erscheint dann ohne Datum.
             return '';
         }
 

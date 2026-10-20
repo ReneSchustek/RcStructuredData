@@ -16,12 +16,14 @@ use Shopware\Core\Content\Cms\CmsPageEntity;
  * Der CompletenessChecker sieht nur den Graphen, den dieses Plugin baut. Die drei Fehler unten liegen im Verhältnis
  * zwischen Graph und Seite und sind am Graphen allein nicht zu erkennen:
  *
- * 1. Handgeschriebenes JSON-LD auf derselben Seite. Steht in einem Baustein ein eigener `ld+json`-Block, trägt die Seite
+ * 1. Handgeschriebenes JSON-LD auf derselben Seite. Steht in einem Baustein ein eigener `ld+json`-Block, trägt die
+ * Seite
  *    zwei Auszeichnungen, die auseinanderlaufen können, etwa Fragen, die auf der Seite gar nicht zu sehen sind.
  * 2. Ein Video ohne Knoten. Fehlt einem YouTube-Baustein das Veröffentlichungsdatum, gibt das Plugin für ihn keinen
  *    Knoten aus: Ein unvollständiges VideoObject ist für Google ein kritischer Fehler, ein fehlendes neutral. Die Meldung
  *    nennt, welches Video ein Datum braucht.
- * 3. `FAQPage` ohne FAQ-Baustein. Meldet der Graph eine FAQ, ohne dass ein `rc-faq`-Baustein auf der Seite steht, stammt
+ * 3. `FAQPage` ohne FAQ-Baustein. Meldet der Graph eine FAQ, ohne dass ein `rc-faq`-Baustein auf der Seite steht,
+ * stammt
  *    sie aus einer anderen Quelle und ist womöglich für keinen Besucher sichtbar.
  *
  * Alle drei Prüfungen laufen über die ohnehin geladenen Bausteine und kosten keine Abfrage.

@@ -15,6 +15,10 @@ use Shopware\Core\System\SalesChannel\Context\LanguageInfo;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
+/**
+ * Prüft, wie aus Kategorie, Landingpage und Startseite der Kontext des Graphen entsteht: Name, Beschreibung und
+ * Rückfälle, die Startseite mit den Angaben des Kanals.
+ */
 class SchemaContextFactoryTest extends TestCase
 {
     private const NAV_ROOT_ID = '0197aa00000000000000000000000000';
@@ -64,7 +68,13 @@ class SchemaContextFactoryTest extends TestCase
     {
         $category = $this->makeCategory(self::NAV_ROOT_ID, name: 'Hauptkategorien');
 
-        $context = $this->factory()->fromCategory($category, null, $this->salesChannelContext(['name' => 'Muster Edelstahl GmbH']));
+        $context = $this->factory()->fromCategory(
+            $category,
+            null,
+            $this->salesChannelContext([
+                'name' => 'Muster Edelstahl GmbH',
+            ])
+        );
 
         static::assertNotNull($context);
         static::assertSame('Muster Edelstahl GmbH', $context->getName());
@@ -257,7 +267,11 @@ class SchemaContextFactoryTest extends TestCase
     {
         $salesChannel = $this->createMock(SalesChannelEntity::class);
         $salesChannel->method('getNavigationCategoryId')->willReturn(self::NAV_ROOT_ID);
-        $salesChannel->method('getTranslation')->willReturnCallback(static fn (string $field): ?string => $translations[$field] ?? null);
+        $salesChannel->method('getTranslation')->willReturnCallback(
+            static fn (
+                string $field,
+            ): ?string => $translations[$field] ?? null
+        );
 
         $context = $this->createMock(SalesChannelContext::class);
         $context->method('getSalesChannel')->willReturn($salesChannel);

@@ -47,7 +47,10 @@ final class SitemapWiringTest extends TestCase
             SitemapImageNamespaceSubscriber::NAMESPACE,
             $event->getUrlsetNamespaces()['xmlns:image'] ?? null,
         );
-        self::assertArrayHasKey(SitemapFilterOpenTagEvent::class, SitemapImageNamespaceSubscriber::getSubscribedEvents());
+        self::assertArrayHasKey(
+            SitemapFilterOpenTagEvent::class,
+            SitemapImageNamespaceSubscriber::getSubscribedEvents()
+        );
     }
 
     /**
@@ -67,7 +70,10 @@ final class SitemapWiringTest extends TestCase
 
         $inner = $this->createMock(AbstractUrlProvider::class);
         $inner->method('getName')->willReturn('category');
-        $inner->expects(self::once())->method('getUrls')->with($context, 100, 200)->willReturn(new UrlResult([$url], 300));
+        $inner->expects(self::once())
+            ->method('getUrls')
+            ->with($context, 100, 200)
+            ->willReturn(new UrlResult([$url], 300));
 
         $loader = new SitemapImageLoader(
             self::repository(ProductCollection::class),

@@ -25,17 +25,20 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  * steht an der Versandart. Beide in dasselbe Feld zu schreiben, wäre für den Kunden eine
  * doppelt gezählte Woche.
  *
- * **Ein Eintrag je Land mit eigenem Preis.** Google liest `shippingRate` als Preis für genau die Ziele desselben
+ * Ein Eintrag je Land mit eigenem Preis: Google liest `shippingRate` als Preis für genau die Ziele desselben
  * `OfferShippingDetails` („Information about the cost of shipping to the specified destination", höchstens ein Preis je
- * Eintrag, für mehrere Preise mehrere Einträge; Merchant-Listing-Dokumentation, gelesen 2026-10-19). Stünden alle
+ * Eintrag, für mehrere Preise mehrere Einträge; Merchant-Listing-Dokumentation). Stünden alle
  * Lieferländer mit dem Preis des Besucherlands in einem Eintrag, gälte der deutsche Paketpreis auch für die Schweiz.
  * Länder ohne vorberechneten Preis stehen gesammelt in einem Eintrag ohne `shippingRate`: Google erfährt, dass dorthin
  * geliefert wird, ohne dass ein Preis behauptet wird.
  */
-// Bewusst nicht `final`: Die Twig-Erweiterung wird in ihren Tests gegen ein Test-Double dieses
+// Nicht `final`: Die Twig-Erweiterung wird in ihren Tests gegen ein Test-Double dieses
 // Anbieters geprüft. Dort geht es um die Flag-Frage, nicht um die Versanddetails.
 class ShippingDetailsProvider
 {
+    /** UN/CEFACT-Code für Tage, die Einheit beider Lieferzeitspannen. */
+    private const UNIT_DAY = 'DAY';
+
     /** @var array<string, list<string>> Länder je Verkaufskanal, einmal je Aufruf gelesen */
     private array $countryCache = [];
 
@@ -160,7 +163,7 @@ class ShippingDetailsProvider
                 '@type' => 'QuantitativeValue',
                 'minValue' => $handling->getMin(),
                 'maxValue' => $handling->getMax(),
-                'unitCode' => 'DAY',
+                'unitCode' => self::UNIT_DAY,
             ];
         }
 
@@ -170,7 +173,7 @@ class ShippingDetailsProvider
                 '@type' => 'QuantitativeValue',
                 'minValue' => $transit->getMin(),
                 'maxValue' => $transit->getMax(),
-                'unitCode' => 'DAY',
+                'unitCode' => self::UNIT_DAY,
             ];
         }
 
@@ -182,8 +185,8 @@ class ShippingDetailsProvider
      *
      * Am Kontext lässt sie sich nicht einfach ablesen: Shopware baut den Kontext mit den
      * Verknüpfungen, die der Bestellvorgang braucht, und die Lieferzeit der Versandart gehört nicht
-     * dazu. `getDeliveryTime()` liefert dann `null`, obwohl an der Versandart eine Lieferzeit hängt. Ohne diesen Nachschlag bliebe `transitTime` genau das
-     * Feld, das Google vermisst.
+     * dazu. `getDeliveryTime()` liefert dann `null`, obwohl an der Versandart eine Lieferzeit hängt. Ohne diesen
+     * Nachschlag bliebe `transitTime` genau das Feld, das Google vermisst.
      */
     private function transitTime(SalesChannelContext $context): ?DeliveryTimeEntity
     {

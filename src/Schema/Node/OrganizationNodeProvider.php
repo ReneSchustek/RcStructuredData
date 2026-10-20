@@ -28,6 +28,8 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
      */
     private const AREA_SERVED = ['DE', 'AT', 'CH'];
 
+    private const CONTACT_TYPE = 'customer service';
+
     public function __construct(
         private readonly SystemConfigService $systemConfig,
         private readonly IdFactory $idFactory,
@@ -64,7 +66,14 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
             $node['sameAs'] = $sameAs;
         }
 
-        return [[...$node, ...$this->details->forSalesChannel($context->getSalesChannelContext()->getSalesChannelId())]];
+        return [
+            [
+                ...$node,
+                ...$this->details->forSalesChannel(
+                    $context->getSalesChannelContext()->getSalesChannelId()
+                ),
+            ],
+        ];
     }
 
     /**
@@ -82,14 +91,15 @@ final class OrganizationNodeProvider implements SchemaNodeProvider
             return null;
         }
 
-        $contactPoint = ['@type' => 'ContactPoint', 'contactType' => 'customer service'];
+        $contactPoint = ['@type' => 'ContactPoint', 'contactType' => self::CONTACT_TYPE];
         if ($telephone !== '') {
             $contactPoint['telephone'] = $telephone;
         }
         if ($email !== '') {
             $contactPoint['email'] = $email;
         }
-        $contactPoint['availableLanguage'] = 'de';
+        // Die Sprache des Kanals, als Sprachcode ohne Land („de-DE" → „de"), wie Google ihn erwartet.
+        $contactPoint['availableLanguage'] = strtolower(explode('-', $context->getLocaleCode())[0]);
         $contactPoint['areaServed'] = self::AREA_SERVED;
 
         return $contactPoint;

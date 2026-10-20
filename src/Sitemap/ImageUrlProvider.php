@@ -37,6 +37,12 @@ final class ImageUrlProvider extends AbstractUrlProvider
     {
         $result = $this->decorated->getUrls($context, $limit, $offset);
 
-        return new UrlResult($this->loader->withImages(array_values($result->getUrls()), $context), $result->getNextOffset());
+        return new UrlResult(
+            $this->loader->withImages(
+                array_values($result->getUrls()),
+                $context
+            ),
+            $result->getNextOffset()
+        );
     }
 }

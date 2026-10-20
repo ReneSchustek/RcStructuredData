@@ -14,6 +14,9 @@ use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\CmsFixtureTrait;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\SchemaContextTrait;
 use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 
+/**
+ * Prüft die `ItemList` der Produkte auf Kategorie- und Landingpages. Ohne Listing oder ohne Produkte entsteht keine.
+ */
 class ItemListNodeProviderTest extends TestCase
 {
     use CmsFixtureTrait;

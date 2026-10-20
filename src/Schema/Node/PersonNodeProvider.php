@@ -26,6 +26,12 @@ final class PersonNodeProvider implements SchemaNodeProvider
 {
     private const ELEMENT_TYPE = 'rc-tr-service';
 
+    // Felder der Elementkonfiguration und die Darstellung, für die Personen ausgezeichnet werden.
+    private const FIELD_DISPLAY = 'display';
+    private const FIELD_PORTRAITS = 'portraits';
+    private const FIELD_ITEMS = 'items';
+    private const DISPLAY_CARDS = 'cards';
+
     public function __construct(
         private readonly CmsSlotIterator $slotIterator,
         private readonly IdFactory $idFactory,
@@ -88,9 +94,9 @@ final class PersonNodeProvider implements SchemaNodeProvider
 
         $config = $slot->getFieldConfig();
         // Ohne gespeicherte Darstellung zeigt der Baustein Karten.
-        $display = $config->get('display')?->getValue() ?? 'cards';
+        $display = $config->get(self::FIELD_DISPLAY)?->getValue() ?? self::DISPLAY_CARDS;
 
-        return $display === 'cards' && $config->get('portraits')?->getValue() === true;
+        return $display === self::DISPLAY_CARDS && $config->get(self::FIELD_PORTRAITS)?->getValue() === true;
     }
 
     /**
@@ -98,7 +104,7 @@ final class PersonNodeProvider implements SchemaNodeProvider
      */
     private function items(CmsSlotEntity $slot): array
     {
-        $items = $slot->getFieldConfig()->get('items')?->getValue();
+        $items = $slot->getFieldConfig()->get(self::FIELD_ITEMS)?->getValue();
         if (!\is_array($items)) {
             return [];
         }

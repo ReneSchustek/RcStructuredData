@@ -8,6 +8,10 @@ use PHPUnit\Framework\TestCase;
 use Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\CmsFixtureTrait;
 
+/**
+ * Prüft, dass der Durchlauf alle Elemente einer Erlebniswelt liefert, über Abschnitte und Blöcke hinweg, und ohne
+ * Seite nichts.
+ */
 class CmsSlotIteratorTest extends TestCase
 {
     use CmsFixtureTrait;

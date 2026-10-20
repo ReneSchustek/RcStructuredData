@@ -43,8 +43,9 @@ final class BlogArticleResolver
     }
 
     /**
-     * Ein nie bearbeiteter Beitrag hat kein Änderungsdatum. Dann gilt das Datum der Veröffentlichung, nicht das heutige,
-     * wie es entsteht, wenn man `null` durch eine Datumsformatierung schickt; so macht es der Block von WerklOpenBlogware.
+     * Ein nie bearbeiteter Beitrag hat kein Änderungsdatum. Dann gilt das Datum der Veröffentlichung, nicht das
+     * heutige, wie es entsteht, wenn man `null` durch eine Datumsformatierung schickt; so macht es der Block von
+     * WerklOpenBlogware.
      */
     private function dateModified(BlogEntryEntity $entry): string
     {

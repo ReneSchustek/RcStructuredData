@@ -53,7 +53,11 @@ final class ProductOfferDetails
             ];
 
             if (\count($tiers) > 1) {
-                $specification['eligibleQuantity'] = self::quantity($tiers[$index - 1] ?? null, $tier, isset($tiers[$index + 1]));
+                $specification['eligibleQuantity'] = self::quantity(
+                    $tiers[$index - 1] ?? null,
+                    $tier,
+                    isset($tiers[$index + 1])
+                );
             }
 
             $specifications[] = $specification;
@@ -81,14 +85,18 @@ final class ProductOfferDetails
     }
 
     /**
-     * Die Mengen einer Stufe. Der Kern führt je Stufe ihre Obergrenze, bei der letzten ihre Untergrenze; die Untergrenze
-     * folgt deshalb aus der Stufe davor.
+     * Die Mengen einer Stufe. Der Kern führt je Stufe ihre Obergrenze, bei der letzten ihre Untergrenze; die
+     * Untergrenze folgt deshalb aus der Stufe davor.
      *
      * @return array<string, mixed>
      */
     private static function quantity(?CalculatedPrice $previous, CalculatedPrice $tier, bool $hasNext): array
     {
-        $quantity = ['@type' => 'QuantitativeValue', 'minValue' => $previous === null ? 1 : $previous->getQuantity() + 1, 'unitCode' => 'C62'];
+        $quantity = [
+            '@type'    => 'QuantitativeValue',
+            'minValue' => $previous === null ? 1 : $previous->getQuantity() + 1,
+            'unitCode' => 'C62',
+        ];
         if ($hasNext) {
             $quantity['maxValue'] = $tier->getQuantity();
         }

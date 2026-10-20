@@ -29,7 +29,8 @@ final class PersonNodeProviderTest extends TestCase
     /**
      * Was: Teamseite mit Personenkarten und einer Karte „Zentrale" ohne Porträts.
      * Warum: Nur Personen sollen als Person erscheinen, und nur mit Name und Funktion (Datenschutz).
-     * Erwartet: zwei Personen mit jobTitle bis zum ersten „·", worksFor auf die Organisation, kein email/telephone/image.
+     * Erwartet: zwei Personen mit jobTitle bis zum ersten „·", worksFor auf die Organisation, kein
+     * email/telephone/image.
      */
     public function testBuildsPeopleFromPortraitCards(): void
     {
@@ -40,7 +41,11 @@ final class PersonNodeProviderTest extends TestCase
             ]),
             $this->peopleSlot(false, [['title' => 'Zentrale', 'text' => 'Mo–Do 8–17 Uhr']]),
         );
-        $context = $this->makeContext(baseUrl: 'https://shop.example/', pageUrl: 'https://shop.example/team', cmsPage: $page);
+        $context = $this->makeContext(
+            baseUrl: 'https://shop.example/',
+            pageUrl: 'https://shop.example/team',
+            cmsPage: $page
+        );
 
         $nodes = $this->provider()->provide($context);
 

@@ -62,7 +62,7 @@ final class CmsImageCollectorTest extends TestCase
             ]),
         ]);
 
-        static::assertSame([self::A, self::B, self::C, self::D], self::collector()->mediaIds($page));
+        static::assertSame([self::A, self::B, self::C, self::D], self::mediaIdsOf($page));
     }
 
     /**
@@ -73,11 +73,33 @@ final class CmsImageCollectorTest extends TestCase
     public function testSkipsBlocksHiddenOnAllDevices(): void
     {
         $page = $this->page([
-            $this->section(null, null, [$this->slot(['media' => self::D])], ['mobile' => false, 'tablet' => false, 'desktop' => false]),
-            $this->section(null, null, [$this->slot(['media' => self::E])], ['mobile' => true, 'tablet' => false, 'desktop' => false]),
+$this->section(
+    null,
+    null,
+    [
+        $this->slot(['media' => self::D]),
+    ],
+    [
+        'mobile'  => false,
+        'tablet'  => false,
+        'desktop' => false,
+    ]
+),
+$this->section(
+    null,
+    null,
+    [
+        $this->slot(['media' => self::E]),
+    ],
+    [
+        'mobile'  => true,
+        'tablet'  => false,
+        'desktop' => false,
+    ]
+),
         ]);
 
-        static::assertSame([self::E], self::collector()->mediaIds($page));
+        static::assertSame([self::E], self::mediaIdsOf($page));
     }
 
     /**
@@ -87,8 +109,23 @@ final class CmsImageCollectorTest extends TestCase
      */
     public function testNothingWithoutPageOrValidIds(): void
     {
-        static::assertSame([], self::collector()->mediaIds(null));
-        static::assertSame([], self::collector()->mediaIds($this->page([$this->section(null, null, [$this->slot(['media' => 'kein-bild'])])])));
+        static::assertSame([], self::mediaIdsOf(null));
+        static::assertSame(
+            [],
+            self::mediaIdsOf(
+                $this->page(
+                    [
+                        $this->section(
+                            null,
+                            null,
+                            [
+                                $this->slot(['media' => 'kein-bild']),
+                            ]
+                        ),
+                    ]
+                )
+            )
+        );
     }
 
     /**
@@ -102,7 +139,13 @@ final class CmsImageCollectorTest extends TestCase
             $this->slot(['content' => '<p>Text</p><img class="a" src="/media/a.webp" alt=""><img src=\'https://cdn.example/b.jpg\'><img src="data:image/gif;base64,AA">']),
         ])]);
 
-        static::assertEquals([ImageSource::fromUrl('/media/a.webp'), ImageSource::fromUrl('https://cdn.example/b.jpg')], self::collector()->sources($page));
+        static::assertEquals(
+            [
+                ImageSource::fromUrl('/media/a.webp'),
+                ImageSource::fromUrl('https://cdn.example/b.jpg'),
+            ],
+            self::collector()->sources($page)
+        );
         static::assertSame([], self::collector()->htmlImageUrls('<p>ohne Bild</p>'));
     }
 
@@ -145,20 +188,40 @@ final class CmsImageCollectorTest extends TestCase
         $section->setBlocks(new CmsBlockCollection([$block]));
         $page = $this->page([$section]);
 
-        static::assertSame([self::A], self::collector()->mediaIds($page));
-        static::assertEquals([ImageSource::fromMediaId(self::B)], self::collector()->sources($page, ['slot-x' => ['media' => ['source' => 'static', 'value' => self::B]]]));
+        static::assertSame([self::A], self::mediaIdsOf($page));
+        static::assertEquals(
+            [
+                ImageSource::fromMediaId(self::B),
+            ],
+            self::collector()->sources(
+                $page,
+                [
+                    'slot-x' => [
+                        'media' => [
+                            'source' => 'static',
+                            'value' => self::B,
+                        ],
+                    ],
+                ]
+            )
+        );
     }
 
     /**
      * Was: Medien der Erlebniswelt, ein Nicht-Bild, ein unbekanntes Medium und HTML-Bilder in allen Adressarten.
-     * Warum: Der Graph nennt jedes Bild einmal, mit Bildunterschrift aus dem Alternativtext, und nur auflösbare Adressen.
-     * Erwartet: eine Abfrage für die Medien; Bild mit Unterschrift, wurzelrelative Adresse mit Shop-Adresse,
+     * Warum: Der Graph nennt jedes Bild einmal, mit Bildunterschrift aus dem Alternativtext, und nur auflösbare
+     * Adressen. Erwartet: eine Abfrage für die Medien; Bild mit Unterschrift, wurzelrelative Adresse mit Shop-Adresse,
      *           protokollrelative mit `https:`, absolute unverändert; PDF, unbekanntes Medium, pfadrelative Adresse und
      *           die doppelte Datei fehlen.
      */
     public function testCollectLoadsMediaOnceAndResolvesHtmlAddresses(): void
     {
-        $photo = $this->media(self::A, 'https://shop.example/media/Geländer 1.jpg', 'image/jpeg', ' Geländer am Balkon ');
+        $photo = $this->media(
+            self::A,
+            'https://shop.example/media/Geländer 1.jpg',
+            'image/jpeg',
+            ' Geländer am Balkon '
+        );
         $pdf = $this->media(self::B, 'https://shop.example/media/blatt.pdf', 'application/pdf');
         $page = $this->page([$this->section(null, null, [
             $this->slot(['media' => self::A]),
@@ -175,7 +238,12 @@ final class CmsImageCollectorTest extends TestCase
             },
         ]);
 
-        $images = (new CmsImageCollector($repository))->collect($page, Context::createDefaultContext(), 'https://shop.example/');
+        $images = (new CmsImageCollector($repository))
+            ->collect(
+                $page,
+                Context::createDefaultContext(),
+                'https://shop.example/'
+            );
 
         static::assertSame([
             ['@type' => 'ImageObject', 'url' => 'https://shop.example/media/Gel%C3%A4nder%201.jpg', 'caption' => 'Geländer am Balkon'],
@@ -196,7 +264,12 @@ final class CmsImageCollectorTest extends TestCase
             $this->slot(['content' => '<img src="/media/a.webp"><img src="https://cdn.example/c.jpg">']),
         ])]);
 
-        $images = (new CmsImageCollector(self::repository(MediaCollection::class)))->collect($page, Context::createDefaultContext());
+        $images = (new CmsImageCollector(
+            self::repository(MediaCollection::class)
+        ))->collect(
+            $page,
+            Context::createDefaultContext()
+        );
 
         static::assertSame([['@type' => 'ImageObject', 'url' => 'https://cdn.example/c.jpg']], $images);
     }
@@ -244,7 +317,7 @@ final class CmsImageCollectorTest extends TestCase
             $this->slotWithData($listing),
         ])]);
 
-        static::assertSame([self::A, self::B, self::C], self::collector()->mediaIds($page));
+        static::assertSame([self::A, self::B, self::C], self::mediaIdsOf($page));
     }
 
     /**
@@ -269,8 +342,22 @@ final class CmsImageCollectorTest extends TestCase
 
         $page = $this->page([$hidden, $this->section(self::C, null, [$broken, $unset])]);
 
-        static::assertEquals([ImageSource::fromMediaId(self::C)], self::collector()->sources($page, ['slot-kaputt' => ['media' => ['value' => self::E]]]));
-        static::assertSame([self::C], self::collector()->mediaIds($page));
+        static::assertEquals(
+            [
+                ImageSource::fromMediaId(self::C),
+            ],
+            self::collector()->sources(
+                $page,
+                [
+                    'slot-kaputt' => [
+                        'media' => [
+                            'value' => self::E,
+                        ],
+                    ],
+                ]
+            )
+        );
+        static::assertSame([self::C], self::mediaIdsOf($page));
     }
 
     public function testAnAddressWithoutPathStaysAsItIs(): void
@@ -328,8 +415,12 @@ final class CmsImageCollectorTest extends TestCase
      * @param list<CmsSlotEntity>      $slots
      * @param array<string, bool>|null $blockVisibility
      */
-    private function section(?string $background, ?string $blockBackground, array $slots, ?array $blockVisibility = null): CmsSectionEntity
-    {
+    private function section(
+        ?string $background,
+        ?string $blockBackground,
+        array $slots,
+        ?array $blockVisibility = null,
+    ): CmsSectionEntity {
         $block = new CmsBlockEntity();
         $block->setUniqueIdentifier('block-' . ++$this->counter);
         if ($blockBackground !== null) {
@@ -365,6 +456,23 @@ final class CmsImageCollectorTest extends TestCase
         $slot->setFieldConfig($fields);
 
         return $slot;
+    }
+
+    /**
+     * Die Medienkennungen unter den Quellen; die Fälle hier fragen nur, welche Medien gefunden werden.
+     *
+     * @return list<string>
+     */
+    private static function mediaIdsOf(?CmsPageEntity $page): array
+    {
+        $ids = [];
+        foreach (self::collector()->sources($page) as $source) {
+            if ($source->mediaId !== null) {
+                $ids[] = $source->mediaId;
+            }
+        }
+
+        return $ids;
     }
 
     private static function collector(): CmsImageCollector

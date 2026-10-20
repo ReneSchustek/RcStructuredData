@@ -13,6 +13,10 @@ use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
 use Shopware\Core\Content\Cms\DataResolver\FieldConfig;
 use Shopware\Core\Content\Cms\DataResolver\FieldConfigCollection;
 
+/**
+ * Prüft die Warnungen zur Seite selbst: handgeschriebenes JSON-LD in einem Element und eine FAQ-Seite ohne
+ * FAQ-Baustein. Beides erzeugt doppelte oder widersprüchliche Angaben, die der Graph allein nicht zeigt.
+ */
 class PageWarningCheckerTest extends TestCase
 {
     use CmsFixtureTrait;

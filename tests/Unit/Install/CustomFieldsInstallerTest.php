@@ -41,7 +41,17 @@ final class CustomFieldsInstallerTest extends TestCase
     {
         $sets = self::repository(CustomFieldSetCollection::class, [new CustomFieldSetCollection()]);
 
-        $this->installer($sets, fields: self::repository(CustomFieldCollection::class, [new CustomFieldCollection()]))->install(Context::createDefaultContext());
+        $this->installer(
+            $sets,
+            fields: self::repository(
+                CustomFieldCollection::class,
+                [
+                    new CustomFieldCollection(),
+                ]
+            )
+        )->install(
+            Context::createDefaultContext()
+        );
 
         $payload = $sets->upserts[0][0];
         self::assertSame('rc_schema', $payload['name']);
@@ -62,7 +72,15 @@ final class CustomFieldsInstallerTest extends TestCase
         $field->setId(self::FIELD_ID);
         $field->setName('rc_schema_description');
 
-        $this->installer($sets, fields: self::repository(CustomFieldCollection::class, [new CustomFieldCollection([$field])]))->install(Context::createDefaultContext());
+        $this->installer(
+            $sets,
+            fields: self::repository(
+                CustomFieldCollection::class,
+                [
+                    new CustomFieldCollection([$field]),
+                ]
+            )
+        )->install(Context::createDefaultContext());
 
         $payload = $sets->upserts[0][0];
         self::assertSame(self::SET_ID, $payload['id']);
@@ -84,7 +102,17 @@ final class CustomFieldsInstallerTest extends TestCase
         $set->setRelations(new CustomFieldSetRelationCollection([$relation]));
         $relations = self::repository(CustomFieldSetRelationCollection::class);
 
-        $this->installer(self::repository(CustomFieldSetCollection::class, [new CustomFieldSetCollection([$set])]), $relations)->addRelations(Context::createDefaultContext());
+        $this->installer(
+            self::repository(
+                CustomFieldSetCollection::class,
+                [
+                    new CustomFieldSetCollection([$set]),
+                ]
+            ),
+            $relations
+        )->addRelations(
+            Context::createDefaultContext()
+        );
 
         self::assertSame([
             ['customFieldSetId' => self::SET_ID, 'entityName' => 'category', 'id' => self::RELATION_ID],
@@ -100,7 +128,16 @@ final class CustomFieldsInstallerTest extends TestCase
     public function testRelationsWithoutSetOrWithoutLoadedRelations(): void
     {
         $relations = self::repository(CustomFieldSetRelationCollection::class);
-        $installer = $this->installer(self::repository(CustomFieldSetCollection::class, [new CustomFieldSetCollection(), new CustomFieldSetCollection([$this->set()])]), $relations);
+        $installer = $this->installer(
+            self::repository(
+                CustomFieldSetCollection::class,
+                [
+                    new CustomFieldSetCollection(),
+                    new CustomFieldSetCollection([$this->set()]),
+                ]
+            ),
+            $relations
+        );
 
         $installer->addRelations(Context::createDefaultContext());
         self::assertCount(0, $relations->upserts);
@@ -118,7 +155,17 @@ final class CustomFieldsInstallerTest extends TestCase
     public function testUninstallRemovesTheSet(): void
     {
         $sets = self::repository(CustomFieldSetCollection::class, [
-            new IdSearchResult(1, [self::SET_ID => ['primaryKey' => self::SET_ID, 'data' => []]], new Criteria(), Context::createDefaultContext()),
+new IdSearchResult(
+    1,
+    [
+        self::SET_ID => [
+            'primaryKey' => self::SET_ID,
+            'data' => [],
+        ],
+    ],
+    new Criteria(),
+    Context::createDefaultContext(),
+),
             new IdSearchResult(0, [], new Criteria(), Context::createDefaultContext()),
         ]);
         $installer = $this->installer($sets);
@@ -134,9 +181,16 @@ final class CustomFieldsInstallerTest extends TestCase
      * @param StaticEntityRepository<CustomFieldSetRelationCollection>|null $relations
      * @param StaticEntityRepository<CustomFieldCollection>|null            $fields
      */
-    private function installer(StaticEntityRepository $sets, ?StaticEntityRepository $relations = null, ?StaticEntityRepository $fields = null): CustomFieldsInstaller
-    {
-        return new CustomFieldsInstaller($sets, $relations ?? self::repository(CustomFieldSetRelationCollection::class), $fields ?? self::repository(CustomFieldCollection::class));
+    private function installer(
+        StaticEntityRepository $sets,
+        ?StaticEntityRepository $relations = null,
+        ?StaticEntityRepository $fields = null,
+    ): CustomFieldsInstaller {
+        return new CustomFieldsInstaller(
+            $sets,
+            $relations ?? self::repository(CustomFieldSetRelationCollection::class),
+            $fields ?? self::repository(CustomFieldCollection::class)
+        );
     }
 
     private function set(): CustomFieldSetEntity

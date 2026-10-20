@@ -62,7 +62,13 @@ final class BlogSchemaSubscriberTest extends TestCase
         $author->method('getDisplayName')->willReturn(' Anna Muster ');
         $media = new MediaEntity();
         $media->setUrl('https://shop.example/media/titel.jpg');
-        $entry = $this->entry(title: ' Geländer planen ', author: $author, updatedAt: new DateTimeImmutable('2026-10-02T08:00:00+00:00'), media: $media, cmsPageId: self::CMS_PAGE_ID);
+        $entry = $this->entry(
+            title: ' Geländer planen ',
+            author: $author,
+            updatedAt: new DateTimeImmutable('2026-10-02T08:00:00+00:00'),
+            media: $media,
+            cmsPageId: self::CMS_PAGE_ID
+        );
         $cmsPage = new CmsPageEntity();
         $cmsPage->setId(self::CMS_PAGE_ID);
         $page = $this->page($entry);
@@ -87,8 +93,8 @@ final class BlogSchemaSubscriberTest extends TestCase
     }
 
     /**
-     * Was: ein Beitrag ohne Titel (nur Meta-Titel), ohne Änderungsdatum, mit Autor ohne Anzeigenamen, ohne Erlebniswelt.
-     * Warum: Beiträge sind oft lückenhaft gepflegt; die Rückfälle füllen die Pflichtfelder.
+     * Was: ein Beitrag ohne Titel (nur Meta-Titel), ohne Änderungsdatum, mit Autor ohne Anzeigenamen, ohne
+     * Erlebniswelt. Warum: Beiträge sind oft lückenhaft gepflegt; die Rückfälle füllen die Pflichtfelder.
      * Erwartet: Meta-Titel als Name, Veröffentlichung als Änderungsdatum, voller Name als Autor, keine Erlebniswelt.
      */
     public function testFallbacksForTitleDateAndAuthor(): void
@@ -127,14 +133,23 @@ final class BlogSchemaSubscriberTest extends TestCase
         self::assertFalse($withoutEntry->hasExtension(SchemaGraphStruct::EXTENSION_NAME));
         self::assertFalse($withoutTitle->hasExtension(SchemaGraphStruct::EXTENSION_NAME));
         self::assertFalse($withoutNodes->hasExtension(SchemaGraphStruct::EXTENSION_NAME));
-        self::assertSame([BlogPageLoadedEvent::class => 'onBlogPageLoaded'], BlogSchemaSubscriber::getSubscribedEvents());
+        self::assertSame(
+            [
+                BlogPageLoadedEvent::class => 'onBlogPageLoaded',
+            ],
+            BlogSchemaSubscriber::getSubscribedEvents()
+        );
     }
 
     /**
      * @param list<array<string, mixed>> $nodes
      */
-    private function subscriber(?CmsPageEntity $cmsPage, array $nodes = [['@type' => 'BlogPosting', '@id' => 'https://shop.example/blog#article']]): BlogSchemaSubscriber
-    {
+    private function subscriber(
+        ?CmsPageEntity $cmsPage,
+        array $nodes = [
+            ['@type' => 'BlogPosting', '@id' => 'https://shop.example/blog#article'],
+        ],
+    ): BlogSchemaSubscriber {
         $seoUrlReplacer = $this->createMock(SeoUrlPlaceholderHandlerInterface::class);
         $seoUrlReplacer->method('generate')->willReturn('https://shop.example/');
 
@@ -173,7 +188,12 @@ final class BlogSchemaSubscriberTest extends TestCase
             Context::createDefaultContext(),
         ));
 
-        return new BlogSchemaSubscriber(new SchemaContextFactory($seoUrlReplacer), new GraphBuilder([$provider]), $cmsPageLoader, new BlogArticleResolver());
+        return new BlogSchemaSubscriber(
+            new SchemaContextFactory($seoUrlReplacer),
+            new GraphBuilder([$provider]),
+            $cmsPageLoader,
+            new BlogArticleResolver()
+        );
     }
 
     private function entry(

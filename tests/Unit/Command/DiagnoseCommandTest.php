@@ -11,6 +11,10 @@ use Ruhrcoder\RcStructuredData\Schema\Diagnostics\DiagnoseResult;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
+/**
+ * Prüft die Ausgabe von `rc-schema:diagnose`: unbekannte Kategorie, vollständiger Graph, fehlende Felder und Seiten
+ * ohne Graph. Die Analyse selbst steht in `SchemaDiagnoserTest`.
+ */
 class DiagnoseCommandTest extends TestCase
 {
     public function testReportsCategoryNotFound(): void
@@ -71,7 +75,7 @@ class DiagnoseCommandTest extends TestCase
             {
             }
 
-            public function diagnose(string $identifier): DiagnoseResult
+            public function diagnose(string $identifier, ?string $salesChannelId = null): DiagnoseResult
             {
                 return $this->result;
             }

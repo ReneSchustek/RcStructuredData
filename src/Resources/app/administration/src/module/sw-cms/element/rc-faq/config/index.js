@@ -1,4 +1,5 @@
 import template from './sw-cms-el-config-rc-faq.html.twig';
+import { stableKey } from '../../../../../helper/stable-key';
 
 const { Component, Mixin } = Shopware;
 
@@ -37,6 +38,8 @@ Component.register('sw-cms-el-config-rc-faq', {
     },
 
     methods: {
+        itemKey: stableKey,
+
         createdComponent() {
             this.initElementConfig('rc-faq');
 

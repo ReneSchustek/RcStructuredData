@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ruhrcoder\RcStructuredData\Block\Faq\Struct;
 
+use Ruhrcoder\RcStructuredData\Block\Faq\DataResolver\FaqResolver;
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
@@ -19,7 +20,7 @@ final class FaqStruct extends Struct
      */
     public function __construct(
         private readonly array $items = [],
-        private readonly string $displayMode = 'accordion',
+        private readonly string $displayMode = FaqResolver::DEFAULT_DISPLAY_MODE,
     ) {
     }
 

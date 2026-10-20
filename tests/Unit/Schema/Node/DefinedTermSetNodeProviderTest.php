@@ -13,6 +13,10 @@ use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\CmsFixtureTrait;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\SchemaContextTrait;
 use Shopware\Core\Framework\Util\HtmlSanitizer;
 
+/**
+ * Prüft die Begriffslisten: je Baustein ein Satz mit eigenem Namen, unvollständige Sätze und Begriffe fallen weg, ohne
+ * dass in der Nummerierung eine Lücke entsteht.
+ */
 class DefinedTermSetNodeProviderTest extends TestCase
 {
     use CmsFixtureTrait;
@@ -74,14 +78,30 @@ class DefinedTermSetNodeProviderTest extends TestCase
     {
         $page = $this->makeCmsPage($this->makeDefinedTermsSlot(null, [['term' => 'Irgendwas']]));
 
-        static::assertSame([], $this->provider()->provide($this->makeContext(pageUrl: 'https://shop.example/x', cmsPage: $page)));
+        static::assertSame(
+            [],
+            $this->provider()->provide(
+                $this->makeContext(
+                    pageUrl: 'https://shop.example/x',
+                    cmsPage: $page
+                )
+            )
+        );
     }
 
     public function testSetWithoutTermsIsNotRendered(): void
     {
         $page = $this->makeCmsPage($this->makeDefinedTermsSlot('Leerer Satz', []));
 
-        static::assertSame([], $this->provider()->provide($this->makeContext(pageUrl: 'https://shop.example/x', cmsPage: $page)));
+        static::assertSame(
+            [],
+            $this->provider()->provide(
+                $this->makeContext(
+                    pageUrl: 'https://shop.example/x',
+                    cmsPage: $page
+                )
+            )
+        );
     }
 
     /**
@@ -124,7 +144,12 @@ class DefinedTermSetNodeProviderTest extends TestCase
             ['term' => 'Mit Erklärung', 'definition' => '<p>Was es bedeutet.</p>'],
         ]));
 
-        $terms = $this->provider()->provide($this->makeContext(pageUrl: 'https://shop.example/x', cmsPage: $page))[0]['hasDefinedTerm'];
+        $terms = $this->provider()->provide(
+            $this->makeContext(
+                pageUrl: 'https://shop.example/x',
+                cmsPage: $page
+            )
+        )[0]['hasDefinedTerm'];
 
         static::assertArrayNotHasKey('description', $terms[0]);
         static::assertSame('Was es bedeutet.', $terms[1]['description']);
@@ -141,7 +166,12 @@ class DefinedTermSetNodeProviderTest extends TestCase
             ['term' => 'Begriff', 'definition' => '<p>Satz eins.</p><p>Satz zwei.</p>'],
         ]));
 
-        $terms = $this->provider()->provide($this->makeContext(pageUrl: 'https://shop.example/x', cmsPage: $page))[0]['hasDefinedTerm'];
+        $terms = $this->provider()->provide(
+            $this->makeContext(
+                pageUrl: 'https://shop.example/x',
+                cmsPage: $page
+            )
+        )[0]['hasDefinedTerm'];
 
         static::assertSame('Satz eins. Satz zwei.', $terms[0]['description']);
     }
@@ -152,7 +182,12 @@ class DefinedTermSetNodeProviderTest extends TestCase
             ['term' => 'Begriff', 'definition' => '<p> </p>'],
         ]));
 
-        $terms = $this->provider()->provide($this->makeContext(pageUrl: 'https://shop.example/x', cmsPage: $page))[0]['hasDefinedTerm'];
+        $terms = $this->provider()->provide(
+            $this->makeContext(
+                pageUrl: 'https://shop.example/x',
+                cmsPage: $page
+            )
+        )[0]['hasDefinedTerm'];
 
         static::assertArrayNotHasKey('description', $terms[0]);
     }

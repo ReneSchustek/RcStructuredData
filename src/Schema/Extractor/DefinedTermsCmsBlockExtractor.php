@@ -86,8 +86,8 @@ final class DefinedTermsCmsBlockExtractor implements CmsBlockSchemaExtractor
      * `|raw` ausgegeben, damit Absätze und Listen erhalten bleiben.
      *
      * Deshalb muss sie durch den Sanitizer (dieselbe Begründung wie bei der FAQ-Antwort):
-     * Ohne ihn wird aus einem Redakteursrecht ein Vollzugriff. Der Begriff selbst geht bewusst
-     * nicht diesen Weg; er wird escaped ausgegeben und stünde sonst mit sichtbaren Auszeichnungen
+     * Ohne ihn wird aus einem Redakteursrecht ein Vollzugriff. Der Begriff selbst geht nicht
+     * diesen Weg; er wird escaped ausgegeben und stünde sonst mit sichtbaren Auszeichnungen
      * auf der Seite.
      */
     private function cleanDefinition(mixed $value): string

@@ -83,7 +83,12 @@ final class BlockResolversTest extends TestCase
      */
     public function testTheDocumentsResolverAsksForNothingWithoutFiles(): void
     {
-        self::assertNull($this->documentsResolver()->collect($this->makeDocumentsSlot(), $this->createMock(ResolverContext::class)));
+        self::assertNull(
+            $this->documentsResolver()->collect(
+                $this->makeDocumentsSlot(),
+                $this->createMock(ResolverContext::class)
+            )
+        );
     }
 
     /**
@@ -132,7 +137,14 @@ final class BlockResolversTest extends TestCase
             },
         ]);
 
-        $this->hydrator($repository)->hydrate($this->makeCmsPage($first, $other, $second), Context::createDefaultContext());
+        $this->hydrator($repository)->hydrate(
+            $this->makeCmsPage(
+                $first,
+                $other,
+                $second
+            ),
+            Context::createDefaultContext()
+        );
 
         self::assertInstanceOf(DocumentsStruct::class, $first->getData());
         self::assertInstanceOf(DocumentsStruct::class, $second->getData());
@@ -160,7 +172,12 @@ final class BlockResolversTest extends TestCase
 
     private function documentsResolver(): DocumentsResolver
     {
-        return new DocumentsResolver(new DocumentsCmsBlockExtractor(), new DocumentsStructBuilder(new DocumentsCmsBlockExtractor()));
+        return new DocumentsResolver(
+            new DocumentsCmsBlockExtractor(),
+            new DocumentsStructBuilder(
+                new DocumentsCmsBlockExtractor()
+            )
+        );
     }
 
     /**

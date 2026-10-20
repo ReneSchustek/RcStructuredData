@@ -34,6 +34,14 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
  */
 final class SitemapImageLoader
 {
+    // Arten der Einträge, nach denen die Bilder geladen werden.
+    private const KIND_PRODUCT = 'product';
+    private const KIND_CATEGORY = 'category';
+    private const KIND_LANDING = 'landing';
+
+    // So kennzeichnet der Kern den Eintrag der Startseite (`HomeUrlProvider::getName()`).
+    private const HOME_RESOURCE = 'home';
+
     /**
      * Dieselbe Obergrenze wie {@see CmsImageCollector}, damit ein Eintrag nicht mehr Bilder nennt als der Graph.
      */
@@ -74,9 +82,32 @@ final class SitemapImageLoader
         }
 
         $images = [
-            'product' => $this->productImages(array_values(array_unique($byResource['product'] ?? [])), $context),
-            'category' => $this->cmsImages('category', array_values(array_unique($byResource['category'] ?? [])), $context),
-            'landing' => $this->cmsImages('landing', array_values(array_unique($byResource['landing'] ?? [])), $context),
+self::KIND_PRODUCT => $this->productImages(
+    array_values(
+        array_unique(
+            $byResource[self::KIND_PRODUCT] ?? []
+        )
+    ),
+    $context
+),
+self::KIND_CATEGORY => $this->cmsImages(
+    self::KIND_CATEGORY,
+    array_values(
+        array_unique(
+            $byResource[self::KIND_CATEGORY] ?? []
+        )
+    ),
+    $context
+),
+self::KIND_LANDING => $this->cmsImages(
+    self::KIND_LANDING,
+    array_values(
+        array_unique(
+            $byResource[self::KIND_LANDING] ?? []
+        )
+    ),
+    $context
+),
         ];
 
         $result = [];
@@ -95,9 +126,9 @@ final class SitemapImageLoader
     private static function kind(Url $url): string
     {
         return match ($url->getResource()) {
-            ProductEntity::class => 'product',
-            LandingPageEntity::class => 'landing',
-            default => 'category',
+            ProductEntity::class => self::KIND_PRODUCT,
+            LandingPageEntity::class => self::KIND_LANDING,
+            default => self::KIND_CATEGORY,
         };
     }
 
@@ -108,7 +139,7 @@ final class SitemapImageLoader
     {
         $id = match ($url->getResource()) {
             ProductEntity::class, CategoryEntity::class, LandingPageEntity::class => $url->getIdentifier(),
-            'home' => $context->getSalesChannel()->getNavigationCategoryId(),
+            self::HOME_RESOURCE => $context->getSalesChannel()->getNavigationCategoryId(),
             default => null,
         };
 
@@ -135,7 +166,19 @@ final class SitemapImageLoader
             $media = $product->getMedia()?->getElements() ?? [];
             $coverId = $product->getCoverId();
             // Titelbild zuerst, danach die Galerie in ihrer gepflegten Reihenfolge.
-            usort($media, static fn (ProductMediaEntity $a, ProductMediaEntity $b): int => [$a->getId() !== $coverId, $a->getPosition()] <=> [$b->getId() !== $coverId, $b->getPosition()]);
+            usort(
+                $media,
+                static fn (
+                    ProductMediaEntity $a,
+                    ProductMediaEntity $b,
+                ): int => [
+                    $a->getId() !== $coverId,
+                    $a->getPosition(),
+                ] <=> [
+                    $b->getId() !== $coverId,
+                    $b->getPosition(),
+                ]
+            );
 
             $urls = [];
             foreach ($media as $productMedia) {
@@ -151,7 +194,7 @@ final class SitemapImageLoader
     }
 
     /**
-     * @param 'category'|'landing' $kind
+     * @param self::KIND_CATEGORY|self::KIND_LANDING $kind
      * @param list<string>         $ids
      *
      * @return array<string, list<string>>
@@ -164,10 +207,10 @@ final class SitemapImageLoader
 
         $criteria = new Criteria($ids);
         $criteria->addAssociation('cmsPage.sections.blocks.slots');
-        if ($kind === 'category') {
+        if ($kind === self::KIND_CATEGORY) {
             $criteria->addAssociation('media');
         }
-        $entities = $kind === 'category'
+        $entities = $kind === self::KIND_CATEGORY
             ? $this->categoryRepository->search($criteria, $context->getContext())->getEntities()
             : $this->landingPageRepository->search($criteria, $context->getContext())->getEntities();
 
@@ -196,10 +239,19 @@ final class SitemapImageLoader
     {
         $sources = [];
         foreach ($entities as $entity) {
-            $own = $entity instanceof CategoryEntity && $entity->getMediaId() !== null ? [ImageSource::fromMediaId($entity->getMediaId())] : [];
+            $own = $entity instanceof CategoryEntity
+                && $entity->getMediaId() !== null
+                ? [ImageSource::fromMediaId($entity->getMediaId())]
+                : [];
             $page = $entity->getCmsPage();
             $unique = [];
-            foreach ([...$own, ...$this->imageCollector->sources($page instanceof CmsPageEntity ? $page : null, $entity->getSlotConfig() ?? [])] as $source) {
+            foreach ([
+                ...$own,
+                ...$this->imageCollector->sources(
+                    $page instanceof CmsPageEntity ? $page : null,
+                    $entity->getSlotConfig() ?? []
+                ),
+            ] as $source) {
                 $unique[$source->key()] ??= $source;
             }
             $sources[$entity->getId()] = array_values($unique);
@@ -224,7 +276,12 @@ final class SitemapImageLoader
             }
         }
 
-        return $mediaIds === [] ? new MediaCollection() : $this->mediaRepository->search(new Criteria(array_keys($mediaIds)), $context->getContext())->getEntities();
+        return $mediaIds === []
+            ? new MediaCollection()
+            : $this->mediaRepository->search(
+                new Criteria(array_keys($mediaIds)),
+                $context->getContext()
+            )->getEntities();
     }
 
     /**

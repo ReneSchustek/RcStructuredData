@@ -7,8 +7,8 @@ namespace Ruhrcoder\RcStructuredData\Schema;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 /**
- * Telefon und Rückgaberichtlinie der Organisation, für den eigenen Graphen und für den Organization-Knoten, den der Kern
- * auf Produktseiten ausgibt. Beide nennen damit dieselben Angaben.
+ * Telefon und Rückgaberichtlinie der Organisation, für den eigenen Graphen und für den Organization-Knoten, den der
+ * Kern auf Produktseiten ausgibt. Beide nennen damit dieselben Angaben.
  */
 final class OrganizationDetails
 {
@@ -61,7 +61,12 @@ final class OrganizationDetails
     public function returnPolicy(?string $salesChannelId): ?array
     {
         $days = $this->systemConfig->getInt(self::CONFIG_PREFIX . 'returnPolicyDays', $salesChannelId);
-        $countries = self::countries($this->systemConfig->getString(self::CONFIG_PREFIX . 'returnPolicyCountries', $salesChannelId));
+        $countries = self::countries(
+            $this->systemConfig->getString(
+                self::CONFIG_PREFIX . 'returnPolicyCountries',
+                $salesChannelId
+            )
+        );
         if ($days <= 0 || $countries === []) {
             return null;
         }
@@ -74,7 +79,12 @@ final class OrganizationDetails
             'returnMethod' => 'https://schema.org/ReturnByMail',
         ];
 
-        $fees = self::RETURN_FEES[$this->systemConfig->getString(self::CONFIG_PREFIX . 'returnPolicyFees', $salesChannelId)] ?? null;
+        $fees = self::RETURN_FEES[
+            $this->systemConfig->getString(
+                self::CONFIG_PREFIX . 'returnPolicyFees',
+                $salesChannelId
+            )
+        ] ?? null;
         if ($fees !== null) {
             $policy['returnFees'] = $fees;
         }
@@ -89,8 +99,24 @@ final class OrganizationDetails
      */
     public static function countries(string $raw): array
     {
-        $codes = array_map(static fn (string $code): string => strtoupper(trim($code)), preg_split('/[\s,;]+/', $raw) ?: []);
+        $codes = array_map(
+            static fn (string $code): string => strtoupper(trim($code)),
+            preg_split(
+                '/[\s,;]+/',
+                $raw
+            ) ?: []
+        );
 
-        return array_values(array_unique(array_filter($codes, static fn (string $code): bool => preg_match('/^[A-Z]{2}$/', $code) === 1)));
+        return array_values(
+            array_unique(
+                array_filter(
+                    $codes,
+                    static fn (string $code): bool => preg_match(
+                        '/^[A-Z]{2}$/',
+                        $code
+                    ) === 1
+                )
+            )
+        );
     }
 }

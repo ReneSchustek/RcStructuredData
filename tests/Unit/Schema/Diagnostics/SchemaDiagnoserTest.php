@@ -10,6 +10,8 @@ use Ruhrcoder\RcStructuredData\Block\Documents\DocumentsSlotHydrator;
 use Ruhrcoder\RcStructuredData\Block\Documents\DocumentsStructBuilder;
 use Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator;
 use Ruhrcoder\RcStructuredData\Schema\Diagnostics\CompletenessChecker;
+use Ruhrcoder\RcStructuredData\Schema\Diagnostics\DiagnosisChannelResolver;
+use Ruhrcoder\RcStructuredData\Schema\Diagnostics\DiagnosisPageLoader;
 use Ruhrcoder\RcStructuredData\Schema\Diagnostics\PageWarningChecker;
 use Ruhrcoder\RcStructuredData\Schema\Diagnostics\SchemaDiagnoser;
 use Ruhrcoder\RcStructuredData\Schema\Extractor\DocumentsCmsBlockExtractor;
@@ -31,6 +33,7 @@ use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\LanguageInfo;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
@@ -57,7 +60,8 @@ final class SchemaDiagnoserTest extends TestCase
 
     /**
      * Was: Diagnose einer Kategorie über ihren Namen, mit Erlebniswelt.
-     * Warum: Der Befehl wird mit dem Namen aufgerufen, den der Händler kennt; der Kontext braucht die Standardsprache des
+     * Warum: Der Befehl wird mit dem Namen aufgerufen, den der Händler kennt; der Kontext braucht die Standardsprache
+     * des
      *        Kanals, nicht die des Systems.
      * Erwartet: Suche nach dem Namen, Kanal mit seiner Sprache, Graph und Hinweise im Ergebnis.
      */
@@ -102,7 +106,13 @@ final class SchemaDiagnoserTest extends TestCase
      */
     public function testFallsBackToAnyActiveChannelAndFindsCategoriesById(): void
     {
-        $channels = self::repository(SalesChannelCollection::class, [new SalesChannelCollection(), new SalesChannelCollection([$this->salesChannel()])]);
+        $channels = self::repository(
+            SalesChannelCollection::class,
+            [
+                new SalesChannelCollection(),
+                new SalesChannelCollection([$this->salesChannel()]),
+            ]
+        );
         $categories = self::repository(CategoryCollection::class, [
             function (Criteria $criteria): CategoryCollection {
                 self::assertSame([self::CATEGORY_ID], $criteria->getIds());
@@ -119,13 +129,56 @@ final class SchemaDiagnoserTest extends TestCase
     }
 
     /**
+     * Ein genannter Kanal wird über seine Kennung gesucht und gilt nur, wenn er aktiv ist; in einem Shop mit mehreren
+     * Kanälen unterscheiden sich URLs, Sprache und Einstellungen.
+     */
+    public function testANamedChannelIsUsedWhenActive(): void
+    {
+        $channelId = Uuid::randomHex();
+        $channels = self::repository(SalesChannelCollection::class, [
+            function (Criteria $criteria) use ($channelId): SalesChannelCollection {
+                self::assertSame([$channelId], $criteria->getIds());
+
+                return new SalesChannelCollection([$this->salesChannel()]);
+            },
+        ]);
+        $categories = self::repository(CategoryCollection::class, [new CategoryCollection([$this->category()])]);
+
+        self::assertTrue(
+            $this->diagnoser(
+                categories: $categories,
+                channels: $channels
+            )->diagnose(
+                self::CATEGORY_ID,
+                $channelId
+            )->pageFound
+        );
+    }
+
+    public function testAnUnknownNamedChannelFails(): void
+    {
+        $channels = self::repository(SalesChannelCollection::class, [new SalesChannelCollection()]);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Kein aktiver Verkaufskanal');
+
+        $this->diagnoser(channels: $channels)->diagnose('Handläufe', Uuid::randomHex());
+    }
+
+    /**
      * Was: kein aktiver Kanal.
      * Warum: Ohne Kanal gibt es keine Adressen und keinen Kontext; ein leeres Ergebnis wäre irreführend.
      * Erwartet: Ausnahme mit Klartext.
      */
     public function testFailsWithoutAnyActiveChannel(): void
     {
-        $channels = self::repository(SalesChannelCollection::class, [new SalesChannelCollection(), new SalesChannelCollection()]);
+        $channels = self::repository(
+            SalesChannelCollection::class,
+            [
+                new SalesChannelCollection(),
+                new SalesChannelCollection(),
+            ]
+        );
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Kein aktiver Sales-Channel gefunden.');
@@ -156,8 +209,8 @@ final class SchemaDiagnoserTest extends TestCase
 
     /**
      * Was: Diagnose einer Landingpage.
-     * Warum: Landingpages haben ihren eigenen Kontext (WebPage statt CollectionPage) und ihre Erlebniswelt am Datensatz.
-     * Erwartet: Name der Landingpage und Graph im Ergebnis.
+     * Warum: Landingpages haben ihren eigenen Kontext (WebPage statt CollectionPage) und ihre Erlebniswelt am
+     * Datensatz. Erwartet: Name der Landingpage und Graph im Ergebnis.
      */
     public function testALandingPageIsAnalysed(): void
     {
@@ -229,21 +282,34 @@ final class SchemaDiagnoserTest extends TestCase
         };
 
         return new SchemaDiagnoser(
-            $categories ?? self::repository(CategoryCollection::class),
-            $cmsPages ?? self::repository(CmsPageCollection::class),
-            $channels ?? self::repository(SalesChannelCollection::class, [new SalesChannelCollection([$this->salesChannel()])]),
-            $contextFactory ?? $this->contextFactory(),
+            new DiagnosisChannelResolver(
+                $channels ?? self::repository(
+                    SalesChannelCollection::class,
+                    [
+        new SalesChannelCollection(
+            [
+                $this->salesChannel(),
+            ]
+        ),
+    ]
+                ),
+                $contextFactory ?? $this->contextFactory(),
+            ),
+            new DiagnosisPageLoader(
+                $categories ?? self::repository(CategoryCollection::class),
+                $cmsPages ?? self::repository(CmsPageCollection::class),
+                $landingPages ?? self::repository(LandingPageCollection::class),
+                new DocumentsSlotHydrator(
+                    new CmsSlotIterator(),
+                    new DocumentsCmsBlockExtractor(),
+                    new DocumentsStructBuilder(new DocumentsCmsBlockExtractor()),
+                    self::repository(MediaCollection::class),
+                ),
+            ),
             new SchemaContextFactory($seoUrlReplacer),
             new GraphBuilder([$provider]),
             new CompletenessChecker(),
-            $landingPages ?? self::repository(LandingPageCollection::class),
             new PageWarningChecker(new CmsSlotIterator(), new YoutubeVideoExtractor()),
-            new DocumentsSlotHydrator(
-                new CmsSlotIterator(),
-                new DocumentsCmsBlockExtractor(),
-                new DocumentsStructBuilder(new DocumentsCmsBlockExtractor()),
-                self::repository(MediaCollection::class),
-            ),
         );
     }
 

@@ -11,6 +11,10 @@ use Ruhrcoder\RcStructuredData\Schema\OrganizationDetails;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\SchemaContextTrait;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
+/**
+ * Prüft die Firmenangaben: Name aus der Einstellung oder dem Shop, Kontaktpunkt aus Telefon und Shop-Adresse,
+ * Rückgaberichtlinie nur mit Frist und Ländern.
+ */
 class OrganizationNodeProviderTest extends TestCase
 {
     use SchemaContextTrait;
@@ -86,7 +90,8 @@ class OrganizationNodeProviderTest extends TestCase
 
     /**
      * Was: Telefon und Rückgaberichtlinie eingestellt.
-     * Warum: Google verlangt an der Rückgaberichtlinie Land, Art und Frist; das Telefon gehört direkt an die Organisation,
+     * Warum: Google verlangt an der Rückgaberichtlinie Land, Art und Frist; das Telefon gehört direkt an die
+     * Organisation,
      *        nicht nur in den Kontaktpunkt.
      * Erwartet: `telephone` und eine vollständige `MerchantReturnPolicy` mit Rücksendekosten.
      */
@@ -117,7 +122,11 @@ class OrganizationNodeProviderTest extends TestCase
      */
     public function testReturnPolicyNeedsDaysAndCountries(): void
     {
-        $details = new OrganizationDetails($this->systemConfig(['RcStructuredData.config.returnPolicyCountries' => 'DE']));
+        $details = new OrganizationDetails(
+            $this->systemConfig([
+                'RcStructuredData.config.returnPolicyCountries' => 'DE',
+            ])
+        );
         static::assertNull($details->returnPolicy(null));
 
         $details = new OrganizationDetails($this->systemConfig(['RcStructuredData.config.returnPolicyDays' => '14']));

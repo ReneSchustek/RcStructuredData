@@ -1,4 +1,5 @@
 import template from './sw-cms-el-config-rc-defined-terms.html.twig';
+import { stableKey } from '../../../../../helper/stable-key';
 
 const { Component, Mixin } = Shopware;
 
@@ -20,6 +21,8 @@ Component.register('sw-cms-el-config-rc-defined-terms', {
     },
 
     methods: {
+        itemKey: stableKey,
+
         createdComponent() {
             this.initElementConfig('rc-defined-terms');
 

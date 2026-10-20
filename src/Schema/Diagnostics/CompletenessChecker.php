@@ -7,10 +7,11 @@ namespace Ruhrcoder\RcStructuredData\Schema\Diagnostics;
 /**
  * Prüft einen fertigen JSON-LD-Graphen gegen die von Google geforderten/empfohlenen Felder.
  *
- * Kennt die Pflicht- und Empfehlungsfelder der Typen, für die Google Anforderungen veröffentlicht (Seiten, Organisation,
- * Video, FAQ, Blogbeitrag, Brotkrumen, Listen, Geschäft) und meldet je Knoten die Lücken. Typen ohne solche Anforderungen
- * (WebSite, Person, DefinedTermSet, DigitalDocument) prüft er nicht; für sie heißt „keine Lücke“ nur „nicht geprüft“.
- * Reine Analyse ohne Ausgabe (SoC); die Formatierung (Debug-Kommentar, Konsole) übernehmen die Aufrufer über describe().
+ * Kennt die Pflicht- und Empfehlungsfelder der Typen, für die Google Anforderungen veröffentlicht (Seiten,
+ * Organisation, Video, FAQ, Blogbeitrag, Brotkrumen, Listen, Geschäft) und meldet je Knoten die Lücken. Typen ohne
+ * solche Anforderungen (WebSite, Person, DefinedTermSet, DigitalDocument) prüft er nicht; für sie heißt „keine Lücke“
+ * nur „nicht geprüft“. Reine Analyse ohne Ausgabe (SoC); die Formatierung (Debug-Kommentar, Konsole) übernehmen die
+ * Aufrufer über describe().
  */
 final class CompletenessChecker
 {

@@ -11,6 +11,8 @@ use Ruhrcoder\RcStructuredData\Block\Documents\DocumentsStructBuilder;
 use Ruhrcoder\RcStructuredData\Controller\SchemaDiagnoseController;
 use Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator;
 use Ruhrcoder\RcStructuredData\Schema\Diagnostics\CompletenessChecker;
+use Ruhrcoder\RcStructuredData\Schema\Diagnostics\DiagnosisChannelResolver;
+use Ruhrcoder\RcStructuredData\Schema\Diagnostics\DiagnosisPageLoader;
 use Ruhrcoder\RcStructuredData\Schema\Diagnostics\PageWarningChecker;
 use Ruhrcoder\RcStructuredData\Schema\Diagnostics\SchemaDiagnoser;
 use Ruhrcoder\RcStructuredData\Schema\Extractor\DocumentsCmsBlockExtractor;
@@ -31,6 +33,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\Stub\DataAbstractionLayer\StaticEntityRepository;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Prüft die Antwort der Diagnose an die Verwaltung: dieselben Felder für Kategorie und Landingpage.
@@ -55,10 +58,17 @@ final class SchemaDiagnoseControllerTest extends TestCase
         $category->setTranslated(['name' => 'Handläufe']);
 
         $response = $this->controller(self::repository(CategoryCollection::class, [new CategoryCollection([$category])]))
-            ->diagnoseCategory(self::CATEGORY_ID);
+            ->diagnoseCategory(self::CATEGORY_ID, new Request());
 
         self::assertSame(
-            ['found' => true, 'name' => 'Handläufe', 'hasGraph' => false, 'nodeCount' => 0, 'findings' => [], 'warnings' => []],
+            [
+    'found' => true,
+    'name' => 'Handläufe',
+    'hasGraph' => false,
+    'nodeCount' => 0,
+    'findings' => [],
+    'warnings' => [],
+],
             json_decode((string) $response->getContent(), true),
         );
     }
@@ -70,7 +80,12 @@ final class SchemaDiagnoseControllerTest extends TestCase
      */
     public function testAnUnknownLandingPageIsNotFound(): void
     {
-        $response = $this->controller(self::repository(CategoryCollection::class))->diagnoseLandingPage('keine-kennung');
+        $response = $this->controller(
+            self::repository(CategoryCollection::class)
+        )->diagnoseLandingPage(
+            'keine-kennung',
+            new Request()
+        );
 
         $content = json_decode((string) $response->getContent(), true);
         self::assertIsArray($content);
@@ -98,21 +113,25 @@ final class SchemaDiagnoseControllerTest extends TestCase
         $seoUrlReplacer->method('generate')->willReturn('https://shop.example/');
 
         return new SchemaDiagnoseController(new SchemaDiagnoser(
-            $categories,
-            self::repository(CmsPageCollection::class),
-            self::repository(SalesChannelCollection::class, [new SalesChannelCollection([$salesChannel])]),
-            $contextFactory,
+            new DiagnosisChannelResolver(
+                self::repository(SalesChannelCollection::class, [new SalesChannelCollection([$salesChannel])]),
+                $contextFactory,
+            ),
+            new DiagnosisPageLoader(
+                $categories,
+                self::repository(CmsPageCollection::class),
+                self::repository(LandingPageCollection::class),
+                new DocumentsSlotHydrator(
+                    new CmsSlotIterator(),
+                    new DocumentsCmsBlockExtractor(),
+                    new DocumentsStructBuilder(new DocumentsCmsBlockExtractor()),
+                    self::repository(MediaCollection::class),
+                ),
+            ),
             new SchemaContextFactory($seoUrlReplacer),
             new GraphBuilder([]),
             new CompletenessChecker(),
-            self::repository(LandingPageCollection::class),
             new PageWarningChecker(new CmsSlotIterator(), new YoutubeVideoExtractor()),
-            new DocumentsSlotHydrator(
-                new CmsSlotIterator(),
-                new DocumentsCmsBlockExtractor(),
-                new DocumentsStructBuilder(new DocumentsCmsBlockExtractor()),
-                self::repository(MediaCollection::class),
-            ),
         ));
     }
 }

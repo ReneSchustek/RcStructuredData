@@ -22,7 +22,7 @@ final class WebPageNodeProvider extends AbstractPageNodeProvider
     public function __construct(
         IdFactory $idFactory,
         private readonly ContentPageDetector $contentPageDetector,
-        ?CmsImageCollector $imageCollector = null,
+        CmsImageCollector $imageCollector,
     ) {
         parent::__construct($idFactory, $imageCollector);
     }

@@ -79,8 +79,8 @@ final class SitemapImageLoaderTest extends TestCase
     }
 
     /**
-     * Was: eine Kategorie mit eigenem Bild und einer Erlebniswelt, deren Bildbaustein in der Kategorie überschrieben ist.
-     * Warum: Die Kategorie pflegt ihre Bausteine über `slotConfig`; das Bild der Vorlage erscheint dort nicht.
+     * Was: eine Kategorie mit eigenem Bild und einer Erlebniswelt, deren Bildbaustein in der Kategorie überschrieben
+     * ist. Warum: Die Kategorie pflegt ihre Bausteine über `slotConfig`; das Bild der Vorlage erscheint dort nicht.
      * Erwartet: zuerst das Kategoriebild, dann das überschriebene Bild und ein absolutes Bild aus Text; das Bild der
      *           Vorlage fehlt.
      */
@@ -92,7 +92,10 @@ final class SitemapImageLoaderTest extends TestCase
         $category->setCmsPage($this->page());
         $category->setSlotConfig([self::SLOT => [
             'media' => ['source' => 'static', 'value' => self::OVERRIDE_MEDIA],
-            'content' => ['source' => 'static', 'value' => '<p><img src="//cdn.example/a.png"><img src="relativ.png"></p>'],
+'content' => [
+    'source' => 'static',
+    'value' => '<p><img src="//cdn.example/a.png"><img src="relativ.png"></p>',
+],
         ]]);
 
         $loader = $this->loader(
@@ -161,8 +164,12 @@ final class SitemapImageLoaderTest extends TestCase
      * @param list<LandingPageCollection> $landingPages
      * @param list<MediaCollection>       $media
      */
-    private function loader(array $products = [], array $categories = [], array $landingPages = [], array $media = []): SitemapImageLoader
-    {
+    private function loader(
+        array $products = [],
+        array $categories = [],
+        array $landingPages = [],
+        array $media = [],
+    ): SitemapImageLoader {
         return new SitemapImageLoader(
             self::repository(ProductCollection::class, $products),
             self::repository(CategoryCollection::class, $categories),
@@ -199,8 +206,12 @@ final class SitemapImageLoaderTest extends TestCase
         return $page;
     }
 
-    private function productMedia(string $id, int $position, string $url, string $mimeType = 'image/jpeg'): ProductMediaEntity
-    {
+    private function productMedia(
+        string $id,
+        int $position,
+        string $url,
+        string $mimeType = 'image/jpeg',
+    ): ProductMediaEntity {
         $productMedia = new ProductMediaEntity();
         $productMedia->setId($id);
         $productMedia->setPosition($position);

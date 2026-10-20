@@ -13,6 +13,10 @@ use Shopware\Core\Content\Cms\DataResolver\Element\ElementDataCollection;
 use Shopware\Core\Content\Cms\DataResolver\ResolverContext\ResolverContext;
 use Shopware\Core\Framework\Util\HtmlSanitizer;
 
+/**
+ * Prüft den Datenauflöser des FAQ-Bausteins: die Fragen aus dem Element und die Darstellung, bei einem unbekannten
+ * Wert die Vorgabe „accordion".
+ */
 class FaqResolverTest extends TestCase
 {
     use CmsFixtureTrait;
@@ -50,7 +54,11 @@ class FaqResolverTest extends TestCase
     {
         $slot = $this->makeSlot('rc-faq', [['question' => 'Q', 'answer' => 'A']], 'list');
 
-        $this->resolver()->enrich($slot, $this->createMock(ResolverContext::class), $this->createMock(ElementDataCollection::class));
+        $this->resolver()->enrich(
+            $slot,
+            $this->createMock(ResolverContext::class),
+            $this->createMock(ElementDataCollection::class)
+        );
 
         $data = $slot->getData();
         static::assertInstanceOf(FaqStruct::class, $data);
@@ -61,7 +69,11 @@ class FaqResolverTest extends TestCase
     {
         $slot = $this->makeSlot('rc-faq', [['question' => 'Q', 'answer' => 'A']], 'carousel');
 
-        $this->resolver()->enrich($slot, $this->createMock(ResolverContext::class), $this->createMock(ElementDataCollection::class));
+        $this->resolver()->enrich(
+            $slot,
+            $this->createMock(ResolverContext::class),
+            $this->createMock(ElementDataCollection::class)
+        );
 
         $data = $slot->getData();
         static::assertInstanceOf(FaqStruct::class, $data);

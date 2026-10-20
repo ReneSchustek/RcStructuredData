@@ -76,7 +76,7 @@ final class FaqCmsBlockExtractor implements CmsBlockSchemaExtractor
      * jedes Besuchers läuft, auch in der eines Administrators, der die Seite ansieht. Der
      * Sanitizer ersetzt hier das Escaping, er ergänzt es nicht.
      *
-     * Die Frage geht bewusst nicht diesen Weg: Sie wird escaped ausgegeben und ist damit
+     * Die Frage geht nicht diesen Weg: Sie wird escaped ausgegeben und ist damit
      * ungefährlich. Durch den Sanitizer geschickt, stünden erlaubte Auszeichnungen hinterher
      * als sichtbarer Text auf der Seite.
      */

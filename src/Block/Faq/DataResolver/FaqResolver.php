@@ -23,7 +23,7 @@ use Shopware\Core\Content\Cms\DataResolver\ResolverContext\ResolverContext;
 final class FaqResolver extends AbstractCmsElementResolver
 {
     private const DISPLAY_MODE_KEY = 'displayMode';
-    private const DEFAULT_DISPLAY_MODE = 'accordion';
+    public const DEFAULT_DISPLAY_MODE = 'accordion';
 
     /**
      * @var list<string>

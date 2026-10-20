@@ -14,6 +14,10 @@ use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\CmsFixtureTrait;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\SchemaContextTrait;
 use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
 
+/**
+ * Prüft die Nachweise als `DigitalDocument`: je Dokument ein Knoten, die Nummer läuft über alle Bausteine, ein fremdes
+ * Element mit ähnlichen Daten zählt nicht.
+ */
 class DigitalDocumentNodeProviderTest extends TestCase
 {
     use CmsFixtureTrait;
@@ -30,8 +34,18 @@ class DigitalDocumentNodeProviderTest extends TestCase
     public function testBuildsOneNodePerDocument(): void
     {
         $page = $this->makeCmsPage($this->resolvedSlot([
-            $this->document('Allgemeines bauaufsichtliches Prüfzeugnis P-169908-LGA', 'https://shop.example/media/abp.pdf', expires: '2031-07-03', description: 'Absturzsichernde Verglasung, Kategorie C1'),
-            $this->document('Verlängerungsbescheid 2026', 'https://shop.example/media/bescheid-2026.pdf', datePublished: '2026-07-04', expires: '2031-07-03'),
+$this->document(
+    'Allgemeines bauaufsichtliches Prüfzeugnis P-169908-LGA',
+    'https://shop.example/media/abp.pdf',
+    expires: '2031-07-03',
+    description: 'Absturzsichernde Verglasung, Kategorie C1'
+),
+$this->document(
+    'Verlängerungsbescheid 2026',
+    'https://shop.example/media/bescheid-2026.pdf',
+    datePublished: '2026-07-04',
+    expires: '2031-07-03'
+),
         ]));
         $context = $this->makeContext(pageUrl: 'https://shop.example/bauteile/glashalter/', cmsPage: $page);
 
@@ -76,7 +90,13 @@ class DigitalDocumentNodeProviderTest extends TestCase
 
         $nodes = $this->provider()->provide($this->makeContext(pageUrl: 'https://shop.example/x', cmsPage: $page));
 
-        static::assertSame(['https://shop.example/x#dokument-1', 'https://shop.example/x#dokument-2'], array_column($nodes, '@id'));
+        static::assertSame(
+            [
+                'https://shop.example/x#dokument-1',
+                'https://shop.example/x#dokument-2',
+            ],
+            array_column($nodes, '@id')
+        );
     }
 
     /**
@@ -88,7 +108,15 @@ class DigitalDocumentNodeProviderTest extends TestCase
             ['name' => 'Prüfzeugnis', 'mediaId' => '0190a1b2c3d4e5f60718293a4b5c6d7e'],
         ]));
 
-        static::assertSame([], $this->provider()->provide($this->makeContext(pageUrl: 'https://shop.example/x', cmsPage: $page)));
+        static::assertSame(
+            [],
+            $this->provider()->provide(
+                $this->makeContext(
+                    pageUrl: 'https://shop.example/x',
+                    cmsPage: $page
+                )
+            )
+        );
     }
 
     public function testForeignSlotWithDocumentsDataIsIgnored(): void
@@ -96,7 +124,15 @@ class DigitalDocumentNodeProviderTest extends TestCase
         $slot = $this->makeSlot('text');
         $slot->setData(new DocumentsStruct('', [$this->document('Fremd', 'https://shop.example/f.pdf')]));
 
-        static::assertSame([], $this->provider()->provide($this->makeContext(pageUrl: 'https://shop.example/x', cmsPage: $this->makeCmsPage($slot))));
+        static::assertSame(
+            [],
+            $this->provider()->provide(
+                $this->makeContext(
+                    pageUrl: 'https://shop.example/x',
+                    cmsPage: $this->makeCmsPage($slot)
+                )
+            )
+        );
     }
 
     /**
@@ -133,6 +169,10 @@ class DigitalDocumentNodeProviderTest extends TestCase
 
     private function provider(): DigitalDocumentNodeProvider
     {
-        return new DigitalDocumentNodeProvider(new CmsSlotIterator(), new DocumentsCmsBlockExtractor(), new IdFactory());
+        return new DigitalDocumentNodeProvider(
+            new CmsSlotIterator(),
+            new DocumentsCmsBlockExtractor(),
+            new IdFactory()
+        );
     }
 }

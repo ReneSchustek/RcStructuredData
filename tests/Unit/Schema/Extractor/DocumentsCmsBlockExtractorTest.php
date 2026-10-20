@@ -9,6 +9,10 @@ use PHPUnit\Framework\TestCase;
 use Ruhrcoder\RcStructuredData\Schema\Extractor\DocumentsCmsBlockExtractor;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\CmsFixtureTrait;
 
+/**
+ * Prüft das Lesen des Nachweis-Elements: Einträge ohne Namen oder Datei fallen weg, Daten gelten in der Zeit der
+ * Redaktion.
+ */
 class DocumentsCmsBlockExtractorTest extends TestCase
 {
     use CmsFixtureTrait;

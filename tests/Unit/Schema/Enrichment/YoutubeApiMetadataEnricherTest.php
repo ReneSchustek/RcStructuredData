@@ -15,6 +15,10 @@ use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+/**
+ * Prüft die Anreicherung über die YouTube-Data-API. Ohne Schlüssel bleibt sie still, Antworten und Fehlschläge werden
+ * zwischengespeichert, damit ein gestörter Dienst nicht jede Seite aufhält.
+ */
 class YoutubeApiMetadataEnricherTest extends TestCase
 {
     private const CONFIG_KEY = 'RcStructuredData.config.youtubeApiKey';
@@ -24,7 +28,7 @@ class YoutubeApiMetadataEnricherTest extends TestCase
         $client = new MockHttpClient([]);
         $enricher = $this->enricher($client, '');
 
-        static::assertNull($enricher->enrich('abc123'));
+        static::assertNull($enricher->enrich('abc123DEF45'));
         static::assertSame(0, $client->getRequestsCount());
     }
 
@@ -40,7 +44,7 @@ class YoutubeApiMetadataEnricherTest extends TestCase
     {
         $client = new MockHttpClient([$this->videoResponse()]);
 
-        $result = $this->enricher($client, 'KEY')->enrich('abc123');
+        $result = $this->enricher($client, 'KEY')->enrich('abc123DEF45');
 
         static::assertNotNull($result);
         static::assertSame('Mein Video', $result['name']);
@@ -55,8 +59,8 @@ class YoutubeApiMetadataEnricherTest extends TestCase
         $client = new MockHttpClient([$this->videoResponse()]);
         $enricher = $this->enricher($client, 'KEY');
 
-        $first = $enricher->enrich('abc123');
-        $second = $enricher->enrich('abc123');
+        $first = $enricher->enrich('abc123DEF45');
+        $second = $enricher->enrich('abc123DEF45');
 
         static::assertSame($first, $second);
         static::assertSame(1, $client->getRequestsCount());
@@ -64,23 +68,31 @@ class YoutubeApiMetadataEnricherTest extends TestCase
 
     public function testReturnsNullWhenNoItems(): void
     {
-        $client = new MockHttpClient([new MockResponse(json_encode(['items' => []], JSON_THROW_ON_ERROR), ['http_code' => 200])]);
+        $client = new MockHttpClient([
+            new MockResponse(
+                json_encode(
+                    ['items' => []],
+                    JSON_THROW_ON_ERROR
+                ),
+                ['http_code' => 200]
+            ),
+        ]);
 
-        static::assertNull($this->enricher($client, 'KEY')->enrich('abc123'));
+        static::assertNull($this->enricher($client, 'KEY')->enrich('abc123DEF45'));
     }
 
     public function testSilentFallbackOnErrorStatus(): void
     {
         $client = new MockHttpClient([new MockResponse('quota exceeded', ['http_code' => 403])]);
 
-        static::assertNull($this->enricher($client, 'KEY')->enrich('abc123'));
+        static::assertNull($this->enricher($client, 'KEY')->enrich('abc123DEF45'));
     }
 
     public function testSilentFallbackOnTransportError(): void
     {
         $client = new MockHttpClient([new MockResponse('', ['error' => 'timeout'])]);
 
-        static::assertNull($this->enricher($client, 'KEY')->enrich('abc123'));
+        static::assertNull($this->enricher($client, 'KEY')->enrich('abc123DEF45'));
     }
 
     public function testNegativelyCachesErrorStatusAcrossCalls(): void
@@ -92,8 +104,8 @@ class YoutubeApiMetadataEnricherTest extends TestCase
         $client = new MockHttpClient([new MockResponse('quota exceeded', ['http_code' => 403])]);
         $enricher = $this->enricher($client, 'KEY');
 
-        static::assertNull($enricher->enrich('abc123'));
-        static::assertNull($enricher->enrich('abc123'));
+        static::assertNull($enricher->enrich('abc123DEF45'));
+        static::assertNull($enricher->enrich('abc123DEF45'));
         static::assertSame(1, $client->getRequestsCount());
     }
 
@@ -115,7 +127,7 @@ class YoutubeApiMetadataEnricherTest extends TestCase
         $systemConfig->method('getString')->willReturn($apiKey);
 
         $enricher = new YoutubeApiMetadataEnricher($client, $systemConfig, new ArrayAdapter(), $logger);
-        $result = $enricher->enrich('abc123');
+        $result = $enricher->enrich('abc123DEF45');
 
         static::assertNull($result);
         static::assertNotEmpty($logger->messages);
@@ -141,7 +153,7 @@ class YoutubeApiMetadataEnricherTest extends TestCase
             return $this->videoResponse();
         });
 
-        $this->enricher($client, 'KEY')->enrich('abc123');
+        $this->enricher($client, 'KEY')->enrich('abc123DEF45');
 
         static::assertCount(1, $timeouts);
         static::assertIsFloat($timeouts[0]);

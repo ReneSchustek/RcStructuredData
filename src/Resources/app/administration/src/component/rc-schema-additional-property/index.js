@@ -1,4 +1,5 @@
 import template from './rc-schema-additional-property.html.twig';
+import { stableKey } from '../../helper/stable-key';
 
 const { Component } = Shopware;
 
@@ -55,6 +56,8 @@ Component.register('rc-schema-additional-property', {
     },
 
     methods: {
+        itemKey: stableKey,
+
         addProperty() {
             this.items.push({ name: '', value: '' });
             this.emitChange();

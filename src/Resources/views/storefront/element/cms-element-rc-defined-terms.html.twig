@@ -8,7 +8,7 @@
 {% block element_rc_defined_terms %}
     {% set termsData = element.data %}
 
-    {# Ohne Namen oder ohne Begriffe wird nichts ausgegeben \u2014 kein leerer Kasten. #}
+    {# Ohne Namen oder ohne Begriffe wird nichts ausgegeben, auch kein leerer Kasten. #}
     {% if termsData and termsData.name and termsData.terms|length > 0 %}
         <div class="cms-element-rc-defined-terms">
             {% block element_rc_defined_terms_head %}

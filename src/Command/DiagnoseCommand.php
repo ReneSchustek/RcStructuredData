@@ -10,6 +10,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -34,6 +35,12 @@ final class DiagnoseCommand extends Command
     protected function configure(): void
     {
         $this->addArgument('category', InputArgument::REQUIRED, 'Kategorie-Name oder -ID');
+        $this->addOption(
+            'sales-channel',
+            null,
+            InputOption::VALUE_REQUIRED,
+            'Verkaufskanal (ID); ohne Angabe der erste aktive Storefront-Kanal'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -41,7 +48,11 @@ final class DiagnoseCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $identifier = (string) $input->getArgument('category');
 
-        $result = $this->diagnoser->diagnose($identifier);
+        $salesChannelId = $input->getOption('sales-channel');
+        $result = $this->diagnoser->diagnose(
+            $identifier,
+            \is_string($salesChannelId) && $salesChannelId !== '' ? $salesChannelId : null
+        );
         if (!$result->pageFound) {
             $io->error(sprintf('Keine Kategorie zu "%s" gefunden.', $identifier));
 

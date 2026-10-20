@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ruhrcoder\RcStructuredData\Tests\Unit\Schema\Node;
 
 use PHPUnit\Framework\TestCase;
+use Ruhrcoder\RcStructuredData\Schema\Cms\CmsImageCollector;
 use Ruhrcoder\RcStructuredData\Schema\Cms\CmsSlotIterator;
 use Ruhrcoder\RcStructuredData\Schema\Cms\ContentPageDetector;
 use Ruhrcoder\RcStructuredData\Schema\IdFactory;
@@ -13,7 +14,12 @@ use Ruhrcoder\RcStructuredData\Schema\Node\WebPageNodeProvider;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\CmsFixtureTrait;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\SchemaContextTrait;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 
+/**
+ * Prüft, welche Seite `CollectionPage` und welche `WebPage` wird, und den Inhalt des Seitenknotens. Eine Inhaltsseite
+ * unter einer Kategorie ist keine Sammlung, eine Produktkategorie schon.
+ */
 class PageNodeProviderTest extends TestCase
 {
     use CmsFixtureTrait;
@@ -21,7 +27,13 @@ class PageNodeProviderTest extends TestCase
 
     public function testCollectionPageOnlySupportsCategoryPages(): void
     {
-        $provider = new CollectionPageNodeProvider(new IdFactory(), new ContentPageDetector(new CmsSlotIterator()));
+        $provider = new CollectionPageNodeProvider(
+            new IdFactory(),
+            new ContentPageDetector(
+                new CmsSlotIterator()
+            ),
+            $this->imageCollector()
+        );
 
         static::assertTrue($provider->supports($this->makeContext(SchemaContext::TYPE_CATEGORY)));
         static::assertFalse($provider->supports($this->makeContext(SchemaContext::TYPE_LANDINGPAGE)));
@@ -29,7 +41,13 @@ class PageNodeProviderTest extends TestCase
 
     public function testWebPageSupportsLandingHomeAndBlogPages(): void
     {
-        $provider = new WebPageNodeProvider(new IdFactory(), new ContentPageDetector(new CmsSlotIterator()));
+        $provider = new WebPageNodeProvider(
+            new IdFactory(),
+            new ContentPageDetector(
+                new CmsSlotIterator()
+            ),
+            $this->imageCollector()
+        );
 
         static::assertTrue($provider->supports($this->makeContext(SchemaContext::TYPE_LANDINGPAGE)));
         static::assertTrue($provider->supports($this->makeContext(SchemaContext::TYPE_HOME)));
@@ -39,7 +57,13 @@ class PageNodeProviderTest extends TestCase
 
     public function testBuildsCollectionPageNode(): void
     {
-        $provider = new CollectionPageNodeProvider(new IdFactory(), new ContentPageDetector(new CmsSlotIterator()));
+        $provider = new CollectionPageNodeProvider(
+            new IdFactory(),
+            new ContentPageDetector(
+                new CmsSlotIterator()
+            ),
+            $this->imageCollector()
+        );
         $context = $this->makeContext(
             SchemaContext::TYPE_CATEGORY,
             'Fittings',
@@ -58,7 +82,13 @@ class PageNodeProviderTest extends TestCase
 
     public function testOmitsEmptyDescription(): void
     {
-        $provider = new CollectionPageNodeProvider(new IdFactory(), new ContentPageDetector(new CmsSlotIterator()));
+        $provider = new CollectionPageNodeProvider(
+            new IdFactory(),
+            new ContentPageDetector(
+                new CmsSlotIterator()
+            ),
+            $this->imageCollector()
+        );
 
         $node = $provider->provide($this->makeContext(description: ''))[0];
         static::assertArrayNotHasKey('description', $node);
@@ -66,7 +96,13 @@ class PageNodeProviderTest extends TestCase
 
     public function testMapsAndFiltersAdditionalProperties(): void
     {
-        $provider = new CollectionPageNodeProvider(new IdFactory(), new ContentPageDetector(new CmsSlotIterator()));
+        $provider = new CollectionPageNodeProvider(
+            new IdFactory(),
+            new ContentPageDetector(
+                new CmsSlotIterator()
+            ),
+            $this->imageCollector()
+        );
         $context = $this->makeContext(additionalProperties: [
             ['name' => 'Material', 'value' => 'Edelstahl'],
             ['name' => '', 'value' => 'leer'],
@@ -91,8 +127,20 @@ class PageNodeProviderTest extends TestCase
         $page->setType('page');
         $context = $this->makeContext(SchemaContext::TYPE_CATEGORY, cmsPage: $page);
 
-        $collection = new CollectionPageNodeProvider(new IdFactory(), new ContentPageDetector(new CmsSlotIterator()));
-        $web = new WebPageNodeProvider(new IdFactory(), new ContentPageDetector(new CmsSlotIterator()));
+        $collection = new CollectionPageNodeProvider(
+            new IdFactory(),
+            new ContentPageDetector(
+                new CmsSlotIterator()
+            ),
+            $this->imageCollector()
+        );
+        $web = new WebPageNodeProvider(
+            new IdFactory(),
+            new ContentPageDetector(
+                new CmsSlotIterator()
+            ),
+            $this->imageCollector()
+        );
 
         static::assertFalse($collection->supports($context));
         static::assertTrue($web->supports($context));
@@ -109,11 +157,31 @@ class PageNodeProviderTest extends TestCase
         $page->setType('product_list');
         $context = $this->makeContext(SchemaContext::TYPE_CATEGORY, cmsPage: $page);
 
-        $collection = new CollectionPageNodeProvider(new IdFactory(), new ContentPageDetector(new CmsSlotIterator()));
-        $web = new WebPageNodeProvider(new IdFactory(), new ContentPageDetector(new CmsSlotIterator()));
+        $collection = new CollectionPageNodeProvider(
+            new IdFactory(),
+            new ContentPageDetector(
+                new CmsSlotIterator()
+            ),
+            $this->imageCollector()
+        );
+        $web = new WebPageNodeProvider(
+            new IdFactory(),
+            new ContentPageDetector(
+                new CmsSlotIterator()
+            ),
+            $this->imageCollector()
+        );
 
         static::assertTrue($collection->supports($context));
         static::assertFalse($web->supports($context));
     }
 
+
+    /**
+     * Ein Sammler über einem leeren Medienbestand: Die Fälle hier prüfen den Knoten, nicht die Bilder.
+     */
+    private function imageCollector(): CmsImageCollector
+    {
+        return new CmsImageCollector($this->createStub(EntityRepository::class));
+    }
 }

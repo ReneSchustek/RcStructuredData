@@ -15,6 +15,8 @@
    Der Kern setzt nur `deliveryTime.handlingTime` und lässt `shippingDetails` ganz weg,
    wenn das Produkt keine Lieferzeit trägt. Deshalb wird das
    ganze Objekt ersetzt und nicht ergänzt: Unser Bau enthält die Bearbeitungszeit ebenfalls. #}
+{# Die `sku` ist die Produktnummer ohne Leerzeichen: Google weist eine `sku` mit Leerzeichen als ungültig ab, und im
+   Bestand tragen viele Nummern eines („E 48120"). Die Nummer im Shop bleibt, wie sie ist. #}
 {% block page_product_detail_json_ld_script %}
     {% set rcShippingDetails = rc_schema_shipping_details(page.product, context) %}
     {% set rcPriceSpecification = rc_schema_price_specification(page.product, context) %}
@@ -28,6 +30,7 @@
         {% set productData = productData|merge({
             offers: rcOffers,
             itemCondition: productData.offers.itemCondition ?? 'https://schema.org/NewCondition',
+            sku: productData.sku|default('')|replace({' ': ''}),
         }) %}
     {% elseif productData['@type'] == 'ProductGroup' and productData.hasVariant is defined %}
         {# Die Variante dieser Seite ist ein konkretes Angebot: dort Preisangabe, Zustand und Versand. Die Gruppe nennt,
@@ -40,6 +43,7 @@
         {% set rcVariant = rcVariant|merge({
             offers: rcOffers,
             itemCondition: rcVariant.offers.itemCondition ?? 'https://schema.org/NewCondition',
+            sku: rcVariant.sku|default('')|replace({' ': ''}),
         }) %}
         {% set productData = productData|merge({ hasVariant: [rcVariant] }) %}
 

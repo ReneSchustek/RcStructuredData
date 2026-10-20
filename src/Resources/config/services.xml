@@ -146,17 +146,25 @@
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Extractor\YoutubeVideoExtractor"/>
         </service>
 
-        <service id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\SchemaDiagnoser">
-            <argument type="service" id="category.repository"/>
-            <argument type="service" id="cms_page.repository"/>
+        <service id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\DiagnosisChannelResolver">
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\DiagnosisPageLoader">
+            <argument type="service" id="category.repository"/>
+            <argument type="service" id="cms_page.repository"/>
+            <argument type="service" id="landing_page.repository"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Block\Documents\DocumentsSlotHydrator"/>
+        </service>
+
+        <service id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\SchemaDiagnoser">
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\DiagnosisChannelResolver"/>
+            <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\DiagnosisPageLoader"/>
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\SchemaContextFactory"/>
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\GraphBuilder"/>
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\CompletenessChecker"/>
-            <argument type="service" id="landing_page.repository"/>
             <argument type="service" id="Ruhrcoder\RcStructuredData\Schema\Diagnostics\PageWarningChecker"/>
-            <argument type="service" id="Ruhrcoder\RcStructuredData\Block\Documents\DocumentsSlotHydrator"/>
         </service>
 
         <service id="Ruhrcoder\RcStructuredData\Command\DiagnoseCommand">

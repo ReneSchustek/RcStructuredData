@@ -14,10 +14,13 @@ use Shopware\Core\Content\Cms\SalesChannel\Struct\ImageStruct;
  * abgeleitet, das Thumbnail stammt aus dem gepflegten `previewMedia` (vom Core-Resolver als
  * ImageStruct an den Slot gehängt) oder dem YouTube-Standardbild. Die vier per Admin-Override
  * ergänzten Metadatenfelder werden roh durchgereicht; die Lücken-Füll-Kaskade (Category/Seite)
- * liegt bewusst im VideoObjectNodeProvider, weil dort der Seiten-Kontext verfügbar ist.
+ * liegt im VideoObjectNodeProvider, weil dort der Seiten-Kontext verfügbar ist.
  */
 final class YoutubeVideoExtractor implements CmsBlockSchemaExtractor
 {
+    /** Eine YouTube-Kennung hat elf Zeichen; eine eingefügte Adresse oder ein Tippfehler ergäbe ein ungültiges Video. */
+    private const VIDEO_ID_PATTERN = '/^[A-Za-z0-9_-]{11}$/';
+
     public const CMS_ELEMENT_TYPE = 'youtube-video';
 
     private const CONFIG_VIDEO_ID = 'videoID';
@@ -37,7 +40,7 @@ final class YoutubeVideoExtractor implements CmsBlockSchemaExtractor
     public function extract(CmsSlotEntity $slot): array
     {
         $videoId = $this->configString($slot, self::CONFIG_VIDEO_ID);
-        if ($videoId === '') {
+        if (preg_match(self::VIDEO_ID_PATTERN, $videoId) !== 1) {
             return [];
         }
 
@@ -63,7 +66,7 @@ final class YoutubeVideoExtractor implements CmsBlockSchemaExtractor
             }
         }
 
-        // hqdefault.jpg existiert für JEDES YouTube-Video (480x360). maxresdefault.jpg gibt es nur bei
+        // hqdefault.jpg existiert für jedes YouTube-Video (480x360). maxresdefault.jpg gibt es nur bei
         // Videos mit HD-Thumbnail -> bei SD-/älteren Videos 404, und `thumbnailUrl` ist ein von Google
         // gefordertes VideoObject-Feld (tote URL = Rich-Result-Warnung).
         return 'https://img.youtube.com/vi/' . $videoId . '/hqdefault.jpg';

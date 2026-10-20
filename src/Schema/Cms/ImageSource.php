@@ -6,10 +6,8 @@ namespace Ruhrcoder\RcStructuredData\Schema\Cms;
 
 /**
  * Eine Bildquelle einer Erlebniswelt: entweder ein Medium der Medienverwaltung oder eine Bildadresse aus dem HTML eines
- * Text- oder Twig-Bausteins. Genau eines von beiden ist gesetzt.
- *
- * Ersetzt das frühere Zeichenketten-Protokoll `id:…`/`url:…`, das Sammler und Sitemap jeweils selbst wieder
- * zerlegen mussten.
+ * Text- oder Twig-Bausteins. Genau eines von beiden ist gesetzt; Sammler und Sitemap lesen beide Felder, ohne eine
+ * Zeichenkette zerlegen zu müssen.
  */
 final readonly class ImageSource
 {

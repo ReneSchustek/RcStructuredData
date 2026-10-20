@@ -10,6 +10,10 @@ use Ruhrcoder\RcStructuredData\Schema\Node\WebSiteNodeProvider;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\SchemaContextTrait;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
+/**
+ * Prüft den `WebSite`-Knoten mit Verweis auf die Organisation. Die Suchaktion steht nur da, wenn die Vorlage über
+ * https läuft und den Platzhalter trägt.
+ */
 class WebSiteNodeProviderTest extends TestCase
 {
     use SchemaContextTrait;
@@ -56,6 +60,19 @@ class WebSiteNodeProviderTest extends TestCase
             $this->systemConfig([
                 'RcStructuredData.config.websiteName' => 'Demo',
                 'RcStructuredData.config.websiteSearchUrl' => 'https://shop.example/search',
+            ]),
+            new IdFactory(),
+        );
+
+        static::assertArrayNotHasKey('potentialAction', $provider->provide($this->makeContext())[0]);
+    }
+
+    public function testIgnoresSearchUrlWithoutHttps(): void
+    {
+        $provider = new WebSiteNodeProvider(
+            $this->systemConfig([
+                'RcStructuredData.config.websiteName' => 'Demo',
+                'RcStructuredData.config.websiteSearchUrl' => 'http://shop.example/search?search={search_term_string}',
             ]),
             new IdFactory(),
         );

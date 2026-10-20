@@ -24,11 +24,11 @@ parameters:
             message: '#EntityRepository method calls are not allowed within loops#'
             path: src/Install/CustomFieldsInstaller.php
 
-        # Die Prüfung läuft über alle Verkaufskanäle und hat keinen Aufrufer, dessen Kontext zu
-        # übernehmen wäre (sie wird aus der Verwaltung angestoßen).
+        # Die Suche nach dem Kanal der Diagnose hat noch keinen Kanal-Kontext, aus dem sich einer ableiten
+        # ließe; angestoßen wird sie aus Verwaltung oder Konsole.
         -
             message: '#Do not use Shopware\\Core\\Framework\\Context::createDefaultContext#'
-            path: src/Schema/Diagnostics/SchemaDiagnoser.php
+            path: src/Schema/Diagnostics/DiagnosisChannelResolver.php
 
         # In Tests gibt es keinen Aufrufer. Ein aufgebauter Nutzerkontext täuschte dort eine
         # Abhängigkeit vor, die der Test gar nicht hat.

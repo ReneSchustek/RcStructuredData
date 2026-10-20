@@ -37,8 +37,11 @@ use Ruhrcoder\RcProductFeedShippingExtension\Struct\ShippingCalculationResult;
 if (!class_exists(ShippingCostCalculatorService::class, false)) {
     class ShippingCostCalculatorService
     {
-        public function lookupCached(string $productId, string $countryIso, string $salesChannelId): ?ShippingCalculationResult
-        {
+        public function lookupCached(
+            string $productId,
+            string $countryIso,
+            string $salesChannelId,
+        ): ?ShippingCalculationResult {
             return null;
         }
     }

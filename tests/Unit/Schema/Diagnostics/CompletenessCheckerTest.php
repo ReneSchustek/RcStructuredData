@@ -7,6 +7,10 @@ namespace Ruhrcoder\RcStructuredData\Tests\Unit\Schema\Diagnostics;
 use PHPUnit\Framework\TestCase;
 use Ruhrcoder\RcStructuredData\Schema\Diagnostics\CompletenessChecker;
 
+/**
+ * Prüft die Liste der Felder, die Google je Schema-Typ verlangt oder empfiehlt. Eine leere Zeichenkette zählt als
+ * fehlend, denn Google wertet sie nicht anders.
+ */
 class CompletenessCheckerTest extends TestCase
 {
     public function testReportsMissingRequiredAndRecommendedForVideoObject(): void
@@ -77,7 +81,12 @@ class CompletenessCheckerTest extends TestCase
         $document = ['@graph' => [
             ['@type' => 'BreadcrumbList', '@id' => 'bc'],
             ['@type' => 'BlogPosting', '@id' => 'post', 'headline' => 'Geländer planen'],
-            ['@type' => 'HomeAndConstructionBusiness', '@id' => 'shop', 'name' => 'Muster', 'url' => 'https://shop.example/'],
+[
+    '@type' => 'HomeAndConstructionBusiness',
+    '@id' => 'shop',
+    'name' => 'Muster',
+    'url' => 'https://shop.example/',
+],
         ]];
 
         $findings = (new CompletenessChecker())->check($document);

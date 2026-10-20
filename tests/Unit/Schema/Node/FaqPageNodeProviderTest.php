@@ -13,6 +13,10 @@ use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\CmsFixtureTrait;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\SchemaContextTrait;
 use Shopware\Core\Framework\Util\HtmlSanitizer;
 
+/**
+ * Prüft die `FAQPage` aus einem oder mehreren FAQ-Bausteinen, auch auf Beitragsseiten. Ohne Fragen entsteht keine,
+ * denn eine leere FAQ-Seite meldet Google als Fehler.
+ */
 class FaqPageNodeProviderTest extends TestCase
 {
     use CmsFixtureTrait;
@@ -77,7 +81,11 @@ class FaqPageNodeProviderTest extends TestCase
 
     private function provider(): FaqPageNodeProvider
     {
-        return new FaqPageNodeProvider(new CmsSlotIterator(), new FaqCmsBlockExtractor($this->passThroughSanitizer()), new IdFactory());
+        return new FaqPageNodeProvider(
+            new CmsSlotIterator(),
+            new FaqCmsBlockExtractor($this->passThroughSanitizer()),
+            new IdFactory()
+        );
     }
 
     /**

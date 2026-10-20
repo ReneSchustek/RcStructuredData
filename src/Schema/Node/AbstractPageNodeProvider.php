@@ -24,7 +24,7 @@ abstract class AbstractPageNodeProvider implements SchemaNodeProvider
 {
     public function __construct(
         protected readonly IdFactory $idFactory,
-        private readonly ?CmsImageCollector $imageCollector = null,
+        private readonly CmsImageCollector $imageCollector,
     ) {
     }
 
@@ -45,12 +45,13 @@ abstract class AbstractPageNodeProvider implements SchemaNodeProvider
             $node['description'] = $description;
         }
 
-        // Ohne Sammler, etwa in Tests der Knotenstruktur, fehlt nur `image`.
-        if ($this->imageCollector !== null) {
-            $images = $this->imageCollector->collect($context->getCmsPage(), $context->getSalesChannelContext()->getContext(), $context->getBaseUrl());
-            if ($images !== []) {
-                $node['image'] = $images;
-            }
+        $images = $this->imageCollector->collect(
+            $context->getCmsPage(),
+            $context->getSalesChannelContext()->getContext(),
+            $context->getBaseUrl(),
+        );
+        if ($images !== []) {
+            $node['image'] = $images;
         }
 
         $additionalProperty = $this->buildAdditionalProperty($context);

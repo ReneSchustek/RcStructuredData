@@ -35,7 +35,11 @@ final class StructuredDataExtensionTest extends TestCase
     protected function setUp(): void
     {
         $sanitizer = $this->createStub(HtmlSanitizer::class);
-        $sanitizer->method('sanitize')->willReturnCallback(static fn (string $text): string => strip_tags($text, '<p><strong>'));
+        $sanitizer->method('sanitize')->willReturnCallback(
+            static fn (
+                string $text,
+            ): string => strip_tags($text, '<p><strong>')
+        );
         $this->extension = new StructuredDataExtension(
             $this->createMock(ShippingDetailsProvider::class),
             new FaqCmsBlockExtractor($sanitizer),
@@ -143,14 +147,23 @@ final class StructuredDataExtensionTest extends TestCase
     public function testMediaUrlsAreEncodedEverywhereInTheBlock(): void
     {
         $data = $this->extension->encodeMediaUrls([
-            'image' => ['https://shop.example/media/bd/ab/CN1 - CN2.jpg?ts=1', 'https://shop.example/thumbnail/bd/CN1%20-%20CN2_200x175.jpg'],
+'image' => [
+    'https://shop.example/media/bd/ab/CN1 - CN2.jpg?ts=1',
+    'https://shop.example/thumbnail/bd/CN1%20-%20CN2_200x175.jpg',
+],
             'primaryImageOfPage' => 'https://shop.example/media/a/b c.jpg',
             'name' => 'Abstandhalter / media / Edelstahl',
             'url' => 'https://shop.example/abstandhalter/cn1',
             'offers' => ['price' => 9.66],
         ]);
 
-        self::assertSame(['https://shop.example/media/bd/ab/CN1%20-%20CN2.jpg?ts=1', 'https://shop.example/thumbnail/bd/CN1%20-%20CN2_200x175.jpg'], $data['image']);
+        self::assertSame(
+            [
+                'https://shop.example/media/bd/ab/CN1%20-%20CN2.jpg?ts=1',
+                'https://shop.example/thumbnail/bd/CN1%20-%20CN2_200x175.jpg',
+            ],
+            $data['image']
+        );
         self::assertSame('https://shop.example/media/a/b%20c.jpg', $data['primaryImageOfPage']);
         self::assertSame('Abstandhalter / media / Edelstahl', $data['name']);
         self::assertSame('https://shop.example/abstandhalter/cn1', $data['url']);

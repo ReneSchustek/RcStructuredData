@@ -53,7 +53,7 @@ final class CustomFieldsInstaller
                 'name' => 'rc_schema_description',
                 'type' => CustomFieldTypes::TEXT,
                 'config' => [
-                    'componentName' => 'sw-field',
+                    'componentName' => 'sw-text-field',
                     'type' => 'text',
                     'customFieldType' => 'text',
                     'label' => [
@@ -62,7 +62,7 @@ final class CustomFieldsInstaller
                         Defaults::LANGUAGE_SYSTEM => 'Schema description (override)',
                     ],
                     'helpText' => [
-                        'en-GB' => 'Optional plain-text description for the structured data. Falls back to the category description.',
+'en-GB' => 'Optional plain-text description for the structured data. Falls back to the category description.',
                         'de-DE' => 'Optionale Klartext-Beschreibung für die strukturierten Daten. Fällt sonst auf die Kategoriebeschreibung zurück.',
                     ],
                     'customFieldPosition' => 1,
@@ -94,7 +94,7 @@ final class CustomFieldsInstaller
                 'name' => 'rc_schema_video_name',
                 'type' => CustomFieldTypes::TEXT,
                 'config' => [
-                    'componentName' => 'sw-field',
+                    'componentName' => 'sw-text-field',
                     'type' => 'text',
                     'customFieldType' => 'text',
                     'label' => [
@@ -114,7 +114,7 @@ final class CustomFieldsInstaller
                 'name' => 'rc_schema_video_description',
                 'type' => CustomFieldTypes::TEXT,
                 'config' => [
-                    'componentName' => 'sw-field',
+                    'componentName' => 'sw-text-field',
                     'type' => 'text',
                     'customFieldType' => 'text',
                     'label' => [
@@ -123,8 +123,8 @@ final class CustomFieldsInstaller
                         Defaults::LANGUAGE_SYSTEM => 'Video description (fallback)',
                     ],
                     'helpText' => [
-                        'en-GB' => 'Page-level fallback for VideoObject.description. Falls back to the page meta description.',
-                        'de-DE' => 'Seiten-Fallback für VideoObject.description. Fällt sonst auf die Meta-Description der Seite zurück.',
+'en-GB' => 'Page-level fallback for VideoObject.description. Falls back to the page meta description.',
+'de-DE' => 'Seiten-Fallback für VideoObject.description. Fällt sonst auf die Meta-Description der Seite zurück.',
                     ],
                     'customFieldPosition' => 4,
                 ],
@@ -134,7 +134,7 @@ final class CustomFieldsInstaller
                 'name' => 'rc_schema_video_upload_date',
                 'type' => CustomFieldTypes::TEXT,
                 'config' => [
-                    'componentName' => 'sw-field',
+                    'componentName' => 'sw-text-field',
                     'type' => 'text',
                     'customFieldType' => 'text',
                     'label' => [
@@ -143,8 +143,8 @@ final class CustomFieldsInstaller
                         Defaults::LANGUAGE_SYSTEM => 'Video upload date (fallback, ISO 8601)',
                     ],
                     'helpText' => [
-                        'en-GB' => 'Page-level fallback for VideoObject.uploadDate, e.g. 2024-05-01. Required by Google.',
-                        'de-DE' => 'Seiten-Fallback für VideoObject.uploadDate, z. B. 2024-05-01. Von Google gefordert.',
+'en-GB' => 'Page-level fallback for VideoObject.uploadDate, e.g. 2024-05-01. Required by Google.',
+'de-DE' => 'Seiten-Fallback für VideoObject.uploadDate, z. B. 2024-05-01. Von Google gefordert.',
                     ],
                     'customFieldPosition' => 5,
                 ],
@@ -154,7 +154,7 @@ final class CustomFieldsInstaller
                 'name' => 'rc_schema_video_duration',
                 'type' => CustomFieldTypes::TEXT,
                 'config' => [
-                    'componentName' => 'sw-field',
+                    'componentName' => 'sw-text-field',
                     'type' => 'text',
                     'customFieldType' => 'text',
                     'label' => [

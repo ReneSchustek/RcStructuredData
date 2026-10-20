@@ -14,6 +14,10 @@ use Ruhrcoder\RcStructuredData\Schema\Node\VideoObjectNodeProvider;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\CmsFixtureTrait;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\SchemaContextTrait;
 
+/**
+ * Prüft die Videos: je Element ein Knoten, Angaben aus Element, Kategorie und Seite in dieser Rangfolge, ein Video
+ * ohne Hochladedatum gar nicht, weil Google es sonst als fehlerhaft meldet.
+ */
 class VideoObjectNodeProviderTest extends TestCase
 {
     use CmsFixtureTrait;
@@ -27,9 +31,9 @@ class VideoObjectNodeProviderTest extends TestCase
     public function testBuildsOneVideoObjectPerSlotWithUniqueId(): void
     {
         $page = $this->makeCmsPage(
-            $this->makeYoutubeSlot('vid-1', ['rcSchemaUploadDate' => '2024-05-01']),
+            $this->makeYoutubeSlot('video0000-1', ['rcSchemaUploadDate' => '2024-05-01']),
             $this->makeSlot('text'),
-            $this->makeYoutubeSlot('vid-2', ['rcSchemaUploadDate' => '2024-05-02']),
+            $this->makeYoutubeSlot('video0000-2', ['rcSchemaUploadDate' => '2024-05-02']),
         );
         $context = $this->makeContext(pageUrl: 'https://shop.example/fittings', cmsPage: $page);
 
@@ -45,7 +49,7 @@ class VideoObjectNodeProviderTest extends TestCase
 
     public function testPublisherReferencesOrganization(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', ['rcSchemaUploadDate' => '2024-05-01']));
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('video0000-1', ['rcSchemaUploadDate' => '2024-05-01']));
         $context = $this->makeContext(baseUrl: 'https://shop.example/', cmsPage: $page);
 
         $node = $this->provider()->provide($context)[0];
@@ -58,7 +62,7 @@ class VideoObjectNodeProviderTest extends TestCase
 
     public function testNameCascadePrefersBlockValue(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', [
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('video0000-1', [
             'rcSchemaName' => 'Block-Titel',
             'rcSchemaUploadDate' => '2024-05-01',
         ]));
@@ -73,7 +77,7 @@ class VideoObjectNodeProviderTest extends TestCase
 
     public function testNameCascadeFallsBackToCategoryThenPage(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', ['rcSchemaUploadDate' => '2024-05-01']));
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('video0000-1', ['rcSchemaUploadDate' => '2024-05-01']));
 
         $withCategory = $this->makeContext(
             name: 'Seitentitel',
@@ -93,7 +97,7 @@ class VideoObjectNodeProviderTest extends TestCase
      */
     public function testAVideoWithoutAnUploadDateIsNotRenderedAtAll(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1'));
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('video0000-1'));
         $context = $this->makeContext(cmsPage: $page);
 
         static::assertSame([], $this->provider()->provide($context));
@@ -104,7 +108,7 @@ class VideoObjectNodeProviderTest extends TestCase
      */
     public function testADurationDoesNotReplaceTheUploadDate(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', ['rcSchemaDuration' => 'PT5M30S']));
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('video0000-1', ['rcSchemaDuration' => 'PT5M30S']));
         $context = $this->makeContext(cmsPage: $page);
 
         static::assertSame([], $this->provider()->provide($context));
@@ -117,8 +121,8 @@ class VideoObjectNodeProviderTest extends TestCase
     public function testSkippedVideosLeaveNoGapInTheNumbering(): void
     {
         $page = $this->makeCmsPage(
-            $this->makeYoutubeSlot('ohne-datum'),
-            $this->makeYoutubeSlot('mit-datum', ['rcSchemaUploadDate' => '2024-05-01']),
+            $this->makeYoutubeSlot('ohne-datum1'),
+            $this->makeYoutubeSlot('mit-datum01', ['rcSchemaUploadDate' => '2024-05-01']),
         );
         $context = $this->makeContext(pageUrl: 'https://shop.example/fittings', cmsPage: $page);
 
@@ -130,7 +134,7 @@ class VideoObjectNodeProviderTest extends TestCase
 
     public function testDurationOmittedWhenMissing(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', ['rcSchemaUploadDate' => '2024-05-01']));
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('video0000-1', ['rcSchemaUploadDate' => '2024-05-01']));
         $context = $this->makeContext(cmsPage: $page);
 
         $node = $this->provider()->provide($context)[0];
@@ -141,7 +145,7 @@ class VideoObjectNodeProviderTest extends TestCase
 
     public function testUploadDateAndDurationFromBlock(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', [
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('video0000-1', [
             'rcSchemaUploadDate' => '2024-05-01',
             'rcSchemaDuration' => 'PT5M30S',
         ]));
@@ -155,7 +159,7 @@ class VideoObjectNodeProviderTest extends TestCase
 
     public function testUploadDateFallsBackToCategory(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1'));
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('video0000-1'));
         $context = $this->makeContext(
             cmsPage: $page,
             videoFallback: $this->fallback(uploadDate: '2023-01-01'),
@@ -166,7 +170,7 @@ class VideoObjectNodeProviderTest extends TestCase
 
     public function testApiFillsGapsAfterBlockAndCategory(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1'));
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('video0000-1'));
         $context = $this->makeContext(name: 'Seitentitel', cmsPage: $page);
         $enricher = $this->stubEnricher([
             'name' => 'API-Titel',
@@ -186,14 +190,19 @@ class VideoObjectNodeProviderTest extends TestCase
 
     public function testBlockWinsOverApi(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', [
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('video0000-1', [
             'rcSchemaName' => 'Block-Titel',
             'rcSchemaUploadDate' => '2020-01-01',
             'rcSchemaDuration' => 'PT1M',
             'rcSchemaDescription' => 'Block-Text',
         ]));
         $context = $this->makeContext(cmsPage: $page);
-        $enricher = $this->stubEnricher(['name' => 'API', 'description' => 'API', 'uploadDate' => '2099-01-01', 'duration' => 'PT9M']);
+        $enricher = $this->stubEnricher([
+            'name' => 'API',
+            'description' => 'API',
+            'uploadDate' => '2099-01-01',
+            'duration' => 'PT9M',
+        ]);
 
         $node = $this->provider($enricher)->provide($context)[0];
 
@@ -203,7 +212,7 @@ class VideoObjectNodeProviderTest extends TestCase
 
     public function testApiNotCalledWhenAllFieldsPresent(): void
     {
-        $page = $this->makeCmsPage($this->makeYoutubeSlot('vid-1', [
+        $page = $this->makeCmsPage($this->makeYoutubeSlot('video0000-1', [
             'rcSchemaName' => 'N',
             'rcSchemaDescription' => 'D',
             'rcSchemaUploadDate' => '2020-01-01',
@@ -226,8 +235,12 @@ class VideoObjectNodeProviderTest extends TestCase
     /**
      * @return array{name: string, description: string, uploadDate: string, duration: string}
      */
-    private function fallback(string $name = '', string $description = '', string $uploadDate = '', string $duration = ''): array
-    {
+    private function fallback(
+        string $name = '',
+        string $description = '',
+        string $uploadDate = '',
+        string $duration = '',
+    ): array {
         return ['name' => $name, 'description' => $description, 'uploadDate' => $uploadDate, 'duration' => $duration];
     }
 

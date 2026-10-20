@@ -101,7 +101,12 @@ final class VideoObjectNodeProvider implements SchemaNodeProvider
             $node['inLanguage'] = $context->getLocaleCode();
         }
 
-        $description = $this->cascade($video['description'], $fallback['description'], $api['description'] ?? '', $context->getDescription());
+        $description = $this->cascade(
+            $video['description'],
+            $fallback['description'],
+            $api['description'] ?? '',
+            $context->getDescription()
+        );
         if ($description !== '') {
             $node['description'] = $description;
         }

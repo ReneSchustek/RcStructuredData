@@ -11,7 +11,7 @@
         {% block sw_cms_element_rc_documents_config_items %}
             <div
                 v-for="(item, index) in documents"
-                :key="index"
+                :key="itemKey(item)"
                 class="sw-cms-el-config-rc-documents__item">
 
                 <sw-text-field

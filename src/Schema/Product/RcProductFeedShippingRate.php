@@ -40,8 +40,8 @@ final class RcProductFeedShippingRate implements PrecalculatedShippingRate
         try {
             $result = $this->calculator->lookupCached($productId, $countryIso, $salesChannelId);
         } catch (Throwable $e) {
-            // Die strukturierten Daten sind ein Zusatz: Ein Fehler im Versand-Plugin darf die Produktseite nicht mit einem
-            // 500 abreißen, dann fehlt der Versandpreis. Protokolliert, damit ein dauerhafter Ausfall auffällt.
+            // Die strukturierten Daten sind ein Zusatz: Ein Fehler im Versand-Plugin darf die Produktseite nicht mit
+            // einem 500 abreißen, dann fehlt der Versandpreis. Protokolliert, damit ein dauerhafter Ausfall auffällt.
             $this->logger->warning('Versandpreis für die strukturierten Daten nicht lesbar', [
                 'productId' => $productId,
                 'countryIso' => $countryIso,

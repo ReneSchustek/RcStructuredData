@@ -9,6 +9,10 @@ use Ruhrcoder\RcStructuredData\Schema\Extractor\FaqCmsBlockExtractor;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\CmsFixtureTrait;
 use Shopware\Core\Framework\Util\HtmlSanitizer;
 
+/**
+ * Prüft das Lesen der Frage-Antwort-Paare. Die Antwort geht durch den Sanitizer, weil sie als Auszeichnung ausgegeben
+ * wird; die Frage bleibt unverändert, weil sie maskiert erscheint.
+ */
 class FaqCmsBlockExtractorTest extends TestCase
 {
     use CmsFixtureTrait;

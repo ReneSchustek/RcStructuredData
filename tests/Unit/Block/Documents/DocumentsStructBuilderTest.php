@@ -10,6 +10,10 @@ use Ruhrcoder\RcStructuredData\Schema\Extractor\DocumentsCmsBlockExtractor;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\CmsFixtureTrait;
 use Shopware\Core\Content\Media\MediaCollection;
 
+/**
+ * Prüft, wie aus gepflegten Einträgen und geladenen Medien die Liste der Nachweise wird. Ein Eintrag, dessen Datei
+ * gelöscht ist, fällt weg, statt auf eine tote Adresse zu zeigen.
+ */
 class DocumentsStructBuilderTest extends TestCase
 {
     use CmsFixtureTrait;

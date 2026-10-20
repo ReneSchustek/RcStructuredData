@@ -17,8 +17,9 @@ use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 /**
- * Beantwortet der Vorlage die eine Frage, die sie selbst nicht beantworten kann:
- * Gibt Shopware WebSite und Organization bereits im globalen Block aus?
+ * Gibt den Vorlagen, was sie selbst nicht berechnen können: ob Shopware WebSite und Organization schon im
+ * globalen Block ausgibt, Versand-, Preis- und Variantenangaben eines Angebots, die FAQ-Seite, die Firmenangaben des
+ * Kanals und kodierte Medienadressen.
  *
  * Warum das nicht in Twig geht: `not feature('JSON_LD_DATA')` trägt nur, solange es das Flag
  * gibt. Mit Shopware 6.8 verschwindet es, und `Feature::isActive()` liefert für ein unbekanntes

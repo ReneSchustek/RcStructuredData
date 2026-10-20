@@ -46,7 +46,11 @@ final class DocumentsResolver extends AbstractCmsElementResolver
         }
 
         $criteria = new CriteriaCollection();
-        $criteria->add(self::RESULT_KEY_PREFIX . $slot->getUniqueIdentifier(), MediaDefinition::class, new Criteria($mediaIds));
+        $criteria->add(
+            self::RESULT_KEY_PREFIX . $slot->getUniqueIdentifier(),
+            MediaDefinition::class,
+            new Criteria($mediaIds)
+        );
 
         return $criteria;
     }

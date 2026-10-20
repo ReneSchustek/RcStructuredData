@@ -137,8 +137,11 @@ final class ShippingDetailsProviderTest extends TestCase
      * @param array{amount: float, currency: string}|null $rate
      * @param array<string, array{amount: float, currency: string}> $ratesByCountry
      */
-    private function provider(array $countryIsoCodes, ?array $rate = null, array $ratesByCountry = []): ShippingDetailsProvider
-    {
+    private function provider(
+        array $countryIsoCodes,
+        ?array $rate = null,
+        array $ratesByCountry = [],
+    ): ShippingDetailsProvider {
         $countries = [];
         foreach ($countryIsoCodes as $iso) {
             $country = new CountryEntity();

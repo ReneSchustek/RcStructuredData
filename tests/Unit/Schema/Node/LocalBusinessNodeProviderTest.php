@@ -10,6 +10,10 @@ use Ruhrcoder\RcStructuredData\Schema\Node\LocalBusinessNodeProvider;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\SchemaContextTrait;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
+/**
+ * Prüft das Geschäft vor Ort: Ohne Straße und Ort entsteht kein Knoten, das Bild fällt auf das Logo zurück, unlesbare
+ * Öffnungszeiten und Koordinaten bleiben weg.
+ */
 class LocalBusinessNodeProviderTest extends TestCase
 {
     use SchemaContextTrait;
@@ -71,7 +75,13 @@ class LocalBusinessNodeProviderTest extends TestCase
         static::assertSame([
             [
                 '@type' => 'OpeningHoursSpecification',
-                'dayOfWeek' => ['https://schema.org/Monday', 'https://schema.org/Tuesday', 'https://schema.org/Wednesday', 'https://schema.org/Thursday', 'https://schema.org/Friday'],
+'dayOfWeek' => [
+    'https://schema.org/Monday',
+    'https://schema.org/Tuesday',
+    'https://schema.org/Wednesday',
+    'https://schema.org/Thursday',
+    'https://schema.org/Friday',
+],
                 'opens' => '09:00',
                 'closes' => '18:00',
             ],
@@ -98,7 +108,10 @@ class LocalBusinessNodeProviderTest extends TestCase
             self::PREFIX . 'organizationLogo' => 'https://shop.example/logo.png',
         ];
 
-        $withLogo = (new LocalBusinessNodeProvider($this->systemConfig($base), new IdFactory()))->provide($this->makeContext())[0];
+        $withLogo = (new LocalBusinessNodeProvider(
+            $this->systemConfig($base),
+            new IdFactory()
+        ))->provide($this->makeContext())[0];
         static::assertSame('https://shop.example/logo.png', $withLogo['image']);
 
         $withPhoto = (new LocalBusinessNodeProvider(
@@ -115,9 +128,18 @@ class LocalBusinessNodeProviderTest extends TestCase
      */
     public function testOpeningHoursWithListAndUnreadableLine(): void
     {
-        [$specification, $unreadable] = LocalBusinessNodeProvider::openingHoursSpecification(['Mo,We 8:00-12:00', 'nach Vereinbarung']);
+        [$specification, $unreadable] = LocalBusinessNodeProvider::openingHoursSpecification([
+            'Mo,We 8:00-12:00',
+            'nach Vereinbarung',
+        ]);
 
-        static::assertSame(['https://schema.org/Monday', 'https://schema.org/Wednesday'], $specification[0]['dayOfWeek']);
+        static::assertSame(
+            [
+                'https://schema.org/Monday',
+                'https://schema.org/Wednesday',
+            ],
+            $specification[0]['dayOfWeek']
+        );
         static::assertSame('08:00', $specification[0]['opens']);
         static::assertSame(['nach Vereinbarung'], $unreadable);
     }
@@ -137,6 +159,30 @@ class LocalBusinessNodeProviderTest extends TestCase
         static::assertArrayNotHasKey('geo', $node);
         static::assertArrayNotHasKey('telephone', $node);
         static::assertArrayNotHasKey('openingHours', $node);
+    }
+
+    /**
+     * Ein Komma aus der deutschen Schreibweise oder ein Wert außerhalb der Erde ergäbe ungültige Koordinaten.
+     */
+    public function testOmitsGeoForUnreadableCoordinates(): void
+    {
+        foreach ([['51,48', '7.21'], ['51.48', '200'], ['Bochum', '7.21']] as [$latitude, $longitude]) {
+            $provider = new LocalBusinessNodeProvider(
+                $this->systemConfig([
+                    self::PREFIX . 'localBusinessStreet' => 'Musterstr. 1',
+                    self::PREFIX . 'localBusinessCity' => 'Bochum',
+                    self::PREFIX . 'localBusinessLatitude' => $latitude,
+                    self::PREFIX . 'localBusinessLongitude' => $longitude,
+                ]),
+                new IdFactory(),
+            );
+
+            static::assertArrayNotHasKey(
+                'geo',
+                $provider->provide($this->makeContext())[0],
+                $latitude . ' / ' . $longitude
+            );
+        }
     }
 
     /**

@@ -49,9 +49,19 @@ final class ProductOfferDetailsTest extends TestCase
     public function testTiersCarryTheirQuantities(): void
     {
         $product = new SalesChannelProductEntity();
-        $product->setCalculatedPrices(new PriceCollection([self::price(10.0, 9), self::price(9.0, 49), self::price(8.0, 50)]));
+        $product->setCalculatedPrices(
+            new PriceCollection([
+                self::price(10.0, 9),
+                self::price(9.0, 49),
+                self::price(8.0, 50),
+            ])
+        );
 
-        $specification = (new ProductOfferDetails())->priceSpecification($product, $this->context(CartPrice::TAX_STATE_NET));
+        $specification = (new ProductOfferDetails())
+            ->priceSpecification(
+                $product,
+                $this->context(CartPrice::TAX_STATE_NET)
+            );
 
         self::assertFalse($specification[0]['valueAddedTaxIncluded']);
         self::assertSame(
@@ -88,7 +98,13 @@ final class ProductOfferDetailsTest extends TestCase
 
     private static function price(float $unitPrice, int $quantity): CalculatedPrice
     {
-        return new CalculatedPrice($unitPrice, $unitPrice * $quantity, new CalculatedTaxCollection(), new TaxRuleCollection(), $quantity);
+        return new CalculatedPrice(
+            $unitPrice,
+            $unitPrice * $quantity,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection(),
+            $quantity
+        );
     }
 
     private function context(string $taxState): SalesChannelContext

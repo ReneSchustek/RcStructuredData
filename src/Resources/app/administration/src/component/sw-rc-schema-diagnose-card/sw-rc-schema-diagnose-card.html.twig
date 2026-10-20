@@ -45,7 +45,7 @@
                         </sw-alert>
 
                         <ul class="sw-rc-schema-diagnose-card__findings">
-                            <li v-for="finding in result.findings" :key="finding.id">
+                            <li v-for="(finding, index) in result.findings" :key="finding.id || finding.type + '-' + index">
                                 <strong>{{ finding.type }}</strong>
                                 <span v-if="finding.missingRequired.length">
                                     — {{ $tc('rc-schema.diagnose.required') }}: {{ finding.missingRequired.join(', ') }}

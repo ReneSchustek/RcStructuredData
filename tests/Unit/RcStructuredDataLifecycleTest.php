@@ -50,7 +50,13 @@ final class RcStructuredDataLifecycleTest extends TestCase
             new CustomFieldSetCollection([$set]),
         ]);
         $relations = self::repository(CustomFieldSetRelationCollection::class);
-        $fields = self::repository(CustomFieldCollection::class, [new CustomFieldCollection(), new CustomFieldCollection()]);
+        $fields = self::repository(
+            CustomFieldCollection::class,
+            [
+                new CustomFieldCollection(),
+                new CustomFieldCollection(),
+            ]
+        );
         $plugin = $this->plugin($sets, $relations, $fields);
         $context = Context::createDefaultContext();
 
@@ -70,9 +76,23 @@ final class RcStructuredDataLifecycleTest extends TestCase
     public function testUninstallRemovesTheFieldSetOnlyWithoutKeepingData(): void
     {
         $sets = self::repository(CustomFieldSetCollection::class, [
-            new IdSearchResult(1, [self::SET_ID => ['primaryKey' => self::SET_ID, 'data' => []]], new Criteria(), Context::createDefaultContext()),
+new IdSearchResult(
+    1,
+    [
+        self::SET_ID => [
+            'primaryKey' => self::SET_ID,
+            'data' => [],
+        ],
+    ],
+    new Criteria(),
+    Context::createDefaultContext(),
+),
         ]);
-        $plugin = $this->plugin($sets, self::repository(CustomFieldSetRelationCollection::class), self::repository(CustomFieldCollection::class));
+        $plugin = $this->plugin(
+            $sets,
+            self::repository(CustomFieldSetRelationCollection::class),
+            self::repository(CustomFieldCollection::class)
+        );
 
         $plugin->uninstall($this->uninstallContext(keepUserData: true));
         self::assertCount(0, $sets->deletes);
@@ -86,7 +106,15 @@ final class RcStructuredDataLifecycleTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Plugin container is not available.');
 
-        (new RcStructuredData(true, __DIR__))->install($this->context(InstallContext::class, Context::createDefaultContext()));
+        (new RcStructuredData(
+            true,
+            __DIR__
+        ))->install(
+            $this->context(
+                InstallContext::class,
+                Context::createDefaultContext()
+            )
+        );
     }
 
     /**
@@ -94,8 +122,11 @@ final class RcStructuredDataLifecycleTest extends TestCase
      * @param StaticEntityRepository<CustomFieldSetRelationCollection> $relations
      * @param StaticEntityRepository<CustomFieldCollection>            $fields
      */
-    private function plugin(StaticEntityRepository $sets, StaticEntityRepository $relations, StaticEntityRepository $fields): RcStructuredData
-    {
+    private function plugin(
+        StaticEntityRepository $sets,
+        StaticEntityRepository $relations,
+        StaticEntityRepository $fields,
+    ): RcStructuredData {
         $container = new Container();
         $container->set('custom_field_set.repository', $sets);
         $container->set('custom_field_set_relation.repository', $relations);

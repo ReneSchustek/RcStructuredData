@@ -24,6 +24,13 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 final class LocalBusinessNodeProvider implements SchemaNodeProvider
 {
     private const TYPE = 'HomeAndConstructionBusiness';
+
+    /**
+     * Eine Zeile der Öffnungszeiten: Tage als Kürzel, einzeln, als Spanne oder mit Komma gereiht, dann Beginn und Ende,
+     * etwa „Mo-Th 08:00-17:00" oder „Mo,We 08:00-12:00". Gruppe 1 sind die Tage, 2 und 3 die Uhrzeiten.
+     */
+    private const OPENING_HOURS_PATTERN = '/^([A-Za-z]{2}(?:-[A-Za-z]{2})?(?:\s*,\s*[A-Za-z]{2}(?:-[A-Za-z]{2})?)*)'
+        . '\s+(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})$/';
     private const DAYS = [
         'Mo' => 'Monday',
         'Tu' => 'Tuesday',
@@ -43,7 +50,7 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
     public function supports(SchemaContext $context): bool
     {
         return $this->config()->string('localBusinessStreet', $context->getSalesChannelContext()->getSalesChannelId()) !== ''
-            && $this->config()->string('localBusinessCity', $context->getSalesChannelContext()->getSalesChannelId()) !== '';
+&& $this->config()->string('localBusinessCity', $context->getSalesChannelContext()->getSalesChannelId()) !== '';
     }
 
     public function provide(SchemaContext $context): array
@@ -64,10 +71,38 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
     private function buildAddress(SchemaContext $context): array
     {
         $address = ['@type' => 'PostalAddress'];
-        $this->addIfSet($address, 'streetAddress', $this->config()->string('localBusinessStreet', $context->getSalesChannelContext()->getSalesChannelId()));
-        $this->addIfSet($address, 'postalCode', $this->config()->string('localBusinessZip', $context->getSalesChannelContext()->getSalesChannelId()));
-        $this->addIfSet($address, 'addressLocality', $this->config()->string('localBusinessCity', $context->getSalesChannelContext()->getSalesChannelId()));
-        $this->addIfSet($address, 'addressCountry', $this->config()->string('localBusinessCountry', $context->getSalesChannelContext()->getSalesChannelId()));
+        $this->addIfSet(
+            $address,
+            'streetAddress',
+            $this->config()->string(
+                'localBusinessStreet',
+                $context->getSalesChannelContext()->getSalesChannelId()
+            )
+        );
+        $this->addIfSet(
+            $address,
+            'postalCode',
+            $this->config()->string(
+                'localBusinessZip',
+                $context->getSalesChannelContext()->getSalesChannelId()
+            )
+        );
+        $this->addIfSet(
+            $address,
+            'addressLocality',
+            $this->config()->string(
+                'localBusinessCity',
+                $context->getSalesChannelContext()->getSalesChannelId()
+            )
+        );
+        $this->addIfSet(
+            $address,
+            'addressCountry',
+            $this->config()->string(
+                'localBusinessCountry',
+                $context->getSalesChannelContext()->getSalesChannelId()
+            )
+        );
 
         return $address;
     }
@@ -94,8 +129,22 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
     private function addOptionalFields(array &$node, SchemaContext $context): void
     {
         $this->addIfSet($node, 'image', $this->resolveImage($context));
-        $this->addIfSet($node, 'telephone', $this->config()->string('localBusinessPhone', $context->getSalesChannelContext()->getSalesChannelId()));
-        $this->addIfSet($node, 'priceRange', $this->config()->string('localBusinessPriceRange', $context->getSalesChannelContext()->getSalesChannelId()));
+        $this->addIfSet(
+            $node,
+            'telephone',
+            $this->config()->string(
+                'localBusinessPhone',
+                $context->getSalesChannelContext()->getSalesChannelId()
+            )
+        );
+        $this->addIfSet(
+            $node,
+            'priceRange',
+            $this->config()->string(
+                'localBusinessPriceRange',
+                $context->getSalesChannelContext()->getSalesChannelId()
+            )
+        );
     }
 
     /**
@@ -122,9 +171,15 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
      */
     private function resolveGeo(SchemaContext $context): ?array
     {
-        $latitude = $this->config()->string('localBusinessLatitude', $context->getSalesChannelContext()->getSalesChannelId());
-        $longitude = $this->config()->string('localBusinessLongitude', $context->getSalesChannelContext()->getSalesChannelId());
-        if ($latitude === '' || $longitude === '') {
+        $latitude = $this->config()->string(
+            'localBusinessLatitude',
+            $context->getSalesChannelContext()->getSalesChannelId()
+        );
+        $longitude = $this->config()->string(
+            'localBusinessLongitude',
+            $context->getSalesChannelContext()->getSalesChannelId()
+        );
+        if (!self::isCoordinate($latitude, 90.0) || !self::isCoordinate($longitude, 180.0)) {
             return null;
         }
 
@@ -140,7 +195,10 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
      */
     private function resolveOpeningHours(SchemaContext $context): array
     {
-        $raw = $this->config()->string('localBusinessOpeningHours', $context->getSalesChannelContext()->getSalesChannelId());
+        $raw = $this->config()->string(
+            'localBusinessOpeningHours',
+            $context->getSalesChannelContext()->getSalesChannelId()
+        );
         if ($raw === '') {
             return [];
         }
@@ -154,7 +212,12 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
     {
         $image = $this->config()->string('localBusinessImage', $context->getSalesChannelContext()->getSalesChannelId());
 
-        return $image !== '' ? $image : $this->config()->string('organizationLogo', $context->getSalesChannelContext()->getSalesChannelId());
+        return $image !== ''
+            ? $image
+            : $this->config()->string(
+                'organizationLogo',
+                $context->getSalesChannelContext()->getSalesChannelId()
+            );
     }
 
     /**
@@ -169,7 +232,7 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
         $specifications = [];
         $unreadable = [];
         foreach ($lines as $line) {
-            if (preg_match('/^([A-Za-z]{2}(?:-[A-Za-z]{2})?(?:\s*,\s*[A-Za-z]{2}(?:-[A-Za-z]{2})?)*)\s+(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})$/', $line, $match) !== 1) {
+            if (preg_match(self::OPENING_HOURS_PATTERN, $line, $match) !== 1) {
                 $unreadable[] = $line;
                 continue;
             }
@@ -228,5 +291,14 @@ final class LocalBusinessNodeProvider implements SchemaNodeProvider
     private function config(): PluginConfigReader
     {
         return new PluginConfigReader($this->systemConfig);
+    }
+
+    /**
+     * Eine Zahl mit Punkt als Dezimaltrenner innerhalb der Grenze; ein Komma aus der deutschen Schreibweise oder ein
+     * Wert außerhalb der Erde ergäbe ungültige Koordinaten.
+     */
+    private static function isCoordinate(string $value, float $limit): bool
+    {
+        return is_numeric($value) && !str_contains($value, ',') && abs((float) $value) <= $limit;
     }
 }

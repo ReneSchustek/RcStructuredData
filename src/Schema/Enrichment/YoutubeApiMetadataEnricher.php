@@ -73,7 +73,7 @@ final class YoutubeApiMetadataEnricher implements VideoMetadataEnricher
         try {
             $data = $this->fetch($videoId, $apiKey);
         } catch (Throwable $exception) {
-            // Netzwerk-/Quota-/Transportfehler (z. B. 403) NEGATIV cachen, sonst würde ein
+            // Netzwerk-/Quota-/Transportfehler (z. B. 403) als Fehlschlag zwischenspeichern, sonst würde ein
             // defekter/quota-erschöpfter API-Zustand jeden HTTP-Cache-Miss-Render erneut mit
             // einem bis zu TIMEOUT_SECONDS blockierenden, scheiternden Call belasten. Wird die
             // Exception dagegen aus dem Callback geworfen, speichert Symfony das Item nicht.

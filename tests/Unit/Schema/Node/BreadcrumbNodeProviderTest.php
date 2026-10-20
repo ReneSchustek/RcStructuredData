@@ -12,6 +12,9 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
 use Shopware\Core\Content\Seo\SeoUrlPlaceholderHandlerInterface;
 
+/**
+ * Prüft den Navigationspfad: in der Reihenfolge von der Wurzel zur Seite, ohne Kategorie oder ohne Pfad kein Knoten.
+ */
 class BreadcrumbNodeProviderTest extends TestCase
 {
     use SchemaContextTrait;

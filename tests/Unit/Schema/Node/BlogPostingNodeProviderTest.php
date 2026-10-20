@@ -10,6 +10,9 @@ use Ruhrcoder\RcStructuredData\Schema\Node\BlogPostingNodeProvider;
 use Ruhrcoder\RcStructuredData\Schema\SchemaContext;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\SchemaContextTrait;
 
+/**
+ * Prüft den `BlogPosting`-Knoten auf Beitragsseiten. Fehlende Angaben bleiben weg, ohne Namen entsteht kein Knoten.
+ */
 class BlogPostingNodeProviderTest extends TestCase
 {
     use SchemaContextTrait;

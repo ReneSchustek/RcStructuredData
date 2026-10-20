@@ -12,5 +12,8 @@ namespace Ruhrcoder\RcStructuredData\Schema\Diagnostics;
  */
 interface CategoryDiagnoser
 {
-    public function diagnose(string $identifier): DiagnoseResult;
+    /**
+     * @param string|null $salesChannelId Kanal, in dessen Sicht geprüft wird; ohne Angabe der erste aktive Storefront-Kanal
+     */
+    public function diagnose(string $identifier, ?string $salesChannelId = null): DiagnoseResult;
 }

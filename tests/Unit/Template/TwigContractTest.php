@@ -42,8 +42,11 @@ final class TwigContractTest extends TestCase
     }
 
     #[DataProvider('overrideProvider')]
-    public function testOverrideExtendsCoreAndTargetsRealBlock(string $relativePath, string $extends, string $block): void
-    {
+    public function testOverrideExtendsCoreAndTargetsRealBlock(
+        string $relativePath,
+        string $extends,
+        string $block,
+    ): void {
         $content = (string) file_get_contents(self::VIEWS . '/' . $relativePath);
 
         self::assertStringContainsString($extends, $content, $relativePath);

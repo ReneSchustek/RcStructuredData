@@ -8,6 +8,10 @@ use PHPUnit\Framework\TestCase;
 use Ruhrcoder\RcStructuredData\Schema\Extractor\ProductListingExtractor;
 use Ruhrcoder\RcStructuredData\Tests\Unit\Schema\CmsFixtureTrait;
 
+/**
+ * Prüft, dass das Produktlisting seine Produkte in der Reihenfolge der Seite liefert; die `ItemList` soll zeigen, was
+ * der Besucher sieht.
+ */
 class ProductListingExtractorTest extends TestCase
 {
     use CmsFixtureTrait;
