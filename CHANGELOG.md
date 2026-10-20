@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.28.1] - 2026-10-20: Rückgaberichtlinie auch am Angebot
+
+> **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
+
+### Behoben
+
+- **Die Rückgaberichtlinie steht jetzt auch an jedem Angebot** (`offers.hasMerchantReturnPolicy`), dieselbe wie an der
+  Organisation. Googles Händlereinträge lesen sie nur dort und meldeten sie für jedes Produkt als fehlend. Frist 0 in der
+  Karte Rückgaberichtlinie schaltet sie weiterhin an beiden Stellen ab.
+
 ## [2.28.0] - 2026-10-20: Restbefunde der Regelprüfung
 
 > **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`. Der Verwaltungsteil

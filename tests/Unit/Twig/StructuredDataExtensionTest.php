@@ -58,13 +58,14 @@ final class StructuredDataExtensionTest extends TestCase
 
     public function testFunctionIsRegisteredForTemplates(): void
     {
-        $namen = array_map(
+        $names = array_map(
             static fn ($function): string => $function->getName(),
             $this->extension->getFunctions(),
         );
 
-        self::assertContains('rc_schema_core_renders_global_json_ld', $namen);
-        self::assertContains('rc_schema_faq_page', $namen);
+        self::assertContains('rc_schema_core_renders_global_json_ld', $names);
+        self::assertContains('rc_schema_faq_page', $names);
+        self::assertContains('rc_schema_return_policy', $names);
     }
 
     public function testCoreDoesNotRenderWhileTheFlagExistsAndIsOff(): void

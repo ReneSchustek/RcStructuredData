@@ -20,12 +20,17 @@
 {% block page_product_detail_json_ld_script %}
     {% set rcShippingDetails = rc_schema_shipping_details(page.product, context) %}
     {% set rcPriceSpecification = rc_schema_price_specification(page.product, context) %}
+    {# Dieselbe Rückgaberichtlinie wie an der Organisation, auch am Angebot: Google liest sie für Händlereinträge dort. #}
+    {% set rcReturnPolicy = rc_schema_return_policy(context.salesChannelId) %}
 
     {% if productData['@type'] == 'Product' and productData.offers is defined %}
         {# `itemCondition` auch am Produkt: Schema.org erlaubt es dort, und manche Auswerter suchen es nur dort. #}
         {% set rcOffers = productData.offers|merge({ priceSpecification: rcPriceSpecification }) %}
         {% if rcShippingDetails and rcOffers['@type'] == 'Offer' %}
             {% set rcOffers = rcOffers|merge({ shippingDetails: rcShippingDetails }) %}
+        {% endif %}
+        {% if rcReturnPolicy and rcOffers['@type'] == 'Offer' %}
+            {% set rcOffers = rcOffers|merge({ hasMerchantReturnPolicy: rcReturnPolicy }) %}
         {% endif %}
         {% set productData = productData|merge({
             offers: rcOffers,
@@ -39,6 +44,9 @@
         {% set rcOffers = rcVariant.offers|merge({ priceSpecification: rcPriceSpecification }) %}
         {% if rcShippingDetails and rcOffers['@type'] == 'Offer' %}
             {% set rcOffers = rcOffers|merge({ shippingDetails: rcShippingDetails }) %}
+        {% endif %}
+        {% if rcReturnPolicy and rcOffers['@type'] == 'Offer' %}
+            {% set rcOffers = rcOffers|merge({ hasMerchantReturnPolicy: rcReturnPolicy }) %}
         {% endif %}
         {% set rcVariant = rcVariant|merge({
             offers: rcOffers,

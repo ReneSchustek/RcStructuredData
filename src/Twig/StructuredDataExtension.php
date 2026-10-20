@@ -50,6 +50,7 @@ final class StructuredDataExtension extends AbstractExtension
             new TwigFunction('rc_schema_faq_page', $this->faqPage(...)),
             new TwigFunction('rc_schema_encode_media_urls', $this->encodeMediaUrls(...)),
             new TwigFunction('rc_schema_organization_details', $this->organizationDetails->forSalesChannel(...)),
+            new TwigFunction('rc_schema_return_policy', $this->organizationDetails->returnPolicy(...)),
             new TwigFunction('rc_schema_price_specification', $this->offerDetails->priceSpecification(...)),
             new TwigFunction('rc_schema_varies_by', $this->offerDetails->variesBy(...)),
         ];
