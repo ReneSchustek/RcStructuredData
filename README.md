@@ -341,7 +341,7 @@ gespeichert und niemals im Seitenquelltext oder in Protokollen ausgegeben.
 ## Support und Lizenz
 
 - **Hersteller:** Ruhrcoder (René Schustek), <https://ruhrcoder.de>
-- **Lizenz:** MIT (siehe [LICENSE](LICENSE))
+- **Lizenz:** proprietär (siehe [composer.json](composer.json))
 - **Änderungshistorie:** siehe [CHANGELOG](CHANGELOG.md)
 
 ## Geschwindigkeit messen
