@@ -16,11 +16,16 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 final class ProductOfferDetails
 {
     /**
+     * Trennt mehrere Gruppen, die auf dieselbe Eigenschaft fallen, etwa Länge und Durchmesser.
+     */
+    private const VALUE_SEPARATOR = ' / ';
+
+    /**
      * Eigenschaftsgruppen, die einem Wert entsprechen, den Google für `variesBy` kennt. Andere Gruppen (Ausführung,
      * Anschluss) haben keinen Gegenwert und bleiben weg; ein unbekannter Wert wäre ein Fehler, kein Hinweis.
      */
-    private const VARIES_BY = [
-        'größe' => 'size', 'size' => 'size', 'maße' => 'size', 'länge' => 'size', 'length' => 'size', 'höhe' => 'size',
+    private const VARIANT_PROPERTIES = [
+        'größe' => 'size', 'size' => 'size', 'maße' => 'size', 'abmessung' => 'size', 'länge' => 'size', 'length' => 'size', 'höhe' => 'size',
         'height' => 'size', 'breite' => 'size', 'width' => 'size', 'tiefe' => 'size', 'durchmesser' => 'size',
         'außendurchmesser' => 'size', 'glasstärke' => 'size', 'stärke' => 'size',
         'material' => 'material', 'farbe' => 'color', 'color' => 'color', 'colour' => 'color',
@@ -69,19 +74,37 @@ final class ProductOfferDetails
     /**
      * Die Eigenschaften, in denen sich die Varianten unterscheiden, als Werte von Schema.org.
      *
+     * Abgeleitet aus {@see self::variantProperties()}: Google verlangt jede hier genannte Eigenschaft an der Variante und
+     * meldet die Seite sonst als ungültig. Eine Gruppe ohne Wert darf deshalb auch hier nicht stehen.
+     *
      * @return list<string>
      */
     public function variesBy(SalesChannelProductEntity $product): array
     {
+        return array_map(
+            static fn (string $property): string => 'https://schema.org/' . $property,
+            array_keys($this->variantProperties($product))
+        );
+    }
+
+    /**
+     * Die Werte der Variante je Eigenschaft von Schema.org. Fallen mehrere Gruppen auf dieselbe Eigenschaft, stehen ihre
+     * Werte zusammen darin, damit keine verloren geht.
+     *
+     * @return array<string, string>
+     */
+    public function variantProperties(SalesChannelProductEntity $product): array
+    {
         $values = [];
         foreach ($product->getVariation() as $variation) {
             $group = mb_strtolower(trim((string) ($variation['group'] ?? '')));
-            if (isset(self::VARIES_BY[$group])) {
-                $values[] = 'https://schema.org/' . self::VARIES_BY[$group];
+            $option = trim((string) ($variation['option'] ?? ''));
+            if ($option !== '' && isset(self::VARIANT_PROPERTIES[$group])) {
+                $values[self::VARIANT_PROPERTIES[$group]][] = $option;
             }
         }
 
-        return array_values(array_unique($values));
+        return array_map(static fn (array $options): string => implode(self::VALUE_SEPARATOR, $options), $values);
     }
 
     /**

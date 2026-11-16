@@ -107,6 +107,90 @@ final class ProductOfferDetailsTest extends TestCase
         );
     }
 
+    /**
+     * Was: Eine Gruppe auf `size`, eine auf `material`.
+     * Warum: Google verlangt jede Eigenschaft aus `variesBy` an der Variante. 351 Seiten waren deshalb ungültig.
+     * Erwartet: beide Werte an der Variante, beide in `variesBy`.
+     */
+    public function testEveryPropertyInVariesByHasItsValue(): void
+    {
+        $details = new ProductOfferDetails();
+        $product = $this->variantWith([
+            ['group' => 'Länge', 'option' => '2,00 m'],
+            ['group' => 'Material', 'option' => 'V2A'],
+        ]);
+
+        self::assertSame(['size' => '2,00 m', 'material' => 'V2A'], $details->variantProperties($product));
+        self::assertSame(['https://schema.org/size', 'https://schema.org/material'], $details->variesBy($product));
+    }
+
+    /**
+     * Was: Länge und Durchmesser, beide fallen auf `size`.
+     * Warum: Es gibt nur ein Feld `size`; keiner der beiden Werte darf verloren gehen.
+     * Erwartet: beide Werte in einem Feld, `size` nur einmal in `variesBy`.
+     */
+    public function testTwoGroupsOnOnePropertyAreJoined(): void
+    {
+        $details = new ProductOfferDetails();
+        $product = $this->variantWith([
+            ['group' => 'Länge', 'option' => '2,00 m'],
+            ['group' => 'Durchmesser', 'option' => '42,4 mm'],
+        ]);
+
+        self::assertSame(['size' => '2,00 m / 42,4 mm'], $details->variantProperties($product));
+        self::assertSame(['https://schema.org/size'], $details->variesBy($product));
+    }
+
+    /**
+     * Was: Eine Gruppe ohne Wert und eine ohne Gegenwert bei Schema.org.
+     * Warum: Stünde die Eigenschaft ohne Wert in `variesBy`, wäre die Seite wieder ungültig.
+     * Erwartet: weder an der Variante noch in `variesBy`.
+     */
+    public function testAGroupWithoutValueOrCounterpartStaysOut(): void
+    {
+        $details = new ProductOfferDetails();
+        $product = $this->variantWith([
+            ['group' => 'Material', 'option' => '  '],
+            ['group' => 'Anschluss', 'option' => 'Kugelgelenk'],
+        ]);
+
+        self::assertSame([], $details->variantProperties($product));
+        self::assertSame([], $details->variesBy($product));
+    }
+
+    /**
+     * Was: Ein Artikel ohne Variation.
+     * Warum: Der Regelfall einfacher Artikel darf nichts ausgeben.
+     * Erwartet: keine Eigenschaften.
+     */
+    public function testNoVariationGivesNothing(): void
+    {
+        self::assertSame([], (new ProductOfferDetails())->variantProperties($this->variantWith([])));
+    }
+
+    /**
+     * Was: Die Gruppe „Abmessung“, wie sie seit der Zusammenlegung auf Staging heißt.
+     * Warum: Ohne Eintrag verlöre die Produktgruppe dort `variesBy`.
+     * Erwartet: `size`.
+     */
+    public function testTheMergedGroupNameCounts(): void
+    {
+        $product = $this->variantWith([['group' => 'Abmessung', 'option' => '40 x 40 mm']]);
+
+        self::assertSame(['size' => '40 x 40 mm'], (new ProductOfferDetails())->variantProperties($product));
+    }
+
+    /**
+     * @param list<array{group: string, option: string}> $variation
+     */
+    private function variantWith(array $variation): SalesChannelProductEntity
+    {
+        $product = new SalesChannelProductEntity();
+        $product->setVariation($variation);
+
+        return $product;
+    }
+
     private function context(string $taxState): SalesChannelContext
     {
         $currency = new CurrencyEntity();

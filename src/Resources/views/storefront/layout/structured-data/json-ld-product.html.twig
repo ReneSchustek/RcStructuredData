@@ -48,17 +48,25 @@
         {% if rcReturnPolicy and rcOffers['@type'] == 'Offer' %}
             {% set rcOffers = rcOffers|merge({ hasMerchantReturnPolicy: rcReturnPolicy }) %}
         {% endif %}
+        {# Was `variesBy` an der Gruppe nennt, muss an der Variante stehen, sonst weist Google den Händlereintrag ab. #}
         {% set rcVariant = rcVariant|merge({
             offers: rcOffers,
             itemCondition: rcVariant.offers.itemCondition ?? 'https://schema.org/NewCondition',
             sku: rcVariant.sku|default('')|replace({' ': ''}),
-        }) %}
+        })|merge(rc_schema_variant_properties(page.product)) %}
         {% set productData = productData|merge({ hasVariant: [rcVariant] }) %}
 
         {% set rcVariesBy = rc_schema_varies_by(page.product) %}
         {% if rcVariesBy is not empty %}
             {% set productData = productData|merge({ variesBy: rcVariesBy }) %}
         {% endif %}
+    {% endif %}
+
+    {# Das Video aus dem Reiter „Video“ des Themes als `subjectOf`. Ohne Reiter, ohne Schlüssel oder ohne Datum von
+       YouTube bleibt es weg; ein VideoObject ohne `uploadDate` wäre für Google ein kritischer Fehler. #}
+    {% set rcVideo = rc_schema_product_video(page.extensions.trVideoTab.video ?? null, page.product) %}
+    {% if rcVideo %}
+        {% set productData = productData|merge({ subjectOf: rcVideo }) %}
     {% endif %}
 
     {% set productData = rc_schema_encode_media_urls(productData) %}

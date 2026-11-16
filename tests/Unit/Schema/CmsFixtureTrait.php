@@ -172,8 +172,10 @@ trait CmsFixtureTrait
             // `setListing()` gibt den Typparameter vor; ohne diese Angabe leitet die
             // statische Prüfung ihn aus der eingesetzten Entität ab und meldet ihn als zu eng.
             /** @var EntitySearchResult<ProductCollection> $listing */
+            // Der Kern prüft, dass der Name zum Alias der Entitäten passt; ohne Definition liefert eine frei erzeugte
+            // Entität ihren Alias aus dem Klassennamen, nicht `product`.
             $listing = new EntitySearchResult(
-                'product',
+                $products === [] ? 'product' : $products[0]->getApiAlias(),
                 \count($products),
                 new ProductCollection($products),
                 null,

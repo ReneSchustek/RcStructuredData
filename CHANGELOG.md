@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.30.0] - 2026-11-11 — Video der Produktseite als VideoObject
+
+> **Deployment:** `plugin:update`, `cache:clear`. Kein Storefront- und kein Verwaltungsbau. Wirkt nur zusammen mit dem Reiter „Video“
+> von RcTrummerEdelstahlTheme2027 und gesetztem YouTube-Schlüssel.
+
+### Neu
+
+- **Video der Produktseite in den Produktdaten:** Zeigt die Produktseite den Reiter „Video“ des Themes, steht das Video als
+  `VideoObject` unter `subjectOf` am Produkt. Titel, Beschreibung, Datum und Dauer kommen von der YouTube-Schnittstelle
+  (derselbe Schlüssel wie bei den Erlebniswelten, ein Tag zwischengespeichert). Ohne Datum gibt es keinen Knoten.
+
+## [2.29.0] - 2026-11-03 — Händlereinträge: Eigenschaften an der Variante
+
+> **Deployment:** `plugin:update`, `cache:clear`. Kein Storefront- und kein Verwaltungsbau.
+
+### Behoben
+
+- **`variesBy` nannte `size` und `material`, die Variante trug sie nicht.** Google meldete deshalb 351 Händlereinträge als ungültig. Die
+  Werte stehen jetzt an der Variante, mehrere Gruppen auf derselben Eigenschaft zusammen („2,00 m / 42,4 mm“). Eine Gruppe ohne Wert steht
+  auch nicht mehr in `variesBy`.
+- **Die Gruppe „Abmessung“** zählt jetzt als `size`.
+
 ## [2.28.1] - 2026-10-20: Rückgaberichtlinie auch am Angebot
 
 > **Deployment:** `php bin/console plugin:update RcStructuredData && php bin/console cache:clear`.
